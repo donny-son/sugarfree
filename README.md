@@ -1,5 +1,7 @@
 # NoBold
 
+<img width="320" height="425" alt="image" src="https://github.com/user-attachments/assets/7d190cd9-22aa-411f-8318-88a98d6ae450" />
+
 A tiny macOS menu bar app that strips **bold** formatting from whatever you copy.
 
 AI chat tools (Claude, ChatGPT, Gemini) love to copy text with bold styling
