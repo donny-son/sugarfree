@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>sugarfree — DynaPuff wordmark options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
+<style>
+  /* ---- Ink tokens (mirror of NoBold/Theme.swift; do not drift) ---- */
+  :root{
+    --desk:#ECE9E1; --surface:#FAF8F3; --text:#161616;
+    --secondary:#6A665D; --tertiary:#8F8A7E;
+    --hairline:rgba(22,22,22,.12); --border:#161616;
+    --markTile:#161616; --markGlyph:#FAF8F3;
+    --active:#2E7D32; --idle:#B0721A;
+  }
+  .dark{
+    --desk:#121214; --surface:#1D1D1F; --text:#F4F1EA;
+    --secondary:#A7A39A; --tertiary:#76726A;
+    --hairline:rgba(244,241,234,.12); --border:#F4F1EA;
+    --markTile:#F4F1EA; --markGlyph:#161616;
+    --active:#6FCF7F; --idle:#E3B341;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--desk); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+    padding:40px; transition:background .2s;
+  }
+  .wm{ font-family:"DynaPuff",system-ui,sans-serif; font-weight:600;
+       letter-spacing:-.01em; line-height:1; }
+
+  /* ---- the four named gradients, applied to text ---- */
+  .g-cotton{ background:linear-gradient(100deg,#FF6FB5 0%,#FF9A6B 52%,#FFC857 100%); }
+  .g-sorbet{ background:linear-gradient(100deg,#FF7E5F 0%,#E3B341 100%); }
+  .g-mint  { background:linear-gradient(100deg,#2BB673 0%,#6FCF7F 55%,#BFE86B 100%); }
+  .g-ink   { background:linear-gradient(100deg,#161616 0%,#6A665D 100%); }
+  .dark .g-ink{ background:linear-gradient(100deg,#F4F1EA 0%,#A7A39A 100%); }
+  .grad{ -webkit-background-clip:text; background-clip:text; color:transparent;
+         -webkit-text-fill-color:transparent; }
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:28px}
+  button{font:inherit;font-size:13px;padding:7px 14px;border-radius:9px;
+    border:1px solid var(--hairline);background:var(--surface);color:var(--text);cursor:pointer}
+
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:1080px}
+  .card{background:var(--surface);border:1px solid var(--hairline);border-radius:18px;
+    padding:26px 26px 22px;box-shadow:0 1px 0 var(--hairline)}
+  .name{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tertiary);margin-bottom:18px}
+  .swatch{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+  .swatch .wm{font-size:46px}
+  .meta{font-size:12px;color:var(--secondary);line-height:1.5}
+
+  /* ---- in-context: menubar popover header ---- */
+  .pop{width:300px;border:1px solid var(--hairline);border-radius:14px;overflow:hidden;
+    background:var(--surface);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+  .pop-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--hairline)}
+  .tile{width:26px;height:26px;border-radius:7px;background:var(--markTile);
+    display:grid;place-items:center;flex:none}
+  .tile svg{width:16px;height:16px;color:var(--markGlyph)}
+  .pop-head .wm{font-size:22px}
+  .pop-body{padding:12px 16px 16px}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;font-size:13px}
+  .row + .row{border-top:1px solid var(--hairline)}
+  .pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .pill.on{color:var(--active);border:1px solid color-mix(in srgb,var(--active) 40%,transparent)}
+  .sub{font-size:12px;color:var(--secondary)}
+  .ctx-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tertiary);margin:34px 0 14px}
+  .ctx-row{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+
+  /* dock-ish icon preview: Ink squircle + wordmark initial */
+  .ico{width:84px;height:84px;border-radius:20px;background:var(--markTile);
+    display:grid;place-items:center}
+  .ico .wm{font-size:40px;color:var(--markGlyph)} /* on-tile: solid, not gradient */
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong style="font-size:13px">sugarfree · DynaPuff wordmark</strong>
+    <button id="mode">Toggle light / dark</button>
+    <span class="sub" style="margin-left:auto">pick one by name</span>
+  </div>
+
+  <div class="grid">
+    <!-- COTTON -->
+    <div class="card">
+      <div class="name">① Cotton — candy</div>
+      <div class="swatch"><span class="wm grad g-cotton">sugarfree</span></div>
+      <div class="meta">Pink → peach → gold. Most playful; leans hardest into the sweet/candy read. Boldest departure from Ink.</div>
+    </div>
+    <!-- SORBET -->
+    <div class="card">
+      <div class="name">② Sorbet — warm</div>
+      <div class="swatch"><span class="wm grad g-sorbet">sugarfree</span></div>
+      <div class="meta">Coral → amber. Ties to Ink's idle amber (#B0721A / #E3B341). Warm but more restrained than Cotton.</div>
+    </div>
+    <!-- MINT -->
+    <div class="card">
+      <div class="name">③ Mint — fresh</div>
+      <div class="swatch"><span class="wm grad g-mint">sugarfree</span></div>
+      <div class="meta">Teal → green → lime. Echoes Ink's active green (#2E7D32 / #6FCF7F) = "clean / fresh / sugar-free."</div>
+    </div>
+    <!-- INK -->
+    <div class="card">
+      <div class="name">④ Ink — restrained</div>
+      <div class="swatch"><span class="wm grad g-ink">sugarfree</span></div>
+      <div class="meta">Monochrome ink → graphite. Most theme-consistent; gradient is a subtle sheen, not color. Safest.</div>
+    </div>
+  </div>
+
+  <div class="ctx-label">In context — menubar popover header (swap the gradient class to compare)</div>
+  <div class="ctx-row">
+    <div class="pop">
+      <div class="pop-head">
+        <div class="tile">
+          <!-- stars-off style glyph stand-in -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z"/><line x1="3" y1="21" x2="21" y2="3"/></svg>
+        </div>
+        <span class="wm grad g-cotton">sugarfree</span>
+      </div>
+      <div class="pop-body">
+        <div class="row"><span>Stripping</span><span class="pill on">ON</span></div>
+        <div class="row"><span>Bold</span><span class="sub">✓ removing</span></div>
+        <div class="row"><span>Italic</span><span class="sub">✓ removing</span></div>
+        <div class="row"><span>Strikethrough</span><span class="sub">keep</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="ico"><span class="wm">s</span></div>
+      <div class="meta" style="width:84px;margin-top:10px;text-align:center">on-tile mark<br>(solid, not gradient)</div>
+    </div>
+  </div>
+
+  <p class="meta" style="margin-top:30px;max-width:680px">
+    Note: gradient text is for the <em>wordmark on light/paper surfaces</em>. On the Ink mark tile
+    (menubar glyph, app icon) the letter stays solid <code>--markGlyph</code> for contrast — gradients
+    on a near-black tile muddy. So the gradient lives in the wordmark, the tile stays Ink.
+  </p>
+
+<script>
+  document.getElementById('mode').onclick=()=>document.body.classList.toggle('dark');
+</script>
+</body>
+</html>

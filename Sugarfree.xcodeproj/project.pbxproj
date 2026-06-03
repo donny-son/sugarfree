@@ -1,0 +1,347 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */; };
+		18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2975DF2D8E1211A515BD8062 /* Assets.xcassets */; };
+		3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29844F5D499475158B4A3B16 /* SugarfreeApp.swift */; };
+		7E1CC0357F637AA3F75A68A5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5374204088FA4277E08E9A45 /* SettingsView.swift */; };
+		85098E9C7450F48405750CAF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7AA4787798EC5F8ACC2945 /* Theme.swift */; };
+		8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C97977678FA753EF4085E8 /* OnboardingView.swift */; };
+		DA377B697B631C69293608D9 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = CDEA90900F98C506136BAE77 /* Fonts */; };
+		DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2975DF2D8E1211A515BD8062 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		29844F5D499475158B4A3B16 /* SugarfreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SugarfreeApp.swift; sourceTree = "<group>"; };
+		5374204088FA4277E08E9A45 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
+		6E7AA4787798EC5F8ACC2945 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardMonitor.swift; sourceTree = "<group>"; };
+		A04C1E63E156CF7944EAB36C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		B567B04475BDB071F6BC6012 /* Sugarfree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sugarfree.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6C97977678FA753EF4085E8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		CDEA90900F98C506136BAE77 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Sugarfree/Fonts; sourceTree = SOURCE_ROOT; };
+		FBB48E3AEA70189DBA1A30E4 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		31780DF0626532B29EE8FA7B /* Sugarfree */ = {
+			isa = PBXGroup;
+			children = (
+				2975DF2D8E1211A515BD8062 /* Assets.xcassets */,
+				CDEA90900F98C506136BAE77 /* Fonts */,
+				5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */,
+				B6C97977678FA753EF4085E8 /* OnboardingView.swift */,
+				967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */,
+				5374204088FA4277E08E9A45 /* SettingsView.swift */,
+				29844F5D499475158B4A3B16 /* SugarfreeApp.swift */,
+				6E7AA4787798EC5F8ACC2945 /* Theme.swift */,
+			);
+			path = Sugarfree;
+			sourceTree = "<group>";
+		};
+		43C3BA6AA6A3D8FA26735D31 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B567B04475BDB071F6BC6012 /* Sugarfree.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B6DF8CD7097E73D89D151245 = {
+			isa = PBXGroup;
+			children = (
+				F5814E79CC2DE4BFE5AA7880 /* Configs */,
+				31780DF0626532B29EE8FA7B /* Sugarfree */,
+				43C3BA6AA6A3D8FA26735D31 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F5814E79CC2DE4BFE5AA7880 /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				FBB48E3AEA70189DBA1A30E4 /* Debug.xcconfig */,
+				A04C1E63E156CF7944EAB36C /* Release.xcconfig */,
+			);
+			path = Configs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6DDB155A10877F12B42F184F /* Sugarfree */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3ED0EABE17AE7410EA2CF10D /* Build configuration list for PBXNativeTarget "Sugarfree" */;
+			buildPhases = (
+				85C8E7E481C5ACF829306A95 /* Sources */,
+				C08E8F48108676373B018C3A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sugarfree;
+			packageProductDependencies = (
+			);
+			productName = Sugarfree;
+			productReference = B567B04475BDB071F6BC6012 /* Sugarfree.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		986537778880F2CC866F6973 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = FD24CE0C78A157C1A238C211 /* Build configuration list for PBXProject "Sugarfree" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B6DF8CD7097E73D89D151245;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 43C3BA6AA6A3D8FA26735D31 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6DDB155A10877F12B42F184F /* Sugarfree */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C08E8F48108676373B018C3A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */,
+				DA377B697B631C69293608D9 /* Fonts in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		85C8E7E481C5ACF829306A95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */,
+				8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */,
+				00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */,
+				7E1CC0357F637AA3F75A68A5 /* SettingsView.swift in Sources */,
+				3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */,
+				85098E9C7450F48405750CAF /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0F82789F129905FD993BB45D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sugarfree/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugarfree.app;
+				PRODUCT_NAME = Sugarfree;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		6C9B24719707520A95591002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sugarfree/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugarfree.app;
+				PRODUCT_NAME = Sugarfree;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		7C2FF1E4276C164E356BC143 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A04C1E63E156CF7944EAB36C /* Release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sugarfree/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_MODULE_NAME = Sugarfree;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B7E8649BA23DEC1AE3A0311E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FBB48E3AEA70189DBA1A30E4 /* Debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sugarfree/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_MODULE_NAME = Sugarfree;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3ED0EABE17AE7410EA2CF10D /* Build configuration list for PBXNativeTarget "Sugarfree" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7E8649BA23DEC1AE3A0311E /* Debug */,
+				7C2FF1E4276C164E356BC143 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FD24CE0C78A157C1A238C211 /* Build configuration list for PBXProject "Sugarfree" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C9B24719707520A95591002 /* Debug */,
+				0F82789F129905FD993BB45D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 986537778880F2CC866F6973 /* Project object */;
+}

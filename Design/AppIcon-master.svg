@@ -1,14 +1,25 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Ink: solid ink squircle, paper line-art stars-off mark. Flat, minimal, high-contrast. -->
-  <rect x="64" y="64" width="896" height="896" rx="224" fill="#161616"/>
-  <rect x="96" y="96" width="832" height="832" rx="192" stroke="#FAF8F3" stroke-opacity="0.08" stroke-width="4"/>
+  <!-- Cotton (icon B): paper squircle, cotton-candy gradient lollipop-off mark. -->
+  <defs>
+    <linearGradient id="cotton" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF6FB5"/>
+      <stop offset="0.52" stop-color="#FF9A6B"/>
+      <stop offset="1" stop-color="#FFC857"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="#FAF8F3"/>
+  <rect x="64.5" y="64.5" width="895" height="895" rx="223.5" stroke="#161616" stroke-opacity="0.10" stroke-width="3"/>
 
   <g transform="translate(212,212) scale(25)"
-     fill="none" stroke="#FAF8F3" stroke-width="2"
+     fill="none" stroke="url(#cotton)" stroke-width="2"
      stroke-linecap="round" stroke-linejoin="round">
-    <path d="M17.373 13.371l.076 -.154a.392 .392 0 0 1 .702 0l.907 1.831m.367 .39c.498 .071 1.245 .18 2.24 .324a.39 .39 0 0 1 .217 .665c-.326 .316 -.57 .553 -.732 .712m-.611 3.405a.39 .39 0 0 1 -.567 .411l-2.172 -1.138l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l1.601 -.232" />
-    <path d="M6.2 19.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138" />
-    <path d="M9.557 5.556l1 -.146l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.014 .187m-4.153 -.166l-.744 .39a.392 .392 0 0 1 -.568 -.41l.188 -1.093" />
+    <path d="M7.462 7.493a7 7 0 0 0 9.06 9.039m2.416 -1.57a7 7 0 1 0 -9.884 -9.915" />
+    <path d="M21 10a3.5 3.5 0 0 0 -7 0" />
+    <path d="M12.71 12.715a3.5 3.5 0 0 1 -5.71 -2.715" />
+    <path d="M14 17c.838 0 1.607 -.294 2.209 -.785m1.291 -2.715a3.5 3.5 0 0 0 -3.5 -3.5" />
+    <path d="M14 3a3.5 3.5 0 0 0 -3.5 3.5" />
+    <path d="M3 21l6 -6" />
     <path d="M3 3l18 18" />
   </g>
 </svg>

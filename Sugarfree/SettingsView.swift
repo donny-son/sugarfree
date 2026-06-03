@@ -21,11 +21,9 @@ struct SettingsView: View {
         HStack(spacing: 12) {
             BrandMark(size: 38)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("NoBold")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(Ink.text)
-                Text("Strip bold formatting from copied text.")
+            VStack(alignment: .leading, spacing: 3) {
+                Wordmark(size: 26)
+                Text("Strip formatting sugar from copied text.")
                     .font(.system(size: 11.5))
                     .foregroundStyle(Ink.secondary)
             }
@@ -44,7 +42,7 @@ struct SettingsView: View {
             Toggle("Automatic cleanup", isOn: $monitor.isEnabled)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Ink.text)
-                .tint(Ink.markTile)
+                .tint(Cotton.accent)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Polling interval")
@@ -57,7 +55,7 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .tint(Ink.markTile)
+                .tint(Cotton.accent)
 
                 Text("0.5s is a good default — fast enough without hammering the pasteboard.")
                     .font(.system(size: 10.5))
@@ -188,7 +186,7 @@ private struct FormatPreferenceRow: View {
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
                 .controlSize(.small)
-                .tint(Ink.markTile)
+                .tint(Cotton.accent)
         }
     }
 }

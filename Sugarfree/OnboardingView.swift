@@ -13,14 +13,12 @@ struct OnboardingView: View {
             Spacer()
                 .frame(height: 20)
 
-            Text("NoBold")
-                .font(.system(size: 26, weight: .semibold))
-                .foregroundStyle(Ink.text)
+            Wordmark(size: 34)
 
             Spacer()
                 .frame(height: 6)
 
-            Text("Strips bold formatting from your clipboard.")
+            Text("Strips formatting sugar from your clipboard.")
                 .font(.system(size: 13))
                 .foregroundStyle(Ink.secondary)
                 .multilineTextAlignment(.center)
@@ -32,19 +30,19 @@ struct OnboardingView: View {
                 featureRow(
                     icon: "doc.on.clipboard",
                     title: "Watches your clipboard",
-                    detail: "Monitors copies from any app and strips bold in real time."
+                    detail: "Monitors copies from any app and cleans formatting in real time."
                 )
 
                 featureRow(
                     icon: "textformat",
                     title: "RTF, HTML, and Markdown",
-                    detail: "Handles bold from rich text, web content, and markdown markers."
+                    detail: "Handles formatting from rich text, web content, and markdown markers."
                 )
 
                 featureRow(
                     icon: "menubar.rectangle",
                     title: "Lives in your menu bar",
-                    detail: "Look for the stars icon in the menu bar to control NoBold."
+                    detail: "Look for the lollipop icon in the menu bar to control Sugarfree."
                 )
             }
             .padding(.horizontal, 8)
@@ -60,7 +58,7 @@ struct OnboardingView: View {
             Spacer()
                 .frame(height: 10)
 
-            Text("NoBold is running. Control it from the menu bar.")
+            Text("Sugarfree is running. Control it from the menu bar.")
                 .font(.system(size: 10.5))
                 .foregroundStyle(Ink.tertiary)
                 .multilineTextAlignment(.center)

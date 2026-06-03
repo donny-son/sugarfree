@@ -217,11 +217,11 @@ final class PasteboardMonitor: ObservableObject {
             if let lastEvent {
                 return "\(lastEvent.detail) • checks every \(pollingIntervalLabel)"
             }
-            return "Waiting for copied text with bold formatting."
+            return "Waiting for copied text to clean."
         case .paused:
             return "Clipboard changes pass through untouched until you resume."
         case .idle:
-            return "NoBold is on, but nothing is selected to clean."
+            return "Sugarfree is on, but nothing is selected to clean."
         }
     }
 

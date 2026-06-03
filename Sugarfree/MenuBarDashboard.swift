@@ -25,9 +25,7 @@ struct MenuBarDashboard: View {
         HStack(spacing: 10) {
             BrandMark(size: 26)
 
-            Text("NoBold")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Ink.text)
+            Wordmark(size: 22)
 
             Spacer()
 
@@ -70,7 +68,7 @@ struct MenuBarDashboard: View {
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Ink.text)
                 .toggleStyle(.switch)
-                .tint(Ink.markTile)
+                .tint(Cotton.accent)
 
             Button {
                 monitor.cleanClipboardManually()
@@ -139,7 +137,7 @@ struct MenuBarStatusIcon: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Image("StarsOff")
+            Image("LollipopOff")
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
@@ -167,11 +165,11 @@ struct MenuBarStatusIcon: View {
     private var accessibilityLabel: String {
         switch state {
         case .active:
-            return "NoBold active"
+            return "Sugarfree active"
         case .paused:
-            return "NoBold paused"
+            return "Sugarfree paused"
         case .idle:
-            return "NoBold needs a format enabled"
+            return "Sugarfree needs a format enabled"
         }
     }
 }
@@ -213,7 +211,7 @@ private struct FormatToggleRow: View {
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
                 .controlSize(.small)
-                .tint(Ink.markTile)
+                .tint(Cotton.accent)
         }
         .accessibilityElement(children: .combine)
     }

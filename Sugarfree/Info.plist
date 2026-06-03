@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.nobold.app</string>
+    <string>com.sugarfree.app</string>
     <key>CFBundleName</key>
-    <string>NoBold</string>
+    <string>Sugarfree</string>
     <key>CFBundleExecutable</key>
-    <string>NoBold</string>
+    <string>Sugarfree</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleVersion</key>
@@ -18,5 +18,7 @@
     <string>13.0</string>
     <key>LSUIElement</key>
     <true/>
+    <key>ATSApplicationFontsPath</key>
+    <string>Fonts</string>
 </dict>
 </plist>

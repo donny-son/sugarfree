@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-PROJECT_NAME="NoBold"
+PROJECT_NAME="Sugarfree"
 PROJECT_FILE="$SCRIPT_DIR/$PROJECT_NAME.xcodeproj"
 BUILD_DIR="$SCRIPT_DIR/build"
 DERIVED_DATA_DIR="$BUILD_DIR/DerivedData"

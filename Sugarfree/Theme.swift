@@ -52,9 +52,58 @@ enum Ink {
     static let idle = Color(lightHex: 0xB0721A, darkHex: 0xE3B341)
 }
 
+// MARK: - Cotton accent
+//
+// The brand accent for "sugarfree": a cotton-candy gradient. Surfaces stay Ink
+// (paper/ink) for legibility — Cotton appears ONLY on the wordmark, ON toggles,
+// the primary button, and the status pill. Never wash a body surface with it.
+// (The menubar glyph is a template image / system tint — always monochrome.)
+
+enum Cotton {
+    // Gradient stops (appearance-adaptive so the candy still reads in dark mode).
+    private static let g1 = Color(lightHex: 0xFF6FB5, darkHex: 0xFF8AC4)
+    private static let g2 = Color(lightHex: 0xFF9A6B, darkHex: 0xFFB07A)
+    private static let g3 = Color(lightHex: 0xFFC857, darkHex: 0xFFD879)
+    // Deeper anchors so white text reads on the button fill.
+    private static let btn1 = Color(lightHex: 0xF0469B, darkHex: 0xFF5FAE)
+    private static let btn2 = Color(lightHex: 0xFF7A4D, darkHex: 0xFF8A5B)
+
+    /// Brand gradient — wordmark, app-icon mark, ON toggle.
+    static var gradient: LinearGradient {
+        LinearGradient(gradient: Gradient(colors: [g1, g2, g3]),
+                       startPoint: .leading, endPoint: .trailing)
+    }
+    /// Deeper gradient for the primary button (white text reads on it).
+    static var buttonGradient: LinearGradient {
+        LinearGradient(gradient: Gradient(colors: [btn1, btn2]),
+                       startPoint: .leading, endPoint: .trailing)
+    }
+    /// Solid accent for control tints (switch on-color) — gradients aren't valid `.tint`.
+    static let accent = Color(lightHex: 0xF0469B, darkHex: 0xFF8AC4)
+    /// Low-alpha fill behind the active status pill.
+    static let tint = Color(lightHex: 0xFF6FB5, darkHex: 0xFF8AC4, alpha: 0.16)
+    /// Deep-pink text on a cotton tint.
+    static let ink = Color(lightHex: 0xC8327E, darkHex: 0xFF9ECB)
+}
+
+// MARK: - Wordmark
+
+/// The "sugarfree" wordmark: DynaPuff (rounded/candy) painted with the Cotton gradient.
+struct Wordmark: View {
+    var size: CGFloat = 22
+
+    var body: some View {
+        Text("sugarfree")
+            .font(.custom("DynaPuff", size: size).weight(.semibold))
+            .tracking(-0.2)
+            .foregroundStyle(Cotton.gradient)
+            .fixedSize()
+    }
+}
+
 // MARK: - Brand mark
 
-/// The stars-off logo on a solid ink tile — the app's primary brand lockup.
+/// The lollipop-off logo on a solid ink tile — the app's primary brand lockup.
 struct BrandMark: View {
     var size: CGFloat = 26
     var corner: CGFloat { size * 0.3 }
@@ -64,7 +113,7 @@ struct BrandMark: View {
             .fill(Ink.markTile)
             .frame(width: size, height: size)
             .overlay(
-                Image("StarsOff")
+                Image("LollipopOff")
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
@@ -146,7 +195,7 @@ struct SectionLabel: View {
     }
 }
 
-// MARK: - Primary button (filled ink)
+// MARK: - Primary button (cotton gradient)
 
 struct InkPrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
@@ -156,11 +205,12 @@ struct InkPrimaryButtonStyle: ButtonStyle {
             .font(.system(size: 13, weight: .semibold))
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
-            .foregroundStyle(Ink.markGlyph)
+            .foregroundStyle(.white)
             .background(
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .fill(Ink.markTile)
+                    .fill(Cotton.buttonGradient)
             )
+            .shadow(color: Cotton.accent.opacity(0.35), radius: 8, y: 2)
             .opacity(isEnabled ? (configuration.isPressed ? 0.7 : 1) : 0.35)
             .contentShape(Rectangle())
     }
@@ -172,27 +222,30 @@ struct StatusPill: View {
     let state: MonitorInterfaceState
 
     var body: some View {
-        HStack(spacing: 5) {
-            Circle()
-                .fill(dotColor)
-                .frame(width: 6, height: 6)
-            Text(state.title.uppercased())
-                .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                .tracking(0.6)
-                .foregroundStyle(Ink.text)
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 3)
-        .overlay(
-            Capsule(style: .continuous)
-                .strokeBorder(Ink.border, lineWidth: 1)
-        )
+        Text(state.title.uppercased())
+            .font(.system(size: 10, weight: .semibold, design: .monospaced))
+            .tracking(0.6)
+            .foregroundStyle(textColor)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 3.5)
+            .background(
+                Capsule(style: .continuous).fill(fillColor)
+            )
     }
 
-    private var dotColor: Color {
+    // Active = cotton; paused = neutral ink; idle = amber attention.
+    private var fillColor: Color {
         switch state {
-        case .active: return Ink.active
-        case .paused: return Ink.tertiary
+        case .active: return Cotton.tint
+        case .paused: return Ink.hairline
+        case .idle: return Ink.idle.opacity(0.16)
+        }
+    }
+
+    private var textColor: Color {
+        switch state {
+        case .active: return Cotton.ink
+        case .paused: return Ink.secondary
         case .idle: return Ink.idle
         }
     }

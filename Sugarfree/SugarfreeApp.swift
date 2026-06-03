@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct NoBoldApp: App {
+struct SugarfreeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var monitor = PasteboardMonitor()
 
@@ -13,7 +13,7 @@ struct NoBoldApp: App {
         }
         .menuBarExtraStyle(.window)
         .commands {
-            CommandMenu("NoBold") {
+            CommandMenu("Sugarfree") {
                 Button(monitor.isEnabled ? "Pause Automatic Cleanup" : "Resume Automatic Cleanup") {
                     monitor.isEnabled.toggle()
                 }
@@ -55,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let hostingController = NSHostingController(rootView: onboardingView)
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "Welcome to NoBold"
+        window.title = "Welcome to Sugarfree"
         window.styleMask = [.titled, .closable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden

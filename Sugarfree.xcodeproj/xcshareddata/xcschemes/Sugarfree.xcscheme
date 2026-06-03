@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B5AD2FAC11376FB5CD64A11D"
-               BuildableName = "NoBold.app"
-               BlueprintName = "NoBold"
-               ReferencedContainer = "container:NoBold.xcodeproj">
+               BlueprintIdentifier = "6DDB155A10877F12B42F184F"
+               BuildableName = "Sugarfree.app"
+               BlueprintName = "Sugarfree"
+               ReferencedContainer = "container:Sugarfree.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B5AD2FAC11376FB5CD64A11D"
-            BuildableName = "NoBold.app"
-            BlueprintName = "NoBold"
-            ReferencedContainer = "container:NoBold.xcodeproj">
+            BlueprintIdentifier = "6DDB155A10877F12B42F184F"
+            BuildableName = "Sugarfree.app"
+            BlueprintName = "Sugarfree"
+            ReferencedContainer = "container:Sugarfree.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B5AD2FAC11376FB5CD64A11D"
-            BuildableName = "NoBold.app"
-            BlueprintName = "NoBold"
-            ReferencedContainer = "container:NoBold.xcodeproj">
+            BlueprintIdentifier = "6DDB155A10877F12B42F184F"
+            BuildableName = "Sugarfree.app"
+            BlueprintName = "Sugarfree"
+            ReferencedContainer = "container:Sugarfree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B5AD2FAC11376FB5CD64A11D"
-            BuildableName = "NoBold.app"
-            BlueprintName = "NoBold"
-            ReferencedContainer = "container:NoBold.xcodeproj">
+            BlueprintIdentifier = "6DDB155A10877F12B42F184F"
+            BuildableName = "Sugarfree.app"
+            BlueprintName = "Sugarfree"
+            ReferencedContainer = "container:Sugarfree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

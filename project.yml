@@ -1,4 +1,4 @@
-name: NoBold
+name: Sugarfree
 
 options:
   createIntermediateGroups: true
@@ -6,11 +6,11 @@ options:
 
 settings:
   base:
-    PRODUCT_NAME: NoBold
-    PRODUCT_BUNDLE_IDENTIFIER: com.nobold.app
+    PRODUCT_NAME: Sugarfree
+    PRODUCT_BUNDLE_IDENTIFIER: com.sugarfree.app
     CURRENT_PROJECT_VERSION: 2
     MARKETING_VERSION: 1.1.0
-    INFOPLIST_FILE: NoBold/Info.plist
+    INFOPLIST_FILE: Sugarfree/Info.plist
     GENERATE_INFOPLIST_FILE: NO
     MACOSX_DEPLOYMENT_TARGET: "13.0"
     SWIFT_VERSION: 6.0
@@ -19,26 +19,29 @@ settings:
     ENABLE_HARDENED_RUNTIME: YES
 
 targets:
-  NoBold:
+  Sugarfree:
     type: application
     platform: macOS
     configFiles:
       Debug: Configs/Debug.xcconfig
       Release: Configs/Release.xcconfig
     sources:
-      - path: NoBold
+      - path: Sugarfree
         excludes:
           - Info.plist
+          - Fonts
+      - path: Sugarfree/Fonts
+        type: folder
     settings:
       base:
-        PRODUCT_MODULE_NAME: NoBold
+        PRODUCT_MODULE_NAME: Sugarfree
         CODE_SIGN_ENTITLEMENTS: ""
 
 schemes:
-  NoBold:
+  Sugarfree:
     build:
       targets:
-        NoBold: all
+        Sugarfree: all
     run:
       config: Debug
     archive:
