@@ -28,6 +28,10 @@ clipboard representation that carries it.
   rule set (`Sugar`) gated per sugar, in `PasteboardMonitor`
 - Rewrites only changed clipboard representations and preserves unrelated pasteboard
   types/items
+- Applies optional structural *transforms* after stripping — currently Tables → list
+  (`Transform`, `TransformOutputFormat`), converting Markdown/HTML tables into YAML or
+  TOML list items via `TableConverter` (pure Foundation). Transforms reshape content
+  (lossy), so they default to off and live in their own dashboard section
 - Tracks `selfWriteCount` to prevent infinite loops
 - Bundle ID `com.sugarfree.app`; source lives in `Sugarfree/`
 
@@ -89,3 +93,24 @@ Caveats (best-effort regex; documented, not bugs):
   identifiers survive. Underline has no markdown form, so it's RTF/HTML only.
 - HTML stripping is regex-based (no DOM parse); combined `text-decoration` shorthands
   (e.g. `underline line-through`) may not split cleanly.
+
+## Transforms (structural)
+
+Beyond stripping emphasis, the app can *reshape* content. Transforms are independently
+toggleable, **off by default** (they're lossy), and configured in their own "Transforms"
+dashboard section. Source of truth: `Transform` / `TransformOutputFormat` in
+`PasteboardMonitor.swift`; conversion in `TableConverter.swift`.
+
+| Transform | What it does | Output |
+|---|---|---|
+| Tables → list | Converts Markdown pipe tables and HTML `<table>` into list items | YAML or TOML (user picks) |
+
+- **Mapping is header-keyed list items**: row 1 = headers; each following row becomes one
+  list entry mapping `header: cell`. Lossless for any column count — no key-column guessing.
+- **Representations:** the plain-text (Markdown) and HTML reps are both converted; the HTML
+  table is replaced with a `<pre>` block of the converted text. When a table is converted in
+  an item, that item's **RTF representation is dropped** (we don't parse RTF tables), so rich
+  paste targets fall back to the converted HTML/plain text instead of pasting the old table.
+- Caveats (best-effort, documented): RTF-only tables (no Markdown/HTML rep) are not
+  converted; HTML parsing is regex-based (no DOM), so nested tables aren't handled; cell
+  values are emitted as strings (numbers quoted) to preserve text fidelity.

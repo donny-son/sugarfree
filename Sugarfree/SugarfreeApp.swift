@@ -23,7 +23,7 @@ struct SugarfreeApp: App {
                     monitor.cleanClipboardManually()
                 }
                 .keyboardShortcut("k", modifiers: [.command, .shift])
-                .disabled(!monitor.hasEnabledSugars)
+                .disabled(!monitor.hasWork)
             }
         }
     }
