@@ -1,6 +1,6 @@
 # NoBold
 
-<img width="823" height="463" alt="SCR-20260520-ensr-2" src="https://github.com/user-attachments/assets/8886a021-dbff-496e-b9b0-b05648600842" />
+<img width="160" height="233" alt="SCR-20260603-lbid" src="https://github.com/user-attachments/assets/bb4be89e-efa5-46a4-8cc3-0e796c8ffe36" />
 
 A tiny macOS menu bar app that strips bold formatting from whatever you copy.
 
