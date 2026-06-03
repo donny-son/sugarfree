@@ -130,6 +130,9 @@ struct MenuBarDashboard: View {
                     .labelsHidden()
                     .pickerStyle(.segmented)
                     .tint(Cotton.accent)
+
+                    TableTransformExample(format: monitor.outputFormat)
+                        .padding(.top, 4)
                 }
                 .padding(.top, 2)
             }
@@ -300,5 +303,89 @@ private struct TransformToggleRow: View {
                 .tint(Cotton.accent)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct TableTransformExample: View {
+    let format: TransformOutputFormat
+
+    private let markdown = """
+    | Setting | Value |
+    |---------|-------|
+    | timeout | 30    |
+    | retries | 3     |
+    """
+
+    private var output: String {
+        switch format {
+        case .yaml:
+            return """
+            - Setting: timeout
+              Value: "30"
+            - Setting: retries
+              Value: "3"
+            """
+        case .toml:
+            return """
+            [[rows]]
+            Setting = "timeout"
+            Value = "30"
+
+            [[rows]]
+            Setting = "retries"
+            Value = "3"
+            """
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ExampleCodeBlock(label: "Markdown copied", text: markdown)
+
+            HStack(spacing: 4) {
+                Rectangle()
+                    .fill(Surface.hairline)
+                    .frame(height: 1)
+
+                Text("converts to")
+                    .font(.system(size: 9.5, design: .monospaced))
+                    .foregroundStyle(Surface.tertiary)
+
+                Rectangle()
+                    .fill(Surface.hairline)
+                    .frame(height: 1)
+            }
+
+            ExampleCodeBlock(label: format.title, text: output)
+        }
+    }
+}
+
+private struct ExampleCodeBlock: View {
+    let label: String
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 9.5, weight: .medium, design: .monospaced))
+                .foregroundStyle(Surface.tertiary)
+
+            Text(text)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(Surface.secondary)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(7)
+                .background(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(Surface.desk.opacity(0.55))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .stroke(Surface.hairline, lineWidth: 1)
+                )
+        }
     }
 }
