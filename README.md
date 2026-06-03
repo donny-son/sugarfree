@@ -1,6 +1,6 @@
 # Sugarfree
 
-<img width="160" height="233" alt="SCR-20260603-lbid" src="https://github.com/user-attachments/assets/bb4be89e-efa5-46a4-8cc3-0e796c8ffe36" />
+<img width="160" height="235" alt="SCR-20260603-osry" src="https://github.com/user-attachments/assets/0fb53c57-4ea4-47f9-b602-382efcc78f4c" />
 
 A tiny macOS menu bar app that strips formatting "sugar" from whatever you copy.
 
