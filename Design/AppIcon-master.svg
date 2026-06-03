@@ -1,38 +1,14 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="112" y1="88" x2="904" y2="944" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F6EDE0"/>
-      <stop offset="0.55" stop-color="#E5B898"/>
-      <stop offset="1" stop-color="#A94F2F"/>
-    </linearGradient>
-    <linearGradient id="paper" x1="512" y1="216" x2="512" y2="808" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFF8EF"/>
-      <stop offset="1" stop-color="#F2E5D5"/>
-    </linearGradient>
-    <linearGradient id="slash" x1="272" y1="758" x2="754" y2="262" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6D2C18"/>
-      <stop offset="1" stop-color="#C65F36"/>
-    </linearGradient>
-    <filter id="shadow" x="175" y="169" width="674" height="686" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-      <feOffset dy="18"/>
-      <feGaussianBlur stdDeviation="24"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.384314 0 0 0 0 0.184314 0 0 0 0 0.113725 0 0 0 0.24 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
-    </filter>
-  </defs>
+  <!-- Ink: solid ink squircle, paper line-art stars-off mark. Flat, minimal, high-contrast. -->
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="#161616"/>
+  <rect x="96" y="96" width="832" height="832" rx="192" stroke="#FAF8F3" stroke-opacity="0.08" stroke-width="4"/>
 
-  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#bg)"/>
-  <rect x="96" y="96" width="832" height="832" rx="192" stroke="#FFF8EF" stroke-opacity="0.45" stroke-width="4"/>
-
-  <g filter="url(#shadow)">
-    <rect x="223" y="191" width="578" height="590" rx="116" fill="url(#paper)"/>
-    <rect x="283" y="285" width="250" height="78" rx="39" fill="#C8643A"/>
-    <rect x="283" y="403" width="206" height="78" rx="39" fill="#C8643A"/>
-    <rect x="283" y="549" width="352" height="48" rx="24" fill="#C6A58C"/>
-    <rect x="283" y="631" width="280" height="48" rx="24" fill="#C6A58C"/>
-    <path d="M334 763L703 251" stroke="url(#slash)" stroke-width="94" stroke-linecap="round"/>
+  <g transform="translate(212,212) scale(25)"
+     fill="none" stroke="#FAF8F3" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17.373 13.371l.076 -.154a.392 .392 0 0 1 .702 0l.907 1.831m.367 .39c.498 .071 1.245 .18 2.24 .324a.39 .39 0 0 1 .217 .665c-.326 .316 -.57 .553 -.732 .712m-.611 3.405a.39 .39 0 0 1 -.567 .411l-2.172 -1.138l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l1.601 -.232" />
+    <path d="M6.2 19.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138" />
+    <path d="M9.557 5.556l1 -.146l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.014 .187m-4.153 -.166l-.744 .39a.392 .392 0 0 1 -.568 -.41l.188 -1.093" />
+    <path d="M3 3l18 18" />
   </g>
 </svg>

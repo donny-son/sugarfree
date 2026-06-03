@@ -13,44 +13,43 @@ struct SettingsView: View {
             }
             .padding(20)
         }
-        .frame(width: 480, height: 500)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .frame(width: 480, height: 520)
+        .background(Ink.desk)
     }
 
     private var header: some View {
         HStack(spacing: 12) {
-            Image(systemName: "bold")
-                .font(.system(size: 22, weight: .bold, design: .monospaced))
-                .foregroundStyle(.primary)
+            BrandMark(size: 38)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("NoBold")
-                    .font(.system(size: 20, weight: .semibold, design: .monospaced))
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(Ink.text)
                 Text("Strip bold formatting from copied text.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Ink.secondary)
             }
 
             Spacer()
 
             StatusPill(state: monitor.interfaceState)
         }
-        .utilityCard()
+        .inkSheet()
     }
 
     private var monitoringCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Monitoring")
-                .font(.system(.caption, design: .monospaced).weight(.medium))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
+            SectionLabel(text: "Monitoring")
 
             Toggle("Automatic cleanup", isOn: $monitor.isEnabled)
-                .font(.system(.subheadline, design: .monospaced))
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Ink.text)
+                .tint(Ink.markTile)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Polling interval")
-                    .font(.system(.caption, design: .monospaced).weight(.medium))
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Ink.text)
 
                 Picker("Polling interval", selection: $monitor.pollingInterval) {
                     ForEach(PasteboardMonitor.allowedPollingIntervals, id: \.self) { interval in
@@ -58,21 +57,19 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(Ink.markTile)
 
                 Text("0.5s is a good default — fast enough without hammering the pasteboard.")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundStyle(.tertiary)
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(Ink.tertiary)
             }
         }
-        .utilityCard()
+        .inkSheet()
     }
 
     private var formatsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Formats to strip")
-                .font(.system(.caption, design: .monospaced).weight(.medium))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
+            SectionLabel(text: "Formats to strip")
 
             FormatPreferenceRow(
                 title: ClipboardFormat.richText.title,
@@ -95,55 +92,55 @@ struct SettingsView: View {
                 isEnabled: $monitor.stripsMarkdown
             )
         }
-        .utilityCard()
+        .inkSheet()
     }
 
     private var activityCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Activity")
-                .font(.system(.caption, design: .monospaced).weight(.medium))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
+            SectionLabel(text: "Activity")
 
             HStack {
                 Text("Total cleanups")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12))
+                    .foregroundStyle(Ink.secondary)
                 Spacer()
                 Text("\(monitor.cleanupCount)")
-                    .font(.system(.subheadline, design: .monospaced).weight(.medium))
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(Ink.text)
             }
 
-            HStack {
+            HStack(alignment: .top) {
                 Text("Last action")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12))
+                    .foregroundStyle(Ink.secondary)
                 Spacer()
                 if let lastEvent = monitor.lastEvent {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(lastEvent.headline)
+                            .foregroundStyle(Ink.text)
                         Text(lastEvent.timestamp, style: .relative)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Ink.tertiary)
                     }
-                    .font(.system(.caption, design: .monospaced))
+                    .font(.system(size: 11.5))
                 } else {
                     Text("—")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(.tertiary)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Ink.tertiary)
                 }
             }
 
-            Divider()
+            InkRule()
+                .padding(.vertical, 2)
 
             Button {
                 monitor.cleanClipboardManually()
             } label: {
                 Text("Clean Now")
-                    .font(.system(.subheadline, design: .monospaced).weight(.medium))
             }
+            .buttonStyle(InkPrimaryButtonStyle())
             .disabled(!monitor.hasEnabledFormats)
         }
-        .utilityCard()
+        .inkSheet()
     }
 
     private func label(for interval: Double) -> String {
@@ -171,17 +168,18 @@ private struct FormatPreferenceRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: systemImage)
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Ink.tertiary)
                 .frame(width: 18)
                 .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(.caption, design: .monospaced).weight(.medium))
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Ink.text)
                 Text(detail)
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundStyle(.tertiary)
+                    .font(.system(size: 11))
+                    .foregroundStyle(Ink.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -190,6 +188,7 @@ private struct FormatPreferenceRow: View {
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
                 .controlSize(.small)
+                .tint(Ink.markTile)
         }
     }
 }

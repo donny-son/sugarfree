@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NoBold · Theme Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --stage: #0e0e10;
+    --stage-2: #161618;
+    --ink: #f4f1ea;
+    --muted: #8b8b92;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background:
+      radial-gradient(1200px 700px at 15% -5%, #1c1c20 0%, transparent 55%),
+      radial-gradient(1000px 600px at 100% 10%, #1a1a1d 0%, transparent 50%),
+      var(--stage);
+    color: var(--ink);
+    font-family: "Hanken Grotesk", sans-serif;
+    min-height: 100vh;
+    padding: 64px 40px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* page header */
+  .masthead { max-width: 1180px; margin: 0 auto 56px; }
+  .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--muted); display: flex; align-items: center; gap: 12px;
+  }
+  .kicker::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, #ffffff22, transparent); }
+  .masthead h1 {
+    font-family: "Fraunces", serif; font-weight: 500;
+    font-size: clamp(34px, 5vw, 56px); line-height: 1.04;
+    letter-spacing: -0.02em; margin: 22px 0 14px;
+  }
+  .masthead h1 em { font-style: italic; color: #c9c4b8; }
+  .masthead p { color: var(--muted); max-width: 620px; font-size: 16px; line-height: 1.6; }
+
+  .grid {
+    max-width: 1180px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 28px;
+  }
+
+  /* per-option card on the stage */
+  .option {
+    border: 1px solid #ffffff14; border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff08, #ffffff03);
+    padding: 26px 24px 28px;
+    display: flex; flex-direction: column; gap: 22px;
+    opacity: 0; transform: translateY(18px);
+    animation: rise .8s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .option:nth-child(2) { animation-delay: .12s; }
+  .option:nth-child(3) { animation-delay: .24s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  .option-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .option-head .num {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .option-head h2 {
+    font-family: "Fraunces", serif; font-weight: 500; font-size: 23px; letter-spacing: -0.01em;
+  }
+  .option-head .tag {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    border: 1px solid #ffffff1f; padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .blurb { color: var(--muted); font-size: 13.5px; line-height: 1.55; margin-top: -8px; }
+
+  /* swatches */
+  .swatches { display: flex; gap: 8px; }
+  .swatches span {
+    width: 26px; height: 26px; border-radius: 8px; border: 1px solid #ffffff20;
+  }
+
+  /* the mock "desktop" each popover floats over */
+  .desk {
+    border-radius: 16px; padding: 30px 22px 34px; position: relative; overflow: hidden;
+    display: flex; justify-content: center;
+  }
+  /* faux menu bar */
+  .menubar {
+    position: absolute; top: 0; left: 0; right: 0; height: 26px;
+    display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+    padding: 0 14px; font-size: 11px;
+  }
+  .menubar .glyph { display: flex; align-items: center; gap: 5px; }
+  .menubar .glyph svg { width: 15px; height: 15px; }
+
+  /* ============ THE POPOVER (shared structure) ============ */
+  .pop {
+    width: 280px; border-radius: 16px; margin-top: 30px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    position: relative;
+  }
+  .pop::before { /* notch */
+    content: ""; position: absolute; top: -7px; right: 30px;
+    width: 14px; height: 14px; transform: rotate(45deg);
+    background: inherit; border-left: inherit; border-top: inherit;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; }
+  .brand .mark { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; flex-shrink: 0; }
+  .brand .mark svg { width: 17px; height: 17px; }
+  .brand .name { font-weight: 600; font-size: 14.5px; letter-spacing: -0.01em; }
+  .brand .pill {
+    margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .headline { font-size: 13px; font-weight: 500; }
+  .detail { font-size: 11.5px; line-height: 1.5; }
+
+  .metrics { display: flex; gap: 18px; padding-top: 2px; }
+  .metric .v { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .metric .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .rule { height: 1px; width: 100%; }
+
+  .row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+  .row .lbl { font-weight: 500; }
+  .row .ico { width: 16px; text-align: center; font-size: 12px; font-weight: 700; opacity: .8; }
+
+  /* toggle */
+  .tg { margin-left: auto; width: 34px; height: 20px; border-radius: 999px; position: relative; transition: background .2s; flex-shrink: 0; }
+  .tg::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 2px #0003; }
+  .tg.on::after { transform: translateX(14px); }
+
+  .cta {
+    text-align: center; font-size: 13px; font-weight: 600; padding: 9px; border-radius: 10px;
+    cursor: default; letter-spacing: 0.01em;
+  }
+  .kbd { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.04em; }
+
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+
+  .footnote { font-size: 11px; line-height: 1.5; }
+
+  /* ===================================================================== */
+  /* THEME 1 — INK  (brutal minimal · monochrome paper)                    */
+  /* ===================================================================== */
+  .t-ink .desk { background: #ece9e1; }
+  .t-ink .menubar { color: #00000088; }
+  .t-ink .menubar .glyph { color: #111; }
+  .t-ink .pop {
+    background: #faf8f3; border: 1px solid #1a1a1a;
+    box-shadow: 6px 6px 0 #1a1a1a; color: #161616;
+    font-family: "Hanken Grotesk", sans-serif;
+  }
+  .t-ink .pop::before { border-left: 1px solid #1a1a1a; border-top: 1px solid #1a1a1a; }
+  .t-ink .brand .mark { background: #161616; color: #faf8f3; }
+  .t-ink .brand .name { font-family: "Hanken Grotesk"; }
+  .t-ink .brand .pill { background: #16161610; color: #161616; border: 1px solid #1a1a1a; }
+  .t-ink .headline, .t-ink .metric .v { color: #161616; }
+  .t-ink .detail, .t-ink .metric .k, .t-ink .section-label, .t-ink .footnote { color: #6a665d; }
+  .t-ink .rule { background: #1a1a1a; opacity: .12; }
+  .t-ink .tg { background: #ccc7bb; }
+  .t-ink .tg.on { background: #161616; }
+  .t-ink .cta { background: #161616; color: #faf8f3; }
+  .t-ink .kbd { color: #8a857a; }
+
+  /* ===================================================================== */
+  /* THEME 2 — GRAPHITE  (premium dark utility · mint accent)              */
+  /* ===================================================================== */
+  .t-graphite .desk { background: linear-gradient(160deg, #2a2c31, #131417); }
+  .t-graphite .menubar { color: #ffffff70; }
+  .t-graphite .menubar .glyph { color: #eafff4; }
+  .t-graphite .pop {
+    background: rgba(28,30,34,0.86); border: 1px solid #ffffff1a;
+    box-shadow: 0 24px 60px -20px #000a, inset 0 1px 0 #ffffff14;
+    backdrop-filter: blur(20px); color: #e7e8ea;
+    font-family: "Sora", sans-serif;
+  }
+  .t-graphite .pop::before { background: rgba(34,36,40,0.95); border-left: 1px solid #ffffff1a; border-top: 1px solid #ffffff1a; }
+  .t-graphite .brand .mark { background: linear-gradient(150deg, #43e8a6, #1fb37a); color: #06231a; box-shadow: 0 4px 14px -4px #43e8a680; }
+  .t-graphite .brand .pill { background: #43e8a61f; color: #5ff0b6; }
+  .t-graphite .headline { color: #f3f4f5; }
+  .t-graphite .detail, .t-graphite .metric .k, .t-graphite .section-label, .t-graphite .footnote { color: #93959c; }
+  .t-graphite .metric .v { color: #f3f4f5; }
+  .t-graphite .rule { background: #ffffff14; }
+  .t-graphite .tg { background: #41444b; }
+  .t-graphite .tg.on { background: linear-gradient(150deg, #43e8a6, #1fb37a); }
+  .t-graphite .cta { background: #ffffff0f; color: #eafff4; border: 1px solid #ffffff1a; }
+  .t-graphite .kbd { color: #6f7178; }
+
+  /* ===================================================================== */
+  /* THEME 3 — DAYLIGHT  (warm editorial minimal · clay accent)            */
+  /* ===================================================================== */
+  .t-daylight .desk { background: linear-gradient(165deg, #f3ece2, #e7dccd); }
+  .t-daylight .menubar { color: #00000060; }
+  .t-daylight .menubar .glyph { color: #b4502f; }
+  .t-daylight .pop {
+    background: #fffdfa; border: 1px solid #e7ddcf;
+    box-shadow: 0 18px 46px -18px #6b3a1f40, 0 2px 6px #0000000d; color: #2c2722;
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+  .t-daylight .pop::before { background: #fffdfa; border-left: 1px solid #e7ddcf; border-top: 1px solid #e7ddcf; }
+  .t-daylight .brand .mark { background: #fbeee4; color: #b4502f; border: 1px solid #f0dccd; }
+  .t-daylight .brand .name { font-family: "Fraunces", serif; font-weight: 600; }
+  .t-daylight .brand .pill { background: #2e9e6314; color: #2e9e63; }
+  .t-daylight .headline { color: #2c2722; }
+  .t-daylight .detail, .t-daylight .metric .k, .t-daylight .section-label, .t-daylight .footnote { color: #978a7b; }
+  .t-daylight .metric .v { color: #b4502f; font-family: "Fraunces", serif; }
+  .t-daylight .rule { background: #ece2d4; }
+  .t-daylight .tg { background: #ddd2c4; }
+  .t-daylight .tg.on { background: #b4502f; }
+  .t-daylight .cta { background: #b4502f; color: #fff; }
+  .t-daylight .kbd { color: #b3a596; }
+
+  .legend { max-width: 1180px; margin: 40px auto 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+  .legend code { font-family: "IBM Plex Mono", monospace; color: #cfcabe; font-size: 11.5px; }
+</style>
+</head>
+<body>
+  <!-- reusable logo symbol: tabler stars-off -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="stars-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.373 13.371l.076 -.154a.392 .392 0 0 1 .702 0l.907 1.831m.367 .39c.498 .071 1.245 .18 2.24 .324a.39 .39 0 0 1 .217 .665c-.326 .316 -.57 .553 -.732 .712m-.611 3.405a.39 .39 0 0 1 -.567 .411l-2.172 -1.138l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l1.601 -.232" />
+      <path d="M6.2 19.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138" />
+      <path d="M9.557 5.556l1 -.146l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.014 .187m-4.153 -.166l-.744 .39a.392 .392 0 0 1 -.568 -.41l.188 -1.093" />
+      <path d="M3 3l18 18" />
+    </symbol>
+  </svg>
+
+  <header class="masthead">
+    <div class="kicker">NoBold · rebrand</div>
+    <h1>Three ways to wear <em>the new mark.</em></h1>
+    <p>Same menu-bar dashboard, three aesthetic directions built around the <code>stars-off</code> logo. Each mockup is a live render of the popover so you can judge type, color, and weight in context. Pick one and I'll take it into the SwiftUI app + app icon.</p>
+  </header>
+
+  <main class="grid">
+
+    <!-- ============ OPTION 1 — INK ============ -->
+    <section class="option t-ink">
+      <div class="option-head">
+        <div>
+          <div class="num">01</div>
+          <h2>Ink</h2>
+        </div>
+        <span class="tag">brutal · mono</span>
+      </div>
+      <p class="blurb">Pure line-art on warm paper. Hard 1px borders, a hard offset shadow, zero gloss. The logo is the hero. Confident and timeless — feels like a tool, not an app.</p>
+      <div class="swatches">
+        <span style="background:#161616"></span>
+        <span style="background:#faf8f3"></span>
+        <span style="background:#ece9e1"></span>
+        <span style="background:#6a665d"></span>
+      </div>
+      <div class="desk">
+        <div class="menubar"><div class="glyph"><svg><use href="#stars-off"/></svg></div></div>
+        <div class="pop">
+          <div class="brand">
+            <div class="mark"><svg><use href="#stars-off"/></svg></div>
+            <div class="name">NoBold</div>
+            <div class="pill">ON</div>
+          </div>
+          <div class="headline">Watching the clipboard</div>
+          <div class="detail">Bold formatting is stripped the moment you copy.</div>
+          <div class="metrics">
+            <div class="metric"><div class="v">128</div><div class="k">cleaned</div></div>
+            <div class="metric"><div class="v">0.4s</div><div class="k">interval</div></div>
+          </div>
+          <div class="rule"></div>
+          <div class="row"><span class="lbl">Automatic cleanup</span><div class="tg on"></div></div>
+          <div class="cta">Clean Now</div>
+          <div class="rule"></div>
+          <div class="section-label">Formats</div>
+          <div class="row"><span class="ico">¶</span><span class="lbl">Rich text</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">&lt;&gt;</span><span class="lbl">HTML</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">**</span><span class="lbl">Markdown</span><div class="tg"></div></div>
+          <div class="rule"></div>
+          <div class="footnote kbd">⌘⇧P toggle · ⌘⇧K clean</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OPTION 2 — GRAPHITE ============ -->
+    <section class="option t-graphite">
+      <div class="option-head">
+        <div>
+          <div class="num">02</div>
+          <h2>Graphite</h2>
+        </div>
+        <span class="tag">dark · premium</span>
+      </div>
+      <p class="blurb">Frosted charcoal glass with a single mint accent that reads as "clean." Sits like Raycast or Linear in the menu bar. Modern, quiet, and a little luxurious.</p>
+      <div class="swatches">
+        <span style="background:#1c1e22"></span>
+        <span style="background:#43e8a6"></span>
+        <span style="background:#2a2c31"></span>
+        <span style="background:#e7e8ea"></span>
+      </div>
+      <div class="desk">
+        <div class="menubar"><div class="glyph"><svg><use href="#stars-off"/></svg></div></div>
+        <div class="pop">
+          <div class="brand">
+            <div class="mark"><svg><use href="#stars-off"/></svg></div>
+            <div class="name">NoBold</div>
+            <div class="pill">ACTIVE</div>
+          </div>
+          <div class="headline">Watching the clipboard</div>
+          <div class="detail">Bold formatting is stripped the moment you copy.</div>
+          <div class="metrics">
+            <div class="metric"><div class="v">128</div><div class="k">cleaned</div></div>
+            <div class="metric"><div class="v">0.4s</div><div class="k">interval</div></div>
+          </div>
+          <div class="rule"></div>
+          <div class="row"><span class="lbl">Automatic cleanup</span><div class="tg on"></div></div>
+          <div class="cta">Clean Now</div>
+          <div class="rule"></div>
+          <div class="section-label">Formats</div>
+          <div class="row"><span class="ico">¶</span><span class="lbl">Rich text</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">&lt;&gt;</span><span class="lbl">HTML</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">**</span><span class="lbl">Markdown</span><div class="tg"></div></div>
+          <div class="rule"></div>
+          <div class="footnote kbd">⌘⇧P toggle · ⌘⇧K clean</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OPTION 3 — DAYLIGHT ============ -->
+    <section class="option t-daylight">
+      <div class="option-head">
+        <div>
+          <div class="num">03</div>
+          <h2>Daylight</h2>
+        </div>
+        <span class="tag">warm · editorial</span>
+      </div>
+      <p class="blurb">Keeps the brand's warmth but modernizes it — soft cream, a Fraunces serif wordmark, and one refined clay accent. Friendly and calm, a clean evolution of today's terracotta.</p>
+      <div class="swatches">
+        <span style="background:#b4502f"></span>
+        <span style="background:#fffdfa"></span>
+        <span style="background:#f3ece2"></span>
+        <span style="background:#2e9e63"></span>
+      </div>
+      <div class="desk">
+        <div class="menubar"><div class="glyph"><svg><use href="#stars-off"/></svg></div></div>
+        <div class="pop">
+          <div class="brand">
+            <div class="mark"><svg><use href="#stars-off"/></svg></div>
+            <div class="name">NoBold</div>
+            <div class="pill">ON</div>
+          </div>
+          <div class="headline">Watching the clipboard</div>
+          <div class="detail">Bold formatting is stripped the moment you copy.</div>
+          <div class="metrics">
+            <div class="metric"><div class="v">128</div><div class="k">cleaned</div></div>
+            <div class="metric"><div class="v">0.4s</div><div class="k">interval</div></div>
+          </div>
+          <div class="rule"></div>
+          <div class="row"><span class="lbl">Automatic cleanup</span><div class="tg on"></div></div>
+          <div class="cta">Clean Now</div>
+          <div class="rule"></div>
+          <div class="section-label">Formats</div>
+          <div class="row"><span class="ico">¶</span><span class="lbl">Rich text</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">&lt;&gt;</span><span class="lbl">HTML</span><div class="tg on"></div></div>
+          <div class="row"><span class="ico">**</span><span class="lbl">Markdown</span><div class="tg"></div></div>
+          <div class="rule"></div>
+          <div class="footnote kbd">⌘⇧P toggle · ⌘⇧K clean</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <p class="legend">
+    All three reuse the real dashboard content (status, metrics, automatic-cleanup toggle, format switches, shortcuts). The menu-bar glyph at top-right of each desk previews the monochrome template icon macOS will actually render. Tell me a number — <code>01 Ink</code>, <code>02 Graphite</code>, or <code>03 Daylight</code> — and I'll wire it through <code>MenuBarDashboard.swift</code>, <code>AccentColor</code>, and the app icon.
+  </p>
+</body>
+</html>

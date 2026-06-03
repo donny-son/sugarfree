@@ -5,47 +5,52 @@ struct MenuBarDashboard: View {
     @ObservedObject var monitor: PasteboardMonitor
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            statusCard
-            controlCard
-            formatsCard
+        VStack(alignment: .leading, spacing: 14) {
+            brandRow
+            statusSection
+            InkRule()
+            controlSection
+            InkRule()
+            formatsSection
+            InkRule()
             footerRow
         }
+        .inkSheet(padding: 16)
         .padding(14)
         .frame(width: 320)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(Ink.desk)
     }
 
-    private var statusCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 10) {
-                Image(systemName: "bold")
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundStyle(.primary)
+    private var brandRow: some View {
+        HStack(spacing: 10) {
+            BrandMark(size: 26)
 
-                Text("NoBold")
-                    .font(.system(.headline, design: .monospaced))
+            Text("NoBold")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Ink.text)
 
-                Spacer()
+            Spacer()
 
-                StatusPill(state: monitor.interfaceState)
-            }
+            StatusPill(state: monitor.interfaceState)
+        }
+    }
 
+    private var statusSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             Text(monitor.statusHeadline)
-                .font(.system(.subheadline, design: .monospaced))
-                .foregroundStyle(.primary)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Ink.text)
 
             Text(monitor.statusDetail)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11.5))
+                .foregroundStyle(Ink.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Divider()
-
-            HStack(spacing: 16) {
+            HStack(spacing: 22) {
                 MetricTile(title: "cleaned", value: "\(monitor.cleanupCount)")
                 MetricTile(title: "interval", value: monitor.pollingIntervalLabel)
             }
+            .padding(.top, 2)
 
             if let lastEvent = monitor.lastEvent {
                 HStack(spacing: 4) {
@@ -53,42 +58,37 @@ struct MenuBarDashboard: View {
                     Text("·")
                     Text(lastEvent.timestamp, style: .relative)
                 }
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(Ink.tertiary)
             }
         }
-        .utilityCard()
     }
 
-    private var controlCard: some View {
+    private var controlSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Toggle("Automatic cleanup", isOn: $monitor.isEnabled)
-                .font(.system(.subheadline, design: .monospaced))
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Ink.text)
                 .toggleStyle(.switch)
+                .tint(Ink.markTile)
 
             Button {
                 monitor.cleanClipboardManually()
             } label: {
                 Text("Clean Now")
-                    .font(.system(.subheadline, design: .monospaced).weight(.medium))
-                    .frame(maxWidth: .infinity)
             }
-            .controlSize(.large)
+            .buttonStyle(InkPrimaryButtonStyle())
             .disabled(!monitor.hasEnabledFormats)
 
             Text("⌘⇧P toggle · ⌘⇧K clean")
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(Ink.tertiary)
         }
-        .utilityCard()
     }
 
-    private var formatsCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Formats")
-                .font(.system(.caption, design: .monospaced).weight(.medium))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
+    private var formatsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionLabel(text: "Formats")
 
             ForEach(ClipboardFormat.allCases) { format in
                 FormatToggleRow(
@@ -97,29 +97,28 @@ struct MenuBarDashboard: View {
                 )
             }
         }
-        .utilityCard()
     }
 
     private var footerRow: some View {
-        HStack {
+        HStack(spacing: 16) {
             Button("About") {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 NSApplication.shared.orderFrontStandardAboutPanel(nil)
             }
-
-            Spacer()
 
             Button("Settings…") {
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 NSApplication.shared.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
             }
 
+            Spacer()
+
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
             }
         }
-        .font(.system(.caption, design: .monospaced))
-        .foregroundStyle(.secondary)
+        .font(.system(size: 11.5, weight: .medium))
+        .foregroundStyle(Ink.secondary)
         .buttonStyle(.plain)
     }
 
@@ -140,7 +139,11 @@ struct MenuBarStatusIcon: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Image(systemName: "bold")
+            Image("StarsOff")
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
 
             Circle()
                 .fill(badgeColor)
@@ -153,11 +156,11 @@ struct MenuBarStatusIcon: View {
     private var badgeColor: Color {
         switch state {
         case .active:
-            return Color(red: 0.20, green: 0.67, blue: 0.33)
+            return Ink.active
         case .paused:
             return .secondary
         case .idle:
-            return Color(red: 0.82, green: 0.57, blue: 0.12)
+            return Ink.idle
         }
     }
 
@@ -173,57 +176,19 @@ struct MenuBarStatusIcon: View {
     }
 }
 
-struct StatusPill: View {
-    let state: MonitorInterfaceState
-
-    var body: some View {
-        Text(state.title.lowercased())
-            .font(.system(.caption2, design: .monospaced).weight(.medium))
-            .foregroundStyle(textColor)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(fillColor)
-            )
-    }
-
-    private var fillColor: Color {
-        switch state {
-        case .active:
-            return Color(red: 0.20, green: 0.67, blue: 0.33).opacity(0.15)
-        case .paused:
-            return Color(nsColor: .quaternaryLabelColor).opacity(0.15)
-        case .idle:
-            return Color(red: 0.82, green: 0.57, blue: 0.12).opacity(0.15)
-        }
-    }
-
-    private var textColor: Color {
-        switch state {
-        case .active:
-            return Color(red: 0.20, green: 0.67, blue: 0.33)
-        case .paused:
-            return .secondary
-        case .idle:
-            return Color(red: 0.82, green: 0.57, blue: 0.12)
-        }
-    }
-}
-
 private struct MetricTile: View {
     let title: String
     let value: String
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             Text(value)
-                .font(.system(.subheadline, design: .monospaced).weight(.medium))
-                .foregroundStyle(.primary)
+                .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                .foregroundStyle(Ink.text)
 
             Text(title)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(Ink.tertiary)
         }
     }
 }
@@ -235,40 +200,21 @@ private struct FormatToggleRow: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: format.symbolName)
-                .font(.system(size: 12, weight: .medium, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Ink.tertiary)
                 .frame(width: 16)
 
             Text(format.title)
-                .font(.system(.caption, design: .monospaced))
+                .font(.system(size: 12.5))
+                .foregroundStyle(Ink.text)
 
             Spacer()
 
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
                 .controlSize(.small)
+                .tint(Ink.markTile)
         }
         .accessibilityElement(children: .combine)
-    }
-}
-
-struct UtilityCardModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .padding(12)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color(nsColor: .separatorColor).opacity(0.5), lineWidth: 0.5)
-            )
-    }
-}
-
-extension View {
-    func utilityCard() -> some View {
-        modifier(UtilityCardModifier())
     }
 }

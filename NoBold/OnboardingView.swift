@@ -6,24 +6,23 @@ struct OnboardingView: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 44)
+                .frame(height: 48)
 
-            Image(systemName: "bold")
-                .font(.system(size: 48, weight: .bold, design: .monospaced))
-                .foregroundStyle(.primary)
+            BrandMark(size: 72)
 
             Spacer()
                 .frame(height: 20)
 
             Text("NoBold")
-                .font(.system(size: 26, weight: .bold, design: .monospaced))
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(Ink.text)
 
             Spacer()
                 .frame(height: 6)
 
             Text("Strips bold formatting from your clipboard.")
-                .font(.system(size: 13, design: .monospaced))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13))
+                .foregroundStyle(Ink.secondary)
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -45,7 +44,7 @@ struct OnboardingView: View {
                 featureRow(
                     icon: "menubar.rectangle",
                     title: "Lives in your menu bar",
-                    detail: "Look for the B icon in the menu bar to control NoBold."
+                    detail: "Look for the stars icon in the menu bar to control NoBold."
                 )
             }
             .padding(.horizontal, 8)
@@ -55,20 +54,15 @@ struct OnboardingView: View {
 
             Button(action: onDismiss) {
                 Text("Get Started")
-                    .font(.system(size: 14, weight: .medium, design: .monospaced))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 36)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .tint(.primary)
+            .buttonStyle(InkPrimaryButtonStyle())
 
             Spacer()
                 .frame(height: 10)
 
             Text("NoBold is running. Control it from the menu bar.")
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 10.5))
+                .foregroundStyle(Ink.tertiary)
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -76,22 +70,23 @@ struct OnboardingView: View {
         }
         .padding(.horizontal, 36)
         .frame(width: 400, height: 480)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(Ink.desk)
     }
 
     private func featureRow(icon: String, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Ink.secondary)
                 .frame(width: 24, height: 24)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.system(size: 13, weight: .medium, design: .monospaced))
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Ink.text)
                 Text(detail)
-                    .font(.system(size: 12, design: .monospaced))
-                    .foregroundStyle(.tertiary)
+                    .font(.system(size: 12))
+                    .foregroundStyle(Ink.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

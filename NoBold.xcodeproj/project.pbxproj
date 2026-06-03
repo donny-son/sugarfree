@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6ABDEF4CC14A0931425E43A4 /* PasteboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4022296B2B70B660E69327DA /* PasteboardMonitor.swift */; };
+		8DABD148080D830084B6543A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D1E3BE488EF41501F53EC3 /* Theme.swift */; };
 		A6C251F1774925E553395A2E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1EFFBE0A25B05FCAFB140B /* OnboardingView.swift */; };
 		B1A3DE77A8C9BBF496994C08 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A155B34089AAD75D81A577F9 /* SettingsView.swift */; };
 		B58F6E73687E2A4170C64430 /* MenuBarDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9F3E9335A523979894DA9A /* MenuBarDashboard.swift */; };
@@ -22,6 +23,7 @@
 		89B12BF2050D1CD131D9282B /* NoBold.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoBold.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A155B34089AAD75D81A577F9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AC1EFFBE0A25B05FCAFB140B /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		B1D1E3BE488EF41501F53EC3 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		B916F550280F721C0F0C1A48 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		DB9F3E9335A523979894DA9A /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
 		DEDF07F37F28A142004C1EFE /* NoBoldApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoBoldApp.swift; sourceTree = "<group>"; };
@@ -37,6 +39,7 @@
 				AC1EFFBE0A25B05FCAFB140B /* OnboardingView.swift */,
 				4022296B2B70B660E69327DA /* PasteboardMonitor.swift */,
 				A155B34089AAD75D81A577F9 /* SettingsView.swift */,
+				B1D1E3BE488EF41501F53EC3 /* Theme.swift */,
 			);
 			path = NoBold;
 			sourceTree = "<group>";
@@ -139,6 +142,7 @@
 				A6C251F1774925E553395A2E /* OnboardingView.swift in Sources */,
 				6ABDEF4CC14A0931425E43A4 /* PasteboardMonitor.swift in Sources */,
 				B1A3DE77A8C9BBF496994C08 /* SettingsView.swift in Sources */,
+				8DABD148080D830084B6543A /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -64,7 +64,7 @@ open NoBold.xcodeproj
 
 ## Usage
 
-1. Launch NoBold. A bold "B" icon appears in the menu bar with a status dot
+1. Launch NoBold. The stars-off icon appears in the menu bar with a status dot
    (green = active, amber = no format enabled, grey = paused).
 2. Click the icon to open the dashboard: toggle automatic cleanup, run
    "Clean Now", and choose which formats to strip.
@@ -97,7 +97,7 @@ NoBold/                  Swift sources
   SettingsView.swift       native Settings window
   OnboardingView.swift     first-launch welcome
 Configs/                 xcconfig build settings
-Design/                  app icon master SVG
+Design/                  logo + app icon master SVGs
 project.yml              XcodeGen spec
 build.sh                 generate + build script
 ```
