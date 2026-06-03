@@ -13,6 +13,8 @@ struct MenuBarDashboard: View {
             SurfaceRule()
             formatsSection
             SurfaceRule()
+            transformsSection
+            SurfaceRule()
             footerRow
         }
         .surfaceSheet(padding: 16)
@@ -84,7 +86,7 @@ struct MenuBarDashboard: View {
                 Text("Clean Now")
             }
             .buttonStyle(CottonPrimaryButtonStyle())
-            .disabled(!monitor.hasEnabledSugars)
+            .disabled(!monitor.hasWork)
 
             Text("⌘⇧P toggle · ⌘⇧K clean")
                 .font(.system(size: 10, design: .monospaced))
@@ -101,6 +103,35 @@ struct MenuBarDashboard: View {
                     sugar: sugar,
                     isEnabled: binding(for: sugar)
                 )
+            }
+        }
+    }
+
+    private var transformsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionLabel(text: "Transforms")
+
+            ForEach(Transform.allCases) { transform in
+                TransformToggleRow(
+                    transform: transform,
+                    isEnabled: binding(for: transform)
+                )
+            }
+
+            if monitor.isEnabled(.tablesToList) {
+                VStack(alignment: .leading, spacing: 6) {
+                    SectionLabel(text: "List format")
+
+                    Picker("List format", selection: $monitor.outputFormat) {
+                        ForEach(TransformOutputFormat.allCases) { format in
+                            Text(format.title).tag(format)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.segmented)
+                    .tint(Cotton.accent)
+                }
+                .padding(.top, 2)
             }
         }
     }
@@ -127,6 +158,13 @@ struct MenuBarDashboard: View {
         Binding(
             get: { monitor.isEnabled(sugar) },
             set: { monitor.setSugar(sugar, enabled: $0) }
+        )
+    }
+
+    private func binding(for transform: Transform) -> Binding<Bool> {
+        Binding(
+            get: { monitor.isEnabled(transform) },
+            set: { monitor.setTransform(transform, enabled: $0) }
         )
     }
 
@@ -221,6 +259,36 @@ private struct SugarToggleRow: View {
                 .foregroundStyle(Surface.text)
 
             Text(sugar.example)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(Surface.tertiary)
+
+            Spacer()
+
+            Toggle("", isOn: $isEnabled)
+                .labelsHidden()
+                .controlSize(.small)
+                .tint(Cotton.accent)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct TransformToggleRow: View {
+    let transform: Transform
+    @Binding var isEnabled: Bool
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: transform.symbolName)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Surface.tertiary)
+                .frame(width: 16)
+
+            Text(transform.title)
+                .font(.system(size: 12.5))
+                .foregroundStyle(Surface.text)
+
+            Text(transform.example)
                 .font(.system(size: 10.5, design: .monospaced))
                 .foregroundStyle(Surface.tertiary)
 

@@ -55,6 +55,63 @@ enum Sugar: String, CaseIterable, Identifiable {
     }
 }
 
+/// A structural rewrite of clipboard content. Distinct from `Sugar` (which only
+/// *removes* inline emphasis markers): a transform *reshapes* content into another
+/// representation, which is lossy — so transforms default to off.
+enum Transform: String, CaseIterable, Identifiable {
+    case tablesToList
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .tablesToList: return "Tables → list"
+        }
+    }
+
+    /// Short syntax hint shown beside the toggle.
+    var example: String {
+        switch self {
+        case .tablesToList: return "| a | b |"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .tablesToList:
+            return "Converts Markdown and HTML tables into YAML or TOML list items."
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .tablesToList: return "tablecells"
+        }
+    }
+}
+
+/// Output style for table → list transforms.
+enum TransformOutputFormat: String, CaseIterable, Identifiable {
+    case yaml
+    case toml
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .yaml: return "YAML"
+        case .toml: return "TOML"
+        }
+    }
+
+    var converterFormat: TableConverter.Format {
+        switch self {
+        case .yaml: return .yaml
+        case .toml: return .toml
+        }
+    }
+}
+
 enum MonitorInterfaceState {
     case active
     case paused
@@ -75,12 +132,14 @@ enum MonitorInterfaceState {
 struct CleanupEvent {
     let timestamp: Date
     let sugars: [Sugar]
+    let transforms: [Transform]
+    let tableCount: Int
     let itemCount: Int
     let wasManual: Bool
 
     var headline: String {
         let action = wasManual ? "Cleaned" : "Auto-cleaned"
-        return "\(action) \(sugarSummary)"
+        return "\(action) \(summary)"
     }
 
     var detail: String {
@@ -88,8 +147,12 @@ struct CleanupEvent {
         return "\(itemCount) \(noun) updated"
     }
 
-    private var sugarSummary: String {
-        sugars.isEmpty ? "formatting" : sugars.map(\.title).joined(separator: " + ")
+    private var summary: String {
+        var parts = sugars.map(\.title)
+        if tableCount > 0 {
+            parts.append(tableCount == 1 ? "1 table" : "\(tableCount) tables")
+        }
+        return parts.isEmpty ? "formatting" : parts.joined(separator: " + ")
     }
 }
 
@@ -105,6 +168,20 @@ final class PasteboardMonitor: ObservableObject {
     @Published var enabledSugars: Set<Sugar> {
         didSet {
             defaults.set(enabledSugars.map(\.rawValue), forKey: DefaultsKey.enabledSugars.rawValue)
+        }
+    }
+
+    /// Which structural transforms the user has opted into (off by default).
+    @Published var enabledTransforms: Set<Transform> {
+        didSet {
+            defaults.set(enabledTransforms.map(\.rawValue), forKey: DefaultsKey.enabledTransforms.rawValue)
+        }
+    }
+
+    /// Output style for table → list transforms.
+    @Published var outputFormat: TransformOutputFormat {
+        didSet {
+            defaults.set(outputFormat.rawValue, forKey: DefaultsKey.outputFormat.rawValue)
         }
     }
 
@@ -137,6 +214,8 @@ final class PasteboardMonitor: ObservableObject {
     private enum DefaultsKey: String {
         case isEnabled
         case enabledSugars
+        case enabledTransforms
+        case outputFormat
         case pollingInterval
         case cleanupCount
     }
@@ -144,9 +223,11 @@ final class PasteboardMonitor: ObservableObject {
     private struct RewriteResult {
         let didChange: Bool
         let sugars: [Sugar]
+        let transforms: [Transform]
+        let tableCount: Int
         let itemCount: Int
 
-        static let unchanged = RewriteResult(didChange: false, sugars: [], itemCount: 0)
+        static let unchanged = RewriteResult(didChange: false, sugars: [], transforms: [], tableCount: 0, itemCount: 0)
     }
 
     static let allowedPollingIntervals: [Double] = [0.25, 0.5, 1.0, 1.5]
@@ -154,6 +235,9 @@ final class PasteboardMonitor: ObservableObject {
     /// Bold + italic are the everyday annoyances; underline/strikethrough often carry
     /// meaning, so they stay off until the user opts in.
     static let defaultSugars: Set<Sugar> = [.bold, .italic]
+    /// Transforms reshape content and are lossy, so they stay off until opted into.
+    static let defaultTransforms: Set<Transform> = []
+    static let defaultOutputFormat: TransformOutputFormat = .yaml
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -164,6 +248,15 @@ final class PasteboardMonitor: ObservableObject {
         } else {
             self.enabledSugars = Self.defaultSugars
         }
+
+        if let storedTransforms = defaults.array(forKey: DefaultsKey.enabledTransforms.rawValue) as? [String] {
+            self.enabledTransforms = Set(storedTransforms.compactMap(Transform.init(rawValue:)))
+        } else {
+            self.enabledTransforms = Self.defaultTransforms
+        }
+
+        let storedFormat = defaults.string(forKey: DefaultsKey.outputFormat.rawValue)
+        self.outputFormat = storedFormat.flatMap(TransformOutputFormat.init(rawValue:)) ?? Self.defaultOutputFormat
 
         let storedInterval = defaults.object(forKey: DefaultsKey.pollingInterval.rawValue) as? Double ?? Self.defaultPollingInterval
         self.pollingInterval = Self.allowedPollingIntervals.contains(storedInterval) ? storedInterval : Self.defaultPollingInterval
@@ -188,15 +281,36 @@ final class PasteboardMonitor: ObservableObject {
         enabledSugars.contains(sugar)
     }
 
+    func setTransform(_ transform: Transform, enabled: Bool) {
+        if enabled {
+            enabledTransforms.insert(transform)
+        } else {
+            enabledTransforms.remove(transform)
+        }
+    }
+
+    func isEnabled(_ transform: Transform) -> Bool {
+        enabledTransforms.contains(transform)
+    }
+
     var hasEnabledSugars: Bool {
         !enabledSugars.isEmpty
+    }
+
+    var hasEnabledTransforms: Bool {
+        !enabledTransforms.isEmpty
+    }
+
+    /// Whether there's anything for the monitor to do (any sugar or transform on).
+    var hasWork: Bool {
+        hasEnabledSugars || hasEnabledTransforms
     }
 
     var interfaceState: MonitorInterfaceState {
         if !isEnabled {
             return .paused
         }
-        if !hasEnabledSugars {
+        if !hasWork {
             return .idle
         }
         return .active
@@ -209,7 +323,7 @@ final class PasteboardMonitor: ObservableObject {
         case .paused:
             return "Automatic cleanup is paused"
         case .idle:
-            return "Enable at least one sugar"
+            return "Enable a sugar or transform"
         }
     }
 
@@ -223,7 +337,7 @@ final class PasteboardMonitor: ObservableObject {
         case .paused:
             return "Clipboard changes pass through untouched until you resume."
         case .idle:
-            return "Sugarfree is on, but no sugars are selected to strip."
+            return "Sugarfree is on, but nothing is selected to clean."
         }
     }
 
@@ -243,7 +357,7 @@ final class PasteboardMonitor: ObservableObject {
     }
 
     func cleanClipboardManually() {
-        guard hasEnabledSugars else { return }
+        guard hasWork else { return }
         _ = cleanPasteboardIfNeeded(wasManual: true)
     }
 
@@ -271,7 +385,7 @@ final class PasteboardMonitor: ObservableObject {
         lastChangeCount = currentCount
 
         guard currentCount != selfWriteCount else { return }
-        guard isEnabled, hasEnabledSugars else { return }
+        guard isEnabled, hasWork else { return }
 
         _ = cleanPasteboardIfNeeded(wasManual: false)
     }
@@ -287,6 +401,8 @@ final class PasteboardMonitor: ObservableObject {
         lastEvent = CleanupEvent(
             timestamp: Date(),
             sugars: result.sugars,
+            transforms: result.transforms,
+            tableCount: result.tableCount,
             itemCount: result.itemCount,
             wasManual: wasManual
         )
@@ -301,31 +417,46 @@ final class PasteboardMonitor: ObservableObject {
         }
 
         let sugars = enabledSugars
+        let convertTables = enabledTransforms.contains(.tablesToList)
+        let format = outputFormat.converterFormat
+
         var updatedItems: [NSPasteboardItem] = []
         var removedSugars = Set<Sugar>()
+        var appliedTransforms = Set<Transform>()
+        var tableCount = 0
 
         for originalItem in originalItems {
             let updatedItem = NSPasteboardItem()
             var copiedAnyType = false
+            // A converted table makes the RTF representation stale (we don't parse RTF
+            // tables); we drop RTF in that case so rich targets fall back to the
+            // converted HTML/plain text instead of pasting the original table.
+            var transformFiredInItem = false
+            var itemTableCount = 0
+            // RTF is deferred until we know whether a transform fired elsewhere.
+            var rtfData: Data?
 
             for type in originalItem.types {
-                if type == .rtf, let originalData = originalItem.data(forType: type) {
-                    let (processed, removed) = stripRTF(originalData, sugars: sugars)
-                    if let processed, !removed.isEmpty {
-                        _ = updatedItem.setData(processed, forType: type)
-                        removedSugars.formUnion(removed)
-                    } else {
-                        _ = updatedItem.setData(originalData, forType: type)
-                    }
-                    copiedAnyType = true
+                if type == .rtf {
+                    rtfData = originalItem.data(forType: type)
                     continue
                 }
 
                 if type == .html, let originalData = originalItem.data(forType: type) {
                     let originalHTML = decodeClipboardString(from: originalData)
-                    let (processedHTML, removed) = stripHTML(originalHTML, sugars: sugars)
+                    let (strippedHTML, removed) = stripHTML(originalHTML, sugars: sugars)
+                    var html = strippedHTML
+                    if convertTables {
+                        let (converted, count) = TableConverter.convertHTMLTables(in: html, format: format)
+                        if count > 0 {
+                            html = converted
+                            transformFiredInItem = true
+                            appliedTransforms.insert(.tablesToList)
+                            itemTableCount = max(itemTableCount, count)
+                        }
+                    }
 
-                    if !removed.isEmpty, processedHTML != originalHTML, let processedData = processedHTML.data(using: .utf8) {
+                    if html != originalHTML, let processedData = html.data(using: .utf8) {
                         _ = updatedItem.setData(processedData, forType: type)
                         removedSugars.formUnion(removed)
                     } else {
@@ -336,10 +467,20 @@ final class PasteboardMonitor: ObservableObject {
                 }
 
                 if type == .string, let originalString = originalItem.string(forType: type) {
-                    let (processedString, removed) = stripPlainText(originalString, sugars: sugars)
+                    let (strippedString, removed) = stripPlainText(originalString, sugars: sugars)
+                    var string = strippedString
+                    if convertTables {
+                        let (converted, count) = TableConverter.convertMarkdownTables(in: string, format: format)
+                        if count > 0 {
+                            string = converted
+                            transformFiredInItem = true
+                            appliedTransforms.insert(.tablesToList)
+                            itemTableCount = max(itemTableCount, count)
+                        }
+                    }
 
-                    if !removed.isEmpty, processedString != originalString {
-                        _ = updatedItem.setString(processedString, forType: type)
+                    if string != originalString {
+                        _ = updatedItem.setString(string, forType: type)
                         removedSugars.formUnion(removed)
                     } else if let originalData = originalItem.data(forType: type) {
                         _ = updatedItem.setData(originalData, forType: type)
@@ -362,12 +503,27 @@ final class PasteboardMonitor: ObservableObject {
                 }
             }
 
+            // Replay the deferred RTF: strip it normally, unless a table conversion
+            // fired in this item — then drop it so the converted reps win.
+            if let rtfData, !(convertTables && transformFiredInItem) {
+                let (processed, removed) = stripRTF(rtfData, sugars: sugars)
+                if let processed, !removed.isEmpty {
+                    _ = updatedItem.setData(processed, forType: .rtf)
+                    removedSugars.formUnion(removed)
+                } else {
+                    _ = updatedItem.setData(rtfData, forType: .rtf)
+                }
+                copiedAnyType = true
+            }
+
+            tableCount += itemTableCount
+
             if copiedAnyType {
                 updatedItems.append(updatedItem)
             }
         }
 
-        guard !removedSugars.isEmpty, !updatedItems.isEmpty else {
+        guard !removedSugars.isEmpty || !appliedTransforms.isEmpty, !updatedItems.isEmpty else {
             return .unchanged
         }
 
@@ -375,7 +531,14 @@ final class PasteboardMonitor: ObservableObject {
         pasteboard.writeObjects(updatedItems)
 
         let orderedSugars = Sugar.allCases.filter { removedSugars.contains($0) }
-        return RewriteResult(didChange: true, sugars: orderedSugars, itemCount: updatedItems.count)
+        let orderedTransforms = Transform.allCases.filter { appliedTransforms.contains($0) }
+        return RewriteResult(
+            didChange: true,
+            sugars: orderedSugars,
+            transforms: orderedTransforms,
+            tableCount: tableCount,
+            itemCount: updatedItems.count
+        )
     }
 
     private func decodeClipboardString(from data: Data) -> String {
