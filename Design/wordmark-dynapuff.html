@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
 <style>
-  /* ---- Ink tokens (mirror of NoBold/Theme.swift; do not drift) ---- */
+  /* ---- Surface tokens (mirror of Sugarfree/Theme.swift; do not drift) ---- */
   :root{
     --desk:#ECE9E1; --surface:#FAF8F3; --text:#161616;
     --secondary:#6A665D; --tertiary:#8F8A7E;
@@ -37,8 +37,8 @@
   .g-cotton{ background:linear-gradient(100deg,#FF6FB5 0%,#FF9A6B 52%,#FFC857 100%); }
   .g-sorbet{ background:linear-gradient(100deg,#FF7E5F 0%,#E3B341 100%); }
   .g-mint  { background:linear-gradient(100deg,#2BB673 0%,#6FCF7F 55%,#BFE86B 100%); }
-  .g-ink   { background:linear-gradient(100deg,#161616 0%,#6A665D 100%); }
-  .dark .g-ink{ background:linear-gradient(100deg,#F4F1EA 0%,#A7A39A 100%); }
+  .g-mono  { background:linear-gradient(100deg,#161616 0%,#6A665D 100%); }
+  .dark .g-mono{ background:linear-gradient(100deg,#F4F1EA 0%,#A7A39A 100%); }
   .grad{ -webkit-background-clip:text; background-clip:text; color:transparent;
          -webkit-text-fill-color:transparent; }
 
@@ -71,7 +71,7 @@
   .ctx-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tertiary);margin:34px 0 14px}
   .ctx-row{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
 
-  /* dock-ish icon preview: Ink squircle + wordmark initial */
+  /* dock-ish icon preview: Surface squircle + wordmark initial */
   .ico{width:84px;height:84px;border-radius:20px;background:var(--markTile);
     display:grid;place-items:center}
   .ico .wm{font-size:40px;color:var(--markGlyph)} /* on-tile: solid, not gradient */
@@ -89,25 +89,25 @@
     <div class="card">
       <div class="name">① Cotton — candy</div>
       <div class="swatch"><span class="wm grad g-cotton">sugarfree</span></div>
-      <div class="meta">Pink → peach → gold. Most playful; leans hardest into the sweet/candy read. Boldest departure from Ink.</div>
+      <div class="meta">Pink → peach → gold. Most playful; leans hardest into the sweet/candy read. Boldest departure from the calm base.</div>
     </div>
     <!-- SORBET -->
     <div class="card">
       <div class="name">② Sorbet — warm</div>
       <div class="swatch"><span class="wm grad g-sorbet">sugarfree</span></div>
-      <div class="meta">Coral → amber. Ties to Ink's idle amber (#B0721A / #E3B341). Warm but more restrained than Cotton.</div>
+      <div class="meta">Coral → amber. Ties to the Surface idle amber (#B0721A / #E3B341). Warm but more restrained than Cotton.</div>
     </div>
     <!-- MINT -->
     <div class="card">
       <div class="name">③ Mint — fresh</div>
       <div class="swatch"><span class="wm grad g-mint">sugarfree</span></div>
-      <div class="meta">Teal → green → lime. Echoes Ink's active green (#2E7D32 / #6FCF7F) = "clean / fresh / sugar-free."</div>
+      <div class="meta">Teal → green → lime. Echoes the Surface active green (#2E7D32 / #6FCF7F) = "clean / fresh / sugar-free."</div>
     </div>
     <!-- INK -->
     <div class="card">
-      <div class="name">④ Ink — restrained</div>
-      <div class="swatch"><span class="wm grad g-ink">sugarfree</span></div>
-      <div class="meta">Monochrome ink → graphite. Most theme-consistent; gradient is a subtle sheen, not color. Safest.</div>
+      <div class="name">④ Mono — restrained</div>
+      <div class="swatch"><span class="wm grad g-mono">sugarfree</span></div>
+      <div class="meta">Monochrome graphite. Most surface-consistent; gradient is a subtle sheen, not color. Safest.</div>
     </div>
   </div>
 
@@ -136,9 +136,9 @@
   </div>
 
   <p class="meta" style="margin-top:30px;max-width:680px">
-    Note: gradient text is for the <em>wordmark on light/paper surfaces</em>. On the Ink mark tile
+    Note: gradient text is for the <em>wordmark on light/paper surfaces</em>. On the dark mark tile
     (menubar glyph, app icon) the letter stays solid <code>--markGlyph</code> for contrast — gradients
-    on a near-black tile muddy. So the gradient lives in the wordmark, the tile stays Ink.
+    on a near-black tile muddy. So the gradient lives in the wordmark, the tile stays dark.
   </p>
 
 <script>

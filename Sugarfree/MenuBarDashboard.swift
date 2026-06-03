@@ -8,17 +8,17 @@ struct MenuBarDashboard: View {
         VStack(alignment: .leading, spacing: 14) {
             brandRow
             statusSection
-            InkRule()
+            SurfaceRule()
             controlSection
-            InkRule()
+            SurfaceRule()
             formatsSection
-            InkRule()
+            SurfaceRule()
             footerRow
         }
-        .inkSheet(padding: 16)
+        .surfaceSheet(padding: 16)
         .padding(14)
         .frame(width: 320)
-        .background(Ink.desk)
+        .background(Surface.desk)
     }
 
     private var brandRow: some View {
@@ -35,11 +35,11 @@ struct MenuBarDashboard: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(monitor.statusHeadline)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Ink.text)
+                .foregroundStyle(Surface.text)
 
             Text(monitor.statusDetail)
                 .font(.system(size: 11.5))
-                .foregroundStyle(Ink.secondary)
+                .foregroundStyle(Surface.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             MetricTile(title: "cleaned", value: "\(monitor.cleanupCount)")
@@ -52,7 +52,7 @@ struct MenuBarDashboard: View {
                     Text(lastEvent.timestamp, style: .relative)
                 }
                 .font(.system(size: 10.5, design: .monospaced))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
             }
         }
     }
@@ -61,7 +61,7 @@ struct MenuBarDashboard: View {
         VStack(alignment: .leading, spacing: 10) {
             Toggle("Automatic cleanup", isOn: $monitor.isEnabled)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Ink.text)
+                .foregroundStyle(Surface.text)
                 .toggleStyle(.switch)
                 .tint(Cotton.accent)
 
@@ -88,7 +88,7 @@ struct MenuBarDashboard: View {
 
             Text("⌘⇧P toggle · ⌘⇧K clean")
                 .font(.system(size: 10, design: .monospaced))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
         }
     }
 
@@ -119,7 +119,7 @@ struct MenuBarDashboard: View {
             }
         }
         .font(.system(size: 11.5, weight: .medium))
-        .foregroundStyle(Ink.secondary)
+        .foregroundStyle(Surface.secondary)
         .buttonStyle(.plain)
     }
 
@@ -172,7 +172,7 @@ struct MenuBarStatusIcon: View {
         case .paused:
             return .secondary
         case .idle:
-            return Ink.idle
+            return Surface.idle
         }
     }
 
@@ -196,11 +196,11 @@ private struct MetricTile: View {
         HStack(spacing: 5) {
             Text(value)
                 .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                .foregroundStyle(Ink.text)
+                .foregroundStyle(Surface.text)
 
             Text(title)
                 .font(.system(size: 10, design: .monospaced))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
         }
     }
 }
@@ -213,16 +213,16 @@ private struct SugarToggleRow: View {
         HStack(spacing: 10) {
             Image(systemName: sugar.symbolName)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
                 .frame(width: 16)
 
             Text(sugar.title)
                 .font(.system(size: 12.5))
-                .foregroundStyle(Ink.text)
+                .foregroundStyle(Surface.text)
 
             Text(sugar.example)
                 .font(.system(size: 10.5, design: .monospaced))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
 
             Spacer()
 

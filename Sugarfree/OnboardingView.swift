@@ -20,7 +20,7 @@ struct OnboardingView: View {
 
             Text("Strips formatting sugar from your clipboard.")
                 .font(.system(size: 13))
-                .foregroundStyle(Ink.secondary)
+                .foregroundStyle(Surface.secondary)
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -60,7 +60,7 @@ struct OnboardingView: View {
 
             Text("Sugarfree is running. Control it from the menu bar.")
                 .font(.system(size: 10.5))
-                .foregroundStyle(Ink.tertiary)
+                .foregroundStyle(Surface.tertiary)
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -68,23 +68,23 @@ struct OnboardingView: View {
         }
         .padding(.horizontal, 36)
         .frame(width: 400, height: 480)
-        .background(Ink.desk)
+        .background(Surface.desk)
     }
 
     private func featureRow(icon: String, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Ink.secondary)
+                .foregroundStyle(Surface.secondary)
                 .frame(width: 24, height: 24)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Ink.text)
+                    .foregroundStyle(Surface.text)
                 Text(detail)
                     .font(.system(size: 12))
-                    .foregroundStyle(Ink.tertiary)
+                    .foregroundStyle(Surface.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

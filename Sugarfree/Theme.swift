@@ -1,12 +1,12 @@
 import AppKit
 import SwiftUI
 
-// MARK: - Ink palette (surface base)
+// MARK: - Surface palette (calm base)
 //
-// "Ink" is the calm base layer: line-art mark on warm paper, hard 1px borders,
+// `Surface` is the calm base layer: line-art mark on warm paper, hard 1px borders,
 // a hard offset shadow, zero gloss. It owns surfaces + text only — the brand
 // accent lives in `Cotton` below. Colors are appearance-adaptive so the popover
-// respects dark mode while keeping the paper/ink character.
+// respects dark mode while keeping the warm paper character.
 
 extension NSColor {
     fileprivate convenience init(hex: UInt32) {
@@ -30,7 +30,7 @@ extension Color {
     }
 }
 
-enum Ink {
+enum Surface {
     /// The window/desk behind the sheet — the darker of the two paper tones.
     static let desk = Color(lightHex: 0xECE9E1, darkHex: 0x121214)
     /// The sheet surface — the lighter paper tone.
@@ -53,8 +53,8 @@ enum Ink {
 
 // MARK: - Cotton accent
 //
-// The brand accent for "sugarfree": a cotton-candy gradient. Surfaces stay Ink
-// (paper/ink) for legibility — Cotton appears ONLY on the wordmark, ON toggles,
+// The brand accent for "sugarfree": a cotton-candy gradient. Body surfaces stay
+// calm paper for legibility — Cotton appears ONLY on the wordmark, ON toggles,
 // the primary button, and the status pill. Never wash a body surface with it.
 // (The menubar glyph is a template image / system tint — always monochrome.)
 
@@ -109,7 +109,7 @@ struct BrandMark: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: corner, style: .continuous)
-            .fill(Ink.markTile)
+            .fill(Surface.markTile)
             .frame(width: size, height: size)
             .overlay(
                 Image("LollipopOff")
@@ -117,14 +117,14 @@ struct BrandMark: View {
                     .resizable()
                     .scaledToFit()
                     .padding(size * 0.2)
-                    .foregroundStyle(Ink.markGlyph)
+                    .foregroundStyle(Surface.markGlyph)
             )
     }
 }
 
-// MARK: - Ink sheet (hard offset shadow)
+// MARK: - Surface sheet (hard offset shadow)
 
-struct InkSheet: ViewModifier {
+struct SurfaceSheet: ViewModifier {
     var padding: CGFloat = 14
     var corner: CGFloat = 14
     var offset: CGFloat = 4
@@ -134,49 +134,49 @@ struct InkSheet: ViewModifier {
             .padding(padding)
             .background(
                 RoundedRectangle(cornerRadius: corner, style: .continuous)
-                    .fill(Ink.surface)
+                    .fill(Surface.surface)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: corner, style: .continuous)
-                    .strokeBorder(Ink.border, lineWidth: 1)
+                    .strokeBorder(Surface.border, lineWidth: 1)
             )
             .background(
                 RoundedRectangle(cornerRadius: corner, style: .continuous)
-                    .fill(Ink.border)
+                    .fill(Surface.border)
                     .offset(x: offset, y: offset)
             )
     }
 }
 
 extension View {
-    func inkSheet(padding: CGFloat = 14, corner: CGFloat = 14, offset: CGFloat = 4) -> some View {
-        modifier(InkSheet(padding: padding, corner: corner, offset: offset))
+    func surfaceSheet(padding: CGFloat = 14, corner: CGFloat = 14, offset: CGFloat = 4) -> some View {
+        modifier(SurfaceSheet(padding: padding, corner: corner, offset: offset))
     }
 }
 
 /// A flat hairline-bordered block used to group rows inside a sheet.
-struct InkBlock: ViewModifier {
+struct SurfaceBlock: ViewModifier {
     var padding: CGFloat = 12
     func body(content: Content) -> some View {
         content
             .padding(padding)
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Ink.hairline, lineWidth: 1)
+                    .strokeBorder(Surface.hairline, lineWidth: 1)
             )
     }
 }
 
 extension View {
-    func inkBlock(padding: CGFloat = 12) -> some View {
-        modifier(InkBlock(padding: padding))
+    func surfaceBlock(padding: CGFloat = 12) -> some View {
+        modifier(SurfaceBlock(padding: padding))
     }
 }
 
-struct InkRule: View {
+struct SurfaceRule: View {
     var body: some View {
         Rectangle()
-            .fill(Ink.hairline)
+            .fill(Surface.hairline)
             .frame(height: 1)
     }
 }
@@ -190,7 +190,7 @@ struct SectionLabel: View {
             .font(.system(size: 10, weight: .semibold, design: .monospaced))
             .tracking(1.2)
             .textCase(.uppercase)
-            .foregroundStyle(Ink.secondary)
+            .foregroundStyle(Surface.secondary)
     }
 }
 
@@ -236,16 +236,16 @@ struct StatusPill: View {
     private var fillColor: Color {
         switch state {
         case .active: return Cotton.tint
-        case .paused: return Ink.hairline
-        case .idle: return Ink.idle.opacity(0.16)
+        case .paused: return Surface.hairline
+        case .idle: return Surface.idle.opacity(0.16)
         }
     }
 
     private var textColor: Color {
         switch state {
         case .active: return Cotton.ink
-        case .paused: return Ink.secondary
-        case .idle: return Ink.idle
+        case .paused: return Surface.secondary
+        case .idle: return Surface.idle
         }
     }
 }
