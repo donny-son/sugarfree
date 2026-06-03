@@ -53,7 +53,7 @@ struct OnboardingView: View {
             Button(action: onDismiss) {
                 Text("Get Started")
             }
-            .buttonStyle(InkPrimaryButtonStyle())
+            .buttonStyle(CottonPrimaryButtonStyle())
 
             Spacer()
                 .frame(height: 10)

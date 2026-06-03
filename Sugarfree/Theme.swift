@@ -197,7 +197,7 @@ struct SectionLabel: View {
 
 // MARK: - Primary button (cotton gradient)
 
-struct InkPrimaryButtonStyle: ButtonStyle {
+struct CottonPrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {

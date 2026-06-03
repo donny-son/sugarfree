@@ -75,7 +75,7 @@ struct MenuBarDashboard: View {
             } label: {
                 Text("Clean Now")
             }
-            .buttonStyle(InkPrimaryButtonStyle())
+            .buttonStyle(CottonPrimaryButtonStyle())
             .disabled(!monitor.hasEnabledFormats)
 
             Text("⌘⇧P toggle · ⌘⇧K clean")

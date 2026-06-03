@@ -135,7 +135,7 @@ struct SettingsView: View {
             } label: {
                 Text("Clean Now")
             }
-            .buttonStyle(InkPrimaryButtonStyle())
+            .buttonStyle(CottonPrimaryButtonStyle())
             .disabled(!monitor.hasEnabledFormats)
         }
         .inkSheet()
