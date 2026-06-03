@@ -37,11 +37,32 @@ targets:
         PRODUCT_MODULE_NAME: Sugarfree
         CODE_SIGN_ENTITLEMENTS: ""
 
+  SugarfreeTests:
+    type: bundle.unit-test
+    platform: macOS
+    # Logic tests: compile the (pure-Foundation) converter straight into the test
+    # module so no app test-host / @testable wiring is needed.
+    sources:
+      - path: Tests
+      - path: Sugarfree/TableConverter.swift
+    settings:
+      base:
+        PRODUCT_NAME: SugarfreeTests
+        PRODUCT_MODULE_NAME: SugarfreeTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.sugarfree.tests
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        CODE_SIGN_ENTITLEMENTS: ""
+
 schemes:
   Sugarfree:
     build:
       targets:
         Sugarfree: all
+        SugarfreeTests: [test]
+    test:
+      targets:
+        - SugarfreeTests
     run:
       config: Debug
     archive:
