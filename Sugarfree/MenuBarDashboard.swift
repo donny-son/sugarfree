@@ -23,8 +23,6 @@ struct MenuBarDashboard: View {
 
     private var brandRow: some View {
         HStack(spacing: 10) {
-            BrandMark(size: 26)
-
             Wordmark(size: 22)
 
             Spacer()
