@@ -18,6 +18,9 @@ text you paste is the text you wanted.
   each independently toggleable (bold + italic on by default).
 - Works across representations — RTF font traits and underline/strikethrough
   attributes, HTML tags + inline styles, and markdown markers.
+- Structural transforms — optionally reshape content after stripping. Currently
+  **Tables → list**: convert Markdown/HTML tables into YAML or TOML list items.
+  Transforms are lossy, so they're off by default and live in their own section.
 - Non-destructive — only changed representations are rewritten; unrelated
   pasteboard types and items are preserved.
 - Configurable polling interval — 0.25s / 0.5s / 1.0s / 1.5s.
@@ -67,9 +70,9 @@ open Sugarfree.xcodeproj
 1. Launch Sugarfree. The lollipop icon appears in the menu bar with a status dot
    (pink = active, amber = no sugar enabled, grey = paused).
 2. Click the icon to open the dashboard: toggle automatic cleanup, run
-   "Clean Now", and choose which sugars to strip.
-3. Open Settings… for the polling interval and an activity summary.
-4. Copy formatted text from anywhere — paste it, and the sugar is gone.
+   "Clean Now", choose which sugars to strip, enable structural transforms,
+   set the polling interval, and see an activity summary — all in one place.
+3. Copy formatted text from anywhere — paste it, and the sugar is gone.
 
 ## How it works
 
