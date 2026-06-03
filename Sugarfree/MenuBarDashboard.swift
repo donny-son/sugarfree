@@ -150,7 +150,7 @@ struct MenuBarStatusIcon: View {
     private var badgeColor: Color {
         switch state {
         case .active:
-            return Ink.active
+            return Cotton.accent
         case .paused:
             return .secondary
         case .idle:

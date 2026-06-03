@@ -52,7 +52,8 @@ the ON/cleaning state; OFF/idle uses neutral gray (`hairline`/`tertiary`).
 - Chrome extension `manifest.json` name/description.
 - `README.md` copy + imagery, `CLAUDE.md` references.
 - Regenerate `NoBold.xcodeproj` via XcodeGen after `project.yml` edits.
-- App icon master + appiconset unchanged (Ink mark retained); only wordmark assets update.
+- App icon regenerated from `Design/AppIcon-master.svg` (cotton lollipop on a paper tile,
+  icon B); the `LollipopOff` template imageset replaces `StarsOff`.
 
 > Branding change → bound by the CLAUDE.md design contract: mock in `Design/`, name the
 > option, get approval, then build, then verify (`./build.sh` + relaunch).

@@ -1,12 +1,12 @@
 import AppKit
 import SwiftUI
 
-// MARK: - Ink palette
+// MARK: - Ink palette (surface base)
 //
-// The "Ink" identity: line-art mark on warm paper, hard 1px borders, a hard
-// offset shadow, zero gloss. Monochrome with a single restrained status dot.
-// Colors are appearance-adaptive so the popover still respects dark mode while
-// keeping the paper/ink character.
+// "Ink" is the calm base layer: line-art mark on warm paper, hard 1px borders,
+// a hard offset shadow, zero gloss. It owns surfaces + text only — the brand
+// accent lives in `Cotton` below. Colors are appearance-adaptive so the popover
+// respects dark mode while keeping the paper/ink character.
 
 extension NSColor {
     fileprivate convenience init(hex: UInt32) {
@@ -47,8 +47,7 @@ enum Ink {
     static let markTile = Color(lightHex: 0x161616, darkHex: 0xF4F1EA)
     static let markGlyph = Color(lightHex: 0xFAF8F3, darkHex: 0x161616)
 
-    // Restrained status accents (the only non-monochrome ink).
-    static let active = Color(lightHex: 0x2E7D32, darkHex: 0x6FCF7F)
+    // Idle / attention accent (amber). The active "cleaning" state uses the Cotton accent.
     static let idle = Color(lightHex: 0xB0721A, darkHex: 0xE3B341)
 }
 
