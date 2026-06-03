@@ -1,43 +1,56 @@
 import AppKit
 import Foundation
 
-enum ClipboardFormat: String, CaseIterable, Identifiable {
-    case richText
-    case html
-    case markdown
+/// A kind of formatting "sugar" the app can strip. The user toggles each one;
+/// every enabled sugar is removed across whichever clipboard representations
+/// carry it (RTF traits/attributes, HTML tags/styles, markdown markers).
+enum Sugar: String, CaseIterable, Identifiable {
+    case bold
+    case italic
+    case underline
+    case strikethrough
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .richText:
-            return "Rich Text"
-        case .html:
-            return "HTML"
-        case .markdown:
-            return "Markdown"
+        case .bold: return "Bold"
+        case .italic: return "Italic"
+        case .underline: return "Underline"
+        case .strikethrough: return "Strikethrough"
         }
     }
 
+    /// Short syntax hint shown beside the toggle.
+    var example: String {
+        switch self {
+        case .bold: return "**bold**"
+        case .italic: return "*italic*"
+        case .underline: return "<u>under</u>"
+        case .strikethrough: return "~~strike~~"
+        }
+    }
+
+    /// Longer description for the Settings rows.
     var detail: String {
         switch self {
-        case .richText:
-            return "Removes bold font traits from RTF clipboard data."
-        case .html:
-            return "Strips bold tags and font-weight styles from HTML."
-        case .markdown:
-            return "Removes ** and __ markers from plain text."
+        case .bold:
+            return "Removes bold — RTF traits, <strong>/<b>, font-weight, and ** __ markers."
+        case .italic:
+            return "Removes italic — RTF traits, <em>/<i>, font-style, and * _ markers."
+        case .underline:
+            return "Removes underline — RTF underline, <u>, and text-decoration."
+        case .strikethrough:
+            return "Removes strikethrough — RTF, <s>/<del>, text-decoration, and ~~ markers."
         }
     }
 
     var symbolName: String {
         switch self {
-        case .richText:
-            return "textformat"
-        case .html:
-            return "chevron.left.forwardslash.chevron.right"
-        case .markdown:
-            return "number.square"
+        case .bold: return "bold"
+        case .italic: return "italic"
+        case .underline: return "underline"
+        case .strikethrough: return "strikethrough"
         }
     }
 }
@@ -61,13 +74,13 @@ enum MonitorInterfaceState {
 
 struct CleanupEvent {
     let timestamp: Date
-    let formats: [ClipboardFormat]
+    let sugars: [Sugar]
     let itemCount: Int
     let wasManual: Bool
 
     var headline: String {
         let action = wasManual ? "Cleaned" : "Auto-cleaned"
-        return "\(action) \(formatSummary)"
+        return "\(action) \(sugarSummary)"
     }
 
     var detail: String {
@@ -75,8 +88,8 @@ struct CleanupEvent {
         return "\(itemCount) \(noun) updated"
     }
 
-    private var formatSummary: String {
-        formats.map(\.title).joined(separator: " + ")
+    private var sugarSummary: String {
+        sugars.isEmpty ? "formatting" : sugars.map(\.title).joined(separator: " + ")
     }
 }
 
@@ -88,21 +101,10 @@ final class PasteboardMonitor: ObservableObject {
         }
     }
 
-    @Published var stripsRTF: Bool {
+    /// Which sugars the user wants stripped.
+    @Published var enabledSugars: Set<Sugar> {
         didSet {
-            defaults.set(stripsRTF, forKey: DefaultsKey.stripsRTF.rawValue)
-        }
-    }
-
-    @Published var stripsHTML: Bool {
-        didSet {
-            defaults.set(stripsHTML, forKey: DefaultsKey.stripsHTML.rawValue)
-        }
-    }
-
-    @Published var stripsMarkdown: Bool {
-        didSet {
-            defaults.set(stripsMarkdown, forKey: DefaultsKey.stripsMarkdown.rawValue)
+            defaults.set(enabledSugars.map(\.rawValue), forKey: DefaultsKey.enabledSugars.rawValue)
         }
     }
 
@@ -134,30 +136,34 @@ final class PasteboardMonitor: ObservableObject {
 
     private enum DefaultsKey: String {
         case isEnabled
-        case stripsRTF
-        case stripsHTML
-        case stripsMarkdown
+        case enabledSugars
         case pollingInterval
         case cleanupCount
     }
 
     private struct RewriteResult {
         let didChange: Bool
-        let formats: [ClipboardFormat]
+        let sugars: [Sugar]
         let itemCount: Int
 
-        static let unchanged = RewriteResult(didChange: false, formats: [], itemCount: 0)
+        static let unchanged = RewriteResult(didChange: false, sugars: [], itemCount: 0)
     }
 
     static let allowedPollingIntervals: [Double] = [0.25, 0.5, 1.0, 1.5]
     static let defaultPollingInterval = 0.5
+    /// Bold + italic are the everyday annoyances; underline/strikethrough often carry
+    /// meaning, so they stay off until the user opts in.
+    static let defaultSugars: Set<Sugar> = [.bold, .italic]
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.isEnabled = defaults.object(forKey: DefaultsKey.isEnabled.rawValue) as? Bool ?? true
-        self.stripsRTF = defaults.object(forKey: DefaultsKey.stripsRTF.rawValue) as? Bool ?? true
-        self.stripsHTML = defaults.object(forKey: DefaultsKey.stripsHTML.rawValue) as? Bool ?? true
-        self.stripsMarkdown = defaults.object(forKey: DefaultsKey.stripsMarkdown.rawValue) as? Bool ?? true
+
+        if let stored = defaults.array(forKey: DefaultsKey.enabledSugars.rawValue) as? [String] {
+            self.enabledSugars = Set(stored.compactMap(Sugar.init(rawValue:)))
+        } else {
+            self.enabledSugars = Self.defaultSugars
+        }
 
         let storedInterval = defaults.object(forKey: DefaultsKey.pollingInterval.rawValue) as? Double ?? Self.defaultPollingInterval
         self.pollingInterval = Self.allowedPollingIntervals.contains(storedInterval) ? storedInterval : Self.defaultPollingInterval
@@ -170,31 +176,27 @@ final class PasteboardMonitor: ObservableObject {
         startMonitoring()
     }
 
-    var enabledFormats: [ClipboardFormat] {
-        var formats: [ClipboardFormat] = []
-
-        if stripsRTF {
-            formats.append(.richText)
+    func setSugar(_ sugar: Sugar, enabled: Bool) {
+        if enabled {
+            enabledSugars.insert(sugar)
+        } else {
+            enabledSugars.remove(sugar)
         }
-        if stripsHTML {
-            formats.append(.html)
-        }
-        if stripsMarkdown {
-            formats.append(.markdown)
-        }
-
-        return formats
     }
 
-    var hasEnabledFormats: Bool {
-        !enabledFormats.isEmpty
+    func isEnabled(_ sugar: Sugar) -> Bool {
+        enabledSugars.contains(sugar)
+    }
+
+    var hasEnabledSugars: Bool {
+        !enabledSugars.isEmpty
     }
 
     var interfaceState: MonitorInterfaceState {
         if !isEnabled {
             return .paused
         }
-        if !hasEnabledFormats {
+        if !hasEnabledSugars {
             return .idle
         }
         return .active
@@ -207,7 +209,7 @@ final class PasteboardMonitor: ObservableObject {
         case .paused:
             return "Automatic cleanup is paused"
         case .idle:
-            return "Enable at least one clipboard format"
+            return "Enable at least one sugar"
         }
     }
 
@@ -221,7 +223,7 @@ final class PasteboardMonitor: ObservableObject {
         case .paused:
             return "Clipboard changes pass through untouched until you resume."
         case .idle:
-            return "Sugarfree is on, but nothing is selected to clean."
+            return "Sugarfree is on, but no sugars are selected to strip."
         }
     }
 
@@ -241,7 +243,7 @@ final class PasteboardMonitor: ObservableObject {
     }
 
     func cleanClipboardManually() {
-        guard hasEnabledFormats else { return }
+        guard hasEnabledSugars else { return }
         _ = cleanPasteboardIfNeeded(wasManual: true)
     }
 
@@ -269,7 +271,7 @@ final class PasteboardMonitor: ObservableObject {
         lastChangeCount = currentCount
 
         guard currentCount != selfWriteCount else { return }
-        guard isEnabled, hasEnabledFormats else { return }
+        guard isEnabled, hasEnabledSugars else { return }
 
         _ = cleanPasteboardIfNeeded(wasManual: false)
     }
@@ -284,7 +286,7 @@ final class PasteboardMonitor: ObservableObject {
         cleanupCount += 1
         lastEvent = CleanupEvent(
             timestamp: Date(),
-            formats: result.formats,
+            sugars: result.sugars,
             itemCount: result.itemCount,
             wasManual: wasManual
         )
@@ -298,18 +300,20 @@ final class PasteboardMonitor: ObservableObject {
             return .unchanged
         }
 
+        let sugars = enabledSugars
         var updatedItems: [NSPasteboardItem] = []
-        var changedFormats = Set<ClipboardFormat>()
+        var removedSugars = Set<Sugar>()
 
         for originalItem in originalItems {
             let updatedItem = NSPasteboardItem()
             var copiedAnyType = false
 
             for type in originalItem.types {
-                if type == .rtf, stripsRTF, let originalData = originalItem.data(forType: type) {
-                    if let processedData = stripBoldFromRTF(originalData) {
-                        _ = updatedItem.setData(processedData, forType: type)
-                        changedFormats.insert(.richText)
+                if type == .rtf, let originalData = originalItem.data(forType: type) {
+                    let (processed, removed) = stripRTF(originalData, sugars: sugars)
+                    if let processed, !removed.isEmpty {
+                        _ = updatedItem.setData(processed, forType: type)
+                        removedSugars.formUnion(removed)
                     } else {
                         _ = updatedItem.setData(originalData, forType: type)
                     }
@@ -317,13 +321,13 @@ final class PasteboardMonitor: ObservableObject {
                     continue
                 }
 
-                if type == .html, stripsHTML, let originalData = originalItem.data(forType: type) {
+                if type == .html, let originalData = originalItem.data(forType: type) {
                     let originalHTML = decodeClipboardString(from: originalData)
-                    let processedHTML = stripBoldFromHTML(originalHTML)
+                    let (processedHTML, removed) = stripHTML(originalHTML, sugars: sugars)
 
-                    if processedHTML != originalHTML, let processedData = processedHTML.data(using: .utf8) {
+                    if !removed.isEmpty, processedHTML != originalHTML, let processedData = processedHTML.data(using: .utf8) {
                         _ = updatedItem.setData(processedData, forType: type)
-                        changedFormats.insert(.html)
+                        removedSugars.formUnion(removed)
                     } else {
                         _ = updatedItem.setData(originalData, forType: type)
                     }
@@ -331,12 +335,12 @@ final class PasteboardMonitor: ObservableObject {
                     continue
                 }
 
-                if type == .string, stripsMarkdown, let originalString = originalItem.string(forType: type) {
-                    let processedString = stripBoldFromPlainText(originalString)
+                if type == .string, let originalString = originalItem.string(forType: type) {
+                    let (processedString, removed) = stripPlainText(originalString, sugars: sugars)
 
-                    if processedString != originalString {
+                    if !removed.isEmpty, processedString != originalString {
                         _ = updatedItem.setString(processedString, forType: type)
-                        changedFormats.insert(.markdown)
+                        removedSugars.formUnion(removed)
                     } else if let originalData = originalItem.data(forType: type) {
                         _ = updatedItem.setData(originalData, forType: type)
                     } else {
@@ -363,15 +367,15 @@ final class PasteboardMonitor: ObservableObject {
             }
         }
 
-        guard !changedFormats.isEmpty, !updatedItems.isEmpty else {
+        guard !removedSugars.isEmpty, !updatedItems.isEmpty else {
             return .unchanged
         }
 
         pasteboard.clearContents()
         pasteboard.writeObjects(updatedItems)
 
-        let orderedFormats = ClipboardFormat.allCases.filter { changedFormats.contains($0) }
-        return RewriteResult(didChange: true, formats: orderedFormats, itemCount: updatedItems.count)
+        let orderedSugars = Sugar.allCases.filter { removedSugars.contains($0) }
+        return RewriteResult(didChange: true, sugars: orderedSugars, itemCount: updatedItems.count)
     }
 
     private func decodeClipboardString(from data: Data) -> String {
@@ -384,73 +388,127 @@ final class PasteboardMonitor: ObservableObject {
         return String(decoding: data, as: UTF8.self)
     }
 
-    private func stripBoldFromRTF(_ data: Data) -> Data? {
-        guard let attributedString = NSMutableAttributedString(rtf: data, documentAttributes: nil) else {
-            return nil
+    // MARK: - Strippers (one rule set, gated per sugar)
+
+    /// RTF: bold/italic are symbolic font traits; underline/strikethrough are their own
+    /// attributes. Returns the rewritten data and the set of sugars actually removed.
+    private func stripRTF(_ data: Data, sugars: Set<Sugar>) -> (Data?, Set<Sugar>) {
+        guard let attr = NSMutableAttributedString(rtf: data, documentAttributes: nil) else {
+            return (nil, [])
         }
 
-        let fullRange = NSRange(location: 0, length: attributedString.length)
-        var changed = false
+        let full = NSRange(location: 0, length: attr.length)
+        var removed: Set<Sugar> = []
 
-        attributedString.enumerateAttribute(.font, in: fullRange, options: []) { value, range, _ in
-            guard let font = value as? NSFont else { return }
-            let descriptor = font.fontDescriptor
-            let traits = descriptor.symbolicTraits
+        if sugars.contains(.bold) || sugars.contains(.italic) {
+            attr.enumerateAttribute(.font, in: full, options: []) { value, range, _ in
+                guard let font = value as? NSFont else { return }
+                let descriptor = font.fontDescriptor
+                var traits = descriptor.symbolicTraits
+                var changed = false
 
-            guard traits.contains(.bold) else { return }
+                if sugars.contains(.bold), traits.contains(.bold) {
+                    traits.remove(.bold)
+                    removed.insert(.bold)
+                    changed = true
+                }
+                if sugars.contains(.italic), traits.contains(.italic) {
+                    traits.remove(.italic)
+                    removed.insert(.italic)
+                    changed = true
+                }
 
-            var updatedTraits = traits
-            updatedTraits.remove(.bold)
-
-            let updatedDescriptor = descriptor.withSymbolicTraits(updatedTraits)
-            let updatedFont = NSFont(descriptor: updatedDescriptor, size: font.pointSize) ?? font
-            attributedString.addAttribute(.font, value: updatedFont, range: range)
-            changed = true
+                guard changed else { return }
+                let updatedDescriptor = descriptor.withSymbolicTraits(traits)
+                let updatedFont = NSFont(descriptor: updatedDescriptor, size: font.pointSize) ?? font
+                attr.addAttribute(.font, value: updatedFont, range: range)
+            }
         }
 
-        guard changed else { return nil }
-        return attributedString.rtf(from: fullRange, documentAttributes: [:])
+        if sugars.contains(.underline) {
+            removeAttributeIfPresent(.underlineStyle, in: attr, range: full) { removed.insert(.underline) }
+        }
+        if sugars.contains(.strikethrough) {
+            removeAttributeIfPresent(.strikethroughStyle, in: attr, range: full) { removed.insert(.strikethrough) }
+        }
+
+        guard !removed.isEmpty else { return (nil, []) }
+        return (attr.rtf(from: full, documentAttributes: [:]), removed)
     }
 
-    private func stripBoldFromHTML(_ html: String) -> String {
+    /// Collect non-zero ranges first, then clear — avoids mutating the attribute mid-enumeration.
+    private func removeAttributeIfPresent(_ name: NSAttributedString.Key,
+                                          in attr: NSMutableAttributedString,
+                                          range: NSRange,
+                                          onRemoval: () -> Void) {
+        var ranges: [NSRange] = []
+        attr.enumerateAttribute(name, in: range, options: []) { value, range, _ in
+            if let style = (value as? NSNumber)?.intValue, style != 0 {
+                ranges.append(range)
+            }
+        }
+        guard !ranges.isEmpty else { return }
+        ranges.forEach { attr.removeAttribute(name, range: $0) }
+        onRemoval()
+    }
+
+    /// HTML: unwrap tags + drop inline-style declarations, per sugar. Best-effort regex.
+    private func stripHTML(_ html: String, sugars: Set<Sugar>) -> (String, Set<Sugar>) {
         var result = html
+        var removed: Set<Sugar> = []
 
-        result = result.replacingOccurrences(
-            of: "<strong[^>]*>(.*?)</strong>",
-            with: "$1",
-            options: [.regularExpression, .caseInsensitive]
-        )
+        func strip(_ sugar: Sugar, tags: [String], styles: [String]) {
+            guard sugars.contains(sugar) else { return }
+            let before = result
+            for pattern in tags {
+                result = result.replacingOccurrences(of: pattern, with: "$1",
+                                                      options: [.regularExpression, .caseInsensitive])
+            }
+            for pattern in styles {
+                result = result.replacingOccurrences(of: pattern, with: "",
+                                                      options: [.regularExpression, .caseInsensitive])
+            }
+            if result != before { removed.insert(sugar) }
+        }
 
-        result = result.replacingOccurrences(
-            of: "<b[^>]*>(.*?)</b>",
-            with: "$1",
-            options: [.regularExpression, .caseInsensitive]
-        )
+        strip(.bold,
+              tags: ["<strong[^>]*>(.*?)</strong>", "<b[^>]*>(.*?)</b>"],
+              styles: ["font-weight\\s*:\\s*[^;\"']+;?"])
+        strip(.italic,
+              tags: ["<em[^>]*>(.*?)</em>", "<i[^>]*>(.*?)</i>"],
+              styles: ["font-style\\s*:\\s*italic\\s*;?"])
+        strip(.underline,
+              tags: ["<u[^>]*>(.*?)</u>"],
+              styles: ["text-decoration(?:-line)?\\s*:\\s*underline\\s*;?"])
+        strip(.strikethrough,
+              tags: ["<s[^>]*>(.*?)</s>", "<del[^>]*>(.*?)</del>", "<strike[^>]*>(.*?)</strike>"],
+              styles: ["text-decoration(?:-line)?\\s*:\\s*line-through\\s*;?"])
 
-        result = result.replacingOccurrences(
-            of: "font-weight\\s*:\\s*[^;\"']+;?",
-            with: "",
-            options: [.regularExpression, .caseInsensitive]
-        )
-
-        return result
+        return (result, removed)
     }
 
-    private func stripBoldFromPlainText(_ text: String) -> String {
+    /// Plain text / markdown markers. Underline has no markdown form, so it's skipped here.
+    /// Bold runs before italic so `**` isn't half-consumed by the single-`*` rule.
+    private func stripPlainText(_ text: String, sugars: Set<Sugar>) -> (String, Set<Sugar>) {
         var result = text
+        var removed: Set<Sugar> = []
 
-        result = result.replacingOccurrences(
-            of: "\\*\\*(.+?)\\*\\*",
-            with: "$1",
-            options: .regularExpression
-        )
+        func strip(_ sugar: Sugar, _ patterns: [String]) {
+            guard sugars.contains(sugar) else { return }
+            let before = result
+            for pattern in patterns {
+                result = result.replacingOccurrences(of: pattern, with: "$1", options: .regularExpression)
+            }
+            if result != before { removed.insert(sugar) }
+        }
 
-        result = result.replacingOccurrences(
-            of: "__(.+?)__",
-            with: "$1",
-            options: .regularExpression
-        )
+        strip(.strikethrough, ["~~(.+?)~~"])
+        strip(.bold, ["\\*\\*(.+?)\\*\\*", "__(.+?)__"])
+        // Italic: single * (not part of **), and _ only at non-alphanumeric boundaries so
+        // snake_case identifiers survive.
+        strip(.italic, ["(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)",
+                        "(?<![A-Za-z0-9])_(.+?)_(?![A-Za-z0-9])"])
 
-        return result
+        return (result, removed)
     }
 }

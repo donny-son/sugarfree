@@ -76,7 +76,7 @@ struct MenuBarDashboard: View {
                 Text("Clean Now")
             }
             .buttonStyle(CottonPrimaryButtonStyle())
-            .disabled(!monitor.hasEnabledFormats)
+            .disabled(!monitor.hasEnabledSugars)
 
             Text("⌘⇧P toggle · ⌘⇧K clean")
                 .font(.system(size: 10, design: .monospaced))
@@ -86,12 +86,12 @@ struct MenuBarDashboard: View {
 
     private var formatsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionLabel(text: "Formats")
+            SectionLabel(text: "Sugars to strip")
 
-            ForEach(ClipboardFormat.allCases) { format in
-                FormatToggleRow(
-                    format: format,
-                    isEnabled: binding(for: format)
+            ForEach(Sugar.allCases) { sugar in
+                SugarToggleRow(
+                    sugar: sugar,
+                    isEnabled: binding(for: sugar)
                 )
             }
         }
@@ -120,15 +120,11 @@ struct MenuBarDashboard: View {
         .buttonStyle(.plain)
     }
 
-    private func binding(for format: ClipboardFormat) -> Binding<Bool> {
-        switch format {
-        case .richText:
-            return $monitor.stripsRTF
-        case .html:
-            return $monitor.stripsHTML
-        case .markdown:
-            return $monitor.stripsMarkdown
-        }
+    private func binding(for sugar: Sugar) -> Binding<Bool> {
+        Binding(
+            get: { monitor.isEnabled(sugar) },
+            set: { monitor.setSugar(sugar, enabled: $0) }
+        )
     }
 }
 
@@ -191,20 +187,24 @@ private struct MetricTile: View {
     }
 }
 
-private struct FormatToggleRow: View {
-    let format: ClipboardFormat
+private struct SugarToggleRow: View {
+    let sugar: Sugar
     @Binding var isEnabled: Bool
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: format.symbolName)
+            Image(systemName: sugar.symbolName)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(Ink.tertiary)
                 .frame(width: 16)
 
-            Text(format.title)
+            Text(sugar.title)
                 .font(.system(size: 12.5))
                 .foregroundStyle(Ink.text)
+
+            Text(sugar.example)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(Ink.tertiary)
 
             Spacer()
 

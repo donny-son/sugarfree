@@ -13,9 +13,9 @@ AI chat tools (Claude, ChatGPT, Gemini) copy text with formatting sugar (HTML
 `<strong>`/`<b>`, RTF bold traits, markdown `**`/`__`). It's annoying when pasting into
 plain-text contexts. Sugarfree cleans it off the clipboard automatically.
 
-> **Scope today:** the engine strips **bold** only. Italic / underline / strikethrough and
-> the per-sugar checklist are **Slice 2** (planned, not yet implemented). Keep "Sugar types
-> handled" below accurate to what actually ships.
+The user picks which sugars to strip (bold / italic / underline / strikethrough) from a
+checklist; bold + italic are on by default. Each enabled sugar is removed across every
+clipboard representation that carries it.
 
 ## Architecture (macOS app)
 
@@ -24,8 +24,9 @@ plain-text contexts. Sugarfree cleans it off the clipboard automatically.
   (`SettingsView`) for status, controls, and format preferences
 - Built as a real Xcode macOS app target generated from `project.yml` via XcodeGen
 - Polls `NSPasteboard.general.changeCount` on a configurable interval (`PasteboardMonitor`)
-- Strips bold from RTF (font descriptor traits), HTML (tag/style removal), and plain text
-  (markdown markers)
+- Strips the enabled sugars from RTF (font traits + underline/strikethrough attributes),
+  HTML (tag unwrap + inline-style removal), and plain text (markdown markers) — one typed
+  rule set (`Sugar`) gated per sugar, in `PasteboardMonitor`
 - Rewrites only changed clipboard representations and preserves unrelated pasteboard
   types/items
 - Tracks `selfWriteCount` to prevent infinite loops
@@ -75,9 +76,17 @@ Any visual / branding change MUST follow this loop. These are rules, not suggest
 
 ## Sugar types handled
 
-Implemented today (bold only):
-- HTML: `<strong>`, `<b>` tags, `font-weight` inline styles
-- RTF: `.bold` symbolic trait on `NSFontDescriptor`
-- Plain text: `**` and `__` markdown markers
+Each sugar is independently toggleable. Coverage per representation:
 
-Planned (Slice 2 — per-sugar checklist, typed rule set): italic, underline, strikethrough.
+| Sugar | RTF | HTML | Plain text (markdown) |
+|---|---|---|---|
+| Bold | `.bold` symbolic trait | `<strong>`/`<b>`, `font-weight` | `**…**`, `__…__` |
+| Italic | `.italic` symbolic trait | `<em>`/`<i>`, `font-style:italic` | `*…*`, `_…_` |
+| Underline | `.underlineStyle` attribute | `<u>`, `text-decoration:underline` | — (no markdown form) |
+| Strikethrough | `.strikethroughStyle` attribute | `<s>`/`<del>`/`<strike>`, `text-decoration:line-through` | `~~…~~` |
+
+Caveats (best-effort regex; documented, not bugs):
+- Plain-text italic via `_` only matches at non-alphanumeric boundaries, so `snake_case`
+  identifiers survive. Underline has no markdown form, so it's RTF/HTML only.
+- HTML stripping is regex-based (no DOM parse); combined `text-decoration` shorthands
+  (e.g. `underline line-through`) may not split cleanly.

@@ -67,30 +67,25 @@ struct SettingsView: View {
 
     private var formatsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionLabel(text: "Formats to strip")
+            SectionLabel(text: "Sugars to strip")
 
-            FormatPreferenceRow(
-                title: ClipboardFormat.richText.title,
-                detail: ClipboardFormat.richText.detail,
-                systemImage: ClipboardFormat.richText.symbolName,
-                isEnabled: $monitor.stripsRTF
-            )
-
-            FormatPreferenceRow(
-                title: ClipboardFormat.html.title,
-                detail: ClipboardFormat.html.detail,
-                systemImage: ClipboardFormat.html.symbolName,
-                isEnabled: $monitor.stripsHTML
-            )
-
-            FormatPreferenceRow(
-                title: ClipboardFormat.markdown.title,
-                detail: ClipboardFormat.markdown.detail,
-                systemImage: ClipboardFormat.markdown.symbolName,
-                isEnabled: $monitor.stripsMarkdown
-            )
+            ForEach(Sugar.allCases) { sugar in
+                FormatPreferenceRow(
+                    title: sugar.title,
+                    detail: sugar.detail,
+                    systemImage: sugar.symbolName,
+                    isEnabled: binding(for: sugar)
+                )
+            }
         }
         .inkSheet()
+    }
+
+    private func binding(for sugar: Sugar) -> Binding<Bool> {
+        Binding(
+            get: { monitor.isEnabled(sugar) },
+            set: { monitor.setSugar(sugar, enabled: $0) }
+        )
     }
 
     private var activityCard: some View {
@@ -136,7 +131,7 @@ struct SettingsView: View {
                 Text("Clean Now")
             }
             .buttonStyle(CottonPrimaryButtonStyle())
-            .disabled(!monitor.hasEnabledFormats)
+            .disabled(!monitor.hasEnabledSugars)
         }
         .inkSheet()
     }
