@@ -10,7 +10,6 @@
 		00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */; };
 		18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2975DF2D8E1211A515BD8062 /* Assets.xcassets */; };
 		3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29844F5D499475158B4A3B16 /* SugarfreeApp.swift */; };
-		7E1CC0357F637AA3F75A68A5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5374204088FA4277E08E9A45 /* SettingsView.swift */; };
 		85098E9C7450F48405750CAF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7AA4787798EC5F8ACC2945 /* Theme.swift */; };
 		8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C97977678FA753EF4085E8 /* OnboardingView.swift */; };
 		DA377B697B631C69293608D9 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = CDEA90900F98C506136BAE77 /* Fonts */; };
@@ -20,7 +19,6 @@
 /* Begin PBXFileReference section */
 		2975DF2D8E1211A515BD8062 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29844F5D499475158B4A3B16 /* SugarfreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SugarfreeApp.swift; sourceTree = "<group>"; };
-		5374204088FA4277E08E9A45 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
 		6E7AA4787798EC5F8ACC2945 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardMonitor.swift; sourceTree = "<group>"; };
@@ -40,7 +38,6 @@
 				5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */,
 				B6C97977678FA753EF4085E8 /* OnboardingView.swift */,
 				967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */,
-				5374204088FA4277E08E9A45 /* SettingsView.swift */,
 				29844F5D499475158B4A3B16 /* SugarfreeApp.swift */,
 				6E7AA4787798EC5F8ACC2945 /* Theme.swift */,
 			);
@@ -144,7 +141,6 @@
 				DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */,
 				8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */,
 				00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */,
-				7E1CC0357F637AA3F75A68A5 /* SettingsView.swift in Sources */,
 				3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */,
 				85098E9C7450F48405750CAF /* Theme.swift in Sources */,
 			);

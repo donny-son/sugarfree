@@ -26,10 +26,6 @@ struct SugarfreeApp: App {
                 .disabled(!monitor.hasEnabledSugars)
             }
         }
-
-        Settings {
-            SettingsView(monitor: monitor)
-        }
     }
 }
 

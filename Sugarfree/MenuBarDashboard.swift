@@ -42,11 +42,8 @@ struct MenuBarDashboard: View {
                 .foregroundStyle(Ink.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 22) {
-                MetricTile(title: "cleaned", value: "\(monitor.cleanupCount)")
-                MetricTile(title: "interval", value: monitor.pollingIntervalLabel)
-            }
-            .padding(.top, 2)
+            MetricTile(title: "cleaned", value: "\(monitor.cleanupCount)")
+                .padding(.top, 2)
 
             if let lastEvent = monitor.lastEvent {
                 HStack(spacing: 4) {
@@ -67,6 +64,19 @@ struct MenuBarDashboard: View {
                 .foregroundStyle(Ink.text)
                 .toggleStyle(.switch)
                 .tint(Cotton.accent)
+
+            VStack(alignment: .leading, spacing: 6) {
+                SectionLabel(text: "Check interval")
+
+                Picker("Check interval", selection: $monitor.pollingInterval) {
+                    ForEach(PasteboardMonitor.allowedPollingIntervals, id: \.self) { interval in
+                        Text(intervalLabel(for: interval)).tag(interval)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .tint(Cotton.accent)
+            }
 
             Button {
                 monitor.cleanClipboardManually()
@@ -102,11 +112,6 @@ struct MenuBarDashboard: View {
                 NSApplication.shared.orderFrontStandardAboutPanel(nil)
             }
 
-            Button("Settings…") {
-                NSApplication.shared.activate(ignoringOtherApps: true)
-                NSApplication.shared.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-            }
-
             Spacer()
 
             Button("Quit") {
@@ -123,6 +128,21 @@ struct MenuBarDashboard: View {
             get: { monitor.isEnabled(sugar) },
             set: { monitor.setSugar(sugar, enabled: $0) }
         )
+    }
+
+    private func intervalLabel(for interval: Double) -> String {
+        switch interval {
+        case 0.25:
+            return "0.25s"
+        case 0.5:
+            return "0.5s"
+        case 1.0:
+            return "1.0s"
+        case 1.5:
+            return "1.5s"
+        default:
+            return String(format: "%.2fs", interval)
+        }
     }
 }
 
