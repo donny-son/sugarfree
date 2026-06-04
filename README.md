@@ -1,4 +1,4 @@
-# Sugarfree
+![Sugarfree](./Design/wordmark@2x.png)
 
 ## Save tokens. Save time.
 
