@@ -9,6 +9,7 @@ enum Sugar: String, CaseIterable, Identifiable {
     case italic
     case underline
     case strikethrough
+    case heading
 
     var id: Self { self }
 
@@ -18,6 +19,7 @@ enum Sugar: String, CaseIterable, Identifiable {
         case .italic: return "Italic"
         case .underline: return "Underline"
         case .strikethrough: return "Strikethrough"
+        case .heading: return "Headers"
         }
     }
 
@@ -28,6 +30,7 @@ enum Sugar: String, CaseIterable, Identifiable {
         case .italic: return "*italic*"
         case .underline: return "<u>under</u>"
         case .strikethrough: return "~~strike~~"
+        case .heading: return "# Heading"
         }
     }
 
@@ -42,6 +45,8 @@ enum Sugar: String, CaseIterable, Identifiable {
             return "Removes underline — RTF underline, <u>, and text-decoration."
         case .strikethrough:
             return "Removes strikethrough — RTF, <s>/<del>, text-decoration, and ~~ markers."
+        case .heading:
+            return "Removes heading markers — leading #..###### at the start of a line, and <h1>–<h6> tags. Keeps the text."
         }
     }
 
@@ -51,6 +56,7 @@ enum Sugar: String, CaseIterable, Identifiable {
         case .italic: return "italic"
         case .underline: return "underline"
         case .strikethrough: return "strikethrough"
+        case .heading: return "number"
         }
     }
 }
@@ -79,7 +85,7 @@ enum Transform: String, CaseIterable, Identifiable {
     var detail: String {
         switch self {
         case .tablesToList:
-            return "Converts Markdown and HTML tables into YAML or TOML list items."
+            return "Converts Markdown and HTML tables into YAML-style or TOML-style list items."
         }
     }
 
@@ -99,8 +105,8 @@ enum TransformOutputFormat: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .yaml: return "YAML"
-        case .toml: return "TOML"
+        case .yaml: return "YAML-style"
+        case .toml: return "TOML-style"
         }
     }
 
@@ -205,6 +211,10 @@ final class PasteboardMonitor: ObservableObject {
     }
 
     @Published private(set) var lastEvent: CleanupEvent?
+
+    /// Bumped on every successful cleanup. Carries no data — it's a pure signal the
+    /// menu-bar icon observes to fire its "just cleaned" animation.
+    @Published private(set) var cleanupPulse: Int = 0
 
     private let defaults: UserDefaults
     private var timer: Timer?
@@ -406,6 +416,7 @@ final class PasteboardMonitor: ObservableObject {
             itemCount: result.itemCount,
             wasManual: wasManual
         )
+        cleanupPulse &+= 1
         selfWriteCount = pasteboard.changeCount
         lastChangeCount = pasteboard.changeCount
         return true
@@ -647,6 +658,18 @@ final class PasteboardMonitor: ObservableObject {
               tags: ["<s[^>]*>(.*?)</s>", "<del[^>]*>(.*?)</del>", "<strike[^>]*>(.*?)</strike>"],
               styles: ["text-decoration(?:-line)?\\s*:\\s*line-through\\s*;?"])
 
+        // Headings: unwrap <h1>–<h6> to their inner text. Uses a backreference so the close
+        // tag matches the open level, so it can't fold through the generic `strip` helper
+        // (which always replaces with $1).
+        if sugars.contains(.heading) {
+            let before = result
+            result = result.replacingOccurrences(
+                of: "<h([1-6])[^>]*>(.*?)</h\\1>",
+                with: "$2",
+                options: [.regularExpression, .caseInsensitive])
+            if result != before { removed.insert(.heading) }
+        }
+
         return (result, removed)
     }
 
@@ -665,6 +688,11 @@ final class PasteboardMonitor: ObservableObject {
             if result != before { removed.insert(sugar) }
         }
 
+        // Headings: leading #..###### at the start of a line (ATX). Anchored to line start
+        // (multiline `^`) and requires whitespace after the hashes, so a `#` used as a
+        // regular character mid-line — or `#tag` with no space — is left untouched. An
+        // optional trailing closing run of `#` is dropped too. Keeps the heading text.
+        strip(.heading, ["(?m)^[ \\t]{0,3}#{1,6}[ \\t]+(.*?)(?:[ \\t]+#+)?[ \\t]*$"])
         strip(.strikethrough, ["~~(.+?)~~"])
         strip(.bold, ["\\*\\*(.+?)\\*\\*", "__(.+?)__"])
         // Italic: single * (not part of **), and _ only at non-alphanumeric boundaries so

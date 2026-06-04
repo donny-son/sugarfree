@@ -188,32 +188,45 @@ struct MenuBarDashboard: View {
 }
 
 struct MenuBarStatusIcon: View {
-    let state: MonitorInterfaceState
+    @ObservedObject var monitor: PasteboardMonitor
+
+    /// One-shot cleanup cue. A MenuBarExtra label is snapshotted (no frame-driven
+    /// animation in the menu bar), so the cue is a simple discrete swap: on a clean the
+    /// glyph flips to the cotton-pink `lollipop-off` mark, then resets after a beat.
+    @State private var sliced = false
+
+    private var state: MonitorInterfaceState { monitor.interfaceState }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Image("LollipopOff")
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 18, height: 18)
-
-            Circle()
-                .fill(badgeColor)
-                .frame(width: 5, height: 5)
-                .offset(x: 2, y: 1)
-        }
-        .accessibilityLabel(accessibilityLabel)
+        Image(sliced ? "LollipopOff" : "Lollipop")
+            .renderingMode(.template)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 18, height: 18)
+            .foregroundStyle(sliced ? Cotton.accent : Color.primary)
+            // Auto-cleanup ON reads at full strength; OFF (paused) mutes the glyph so the
+            // menu bar shows at a glance that cleanup is off.
+            .opacity(glyphOpacity)
+            .accessibilityLabel(accessibilityLabel)
+            .onChange(of: monitor.cleanupPulse) { _ in flashSlice() }
     }
 
-    private var badgeColor: Color {
+    private func flashSlice() {
+        sliced = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            sliced = false
+        }
+    }
+
+    // ON (active) = full; idle (on, nothing selected) = dimmed; OFF (paused) = muted.
+    private var glyphOpacity: Double {
         switch state {
         case .active:
-            return Cotton.accent
-        case .paused:
-            return .secondary
+            return 1.0
         case .idle:
-            return Surface.idle
+            return 0.6
+        case .paused:
+            return 0.35
         }
     }
 
@@ -321,19 +334,17 @@ private struct TableTransformExample: View {
         case .yaml:
             return """
             - Setting: timeout
-              Value: "30"
+              Value: 30
             - Setting: retries
-              Value: "3"
+              Value: 3
             """
         case .toml:
             return """
-            [[rows]]
-            Setting = "timeout"
-            Value = "30"
+            Setting = timeout
+            Value = 30
 
-            [[rows]]
-            Setting = "retries"
-            Value = "3"
+            Setting = retries
+            Value = 3
             """
         }
     }

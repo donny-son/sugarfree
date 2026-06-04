@@ -42,7 +42,21 @@ The old green `active`/amber `idle` status colors are **replaced by the cotton a
 the ON/cleaning state; OFF/idle uses neutral gray (`hairline`/`tertiary`).
 
 > **Menubar constraint:** the menu-bar glyph is a template image and follows the system tint
-> — it is ALWAYS monochrome. No gradient there. Gradient lollipop is app-icon only.
+> — it is ALWAYS monochrome at rest. No gradient there. Gradient lollipop is app-icon only.
+>
+> **Menubar cleanup cue + on/off state (added 2026-06-04):**
+> - *On/off hint:* the menu-bar glyph's opacity tracks state — auto-cleanup ON (active) is
+>   full strength (1.0), idle (on, nothing selected) is dimmed (0.6), OFF (paused) is muted
+>   (0.35). So the menu bar shows at a glance whether cleanup is running.
+> - *Resting glyph:* the plain **lollipop** (`Design/logo-lollipop.svg`), not lollipop-off.
+> - *Clean cue:* on each clean the glyph does a brief one-shot flip to the **lollipop-off**
+>   mark tinted cotton-pink (`Cotton.accent`), then resets after ~0.5s. A MenuBarExtra label
+>   is snapshotted by the status bar, so frame-driven tweens (TimelineView / implicit
+>   animation) don't run there — the cue is a deliberate discrete swap, not an interpolated
+>   slash. This momentary pink flip is the documented exception to "always monochrome."
+> The brand **mark** (About lockup, app icon) is still lollipop-off — only the menu-bar
+> resting glyph is the plain lollipop, so the "off" is earned live at clean-time.
+> Source of truth: `MenuBarStatusIcon` in `MenuBarDashboard.swift`.
 
 > Branding change → bound by the CLAUDE.md design contract: mock in `Design/`, name the
 > option, get approval, then build, then verify (`./build.sh` + relaunch).

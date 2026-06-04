@@ -9,7 +9,7 @@ struct SugarfreeApp: App {
         MenuBarExtra {
             MenuBarDashboard(monitor: monitor)
         } label: {
-            MenuBarStatusIcon(state: monitor.interfaceState)
+            MenuBarStatusIcon(monitor: monitor)
         }
         .menuBarExtraStyle(.window)
         .commands {

@@ -1,8 +1,9 @@
 import Foundation
 
 /// Converts tabular content — Markdown pipe tables and HTML `<table>` — into
-/// YAML or TOML list items. Pure string logic (no AppKit) so it stays unit-testable
-/// and reusable across representations.
+/// YAML-style or TOML-style list items. Pure string logic (no AppKit) so it stays
+/// unit-testable and reusable across representations. Output is *style*, not spec-strict:
+/// values and keys are emitted raw (no quoting) for readability.
 ///
 /// Mapping is **header-keyed list items**: the first row is treated as headers and
 /// every following row becomes one list entry mapping `header: cell`. This is
@@ -216,6 +217,10 @@ enum TableConverter {
     }
 
     // MARK: - Rendering
+    //
+    // These are deliberately YAML-/TOML-*style* (not spec-strict): values and keys are
+    // emitted raw — no quoting — for readability. Cells are already single-line (Markdown
+    // rows are one line; HTML cells collapse whitespace), so raw emission stays well-formed.
 
     private static func render(headers: [String], rows: [[String]], format: Format) -> String {
         switch format {
@@ -224,76 +229,30 @@ enum TableConverter {
         }
     }
 
+    /// YAML-style: one list item per row, `- header: value` then indented `header: value`.
     private static func renderYAML(headers: [String], rows: [[String]]) -> String {
         var out: [String] = []
         for row in rows {
             for (col, header) in headers.enumerated() {
                 let value = col < row.count ? row[col] : ""
-                let entry = "\(yamlScalar(header)): \(yamlScalar(value))"
+                let entry = value.isEmpty ? "\(header):" : "\(header): \(value)"
                 out.append(col == 0 ? "- \(entry)" : "  \(entry)")
             }
         }
         return out.joined(separator: "\n")
     }
 
+    /// TOML-style: one `header = value` block per row, blank-line separated (no `[[rows]]`).
     private static func renderTOML(headers: [String], rows: [[String]]) -> String {
         var blocks: [String] = []
         for row in rows {
-            var lines = ["[[rows]]"]
+            var lines: [String] = []
             for (col, header) in headers.enumerated() {
                 let value = col < row.count ? row[col] : ""
-                lines.append("\(tomlKey(header)) = \(tomlString(value))")
+                lines.append(value.isEmpty ? "\(header) =" : "\(header) = \(value)")
             }
             blocks.append(lines.joined(separator: "\n"))
         }
         return blocks.joined(separator: "\n\n")
-    }
-
-    // MARK: YAML scalars
-
-    private static func yamlScalar(_ raw: String) -> String {
-        guard !raw.isEmpty else { return "\"\"" }
-        guard needsYAMLQuoting(raw) else { return raw }
-        let escaped = raw
-            .replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "\"", with: "\\\"")
-            .replacingOccurrences(of: "\n", with: "\\n")
-            .replacingOccurrences(of: "\t", with: "\\t")
-        return "\"\(escaped)\""
-    }
-
-    private static let yamlReserved: Set<String> = [
-        "true", "false", "yes", "no", "on", "off", "null", "none", "~",
-    ]
-
-    private static func needsYAMLQuoting(_ s: String) -> Bool {
-        if s != s.trimmingCharacters(in: .whitespaces) { return true }
-        if yamlReserved.contains(s.lowercased()) { return true }
-        // Quote anything number-like so a text cell never becomes a YAML number.
-        if Int(s) != nil || Double(s) != nil { return true }
-        if let first = s.first, "!&*?|>%@`#-[]{},:\"'".contains(first) { return true }
-        if s.contains(": ") || s.hasSuffix(":") || s.contains(" #") { return true }
-        return s.contains("\n") || s.contains("\t")
-    }
-
-    // MARK: TOML strings/keys
-
-    private static func tomlKey(_ raw: String) -> String {
-        if !raw.isEmpty && raw.allSatisfy(isBareKeyChar) { return raw }
-        return tomlString(raw)
-    }
-
-    private static func isBareKeyChar(_ c: Character) -> Bool {
-        if c == "_" || c == "-" { return true }
-        return c.isASCII && (c.isLetter || c.isNumber)
-    }
-
-    private static func tomlString(_ raw: String) -> String {
-        let escaped = raw
-            .replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "\"", with: "\\\"")
-            .replacingOccurrences(of: "\n", with: "\\n")
-            .replacingOccurrences(of: "\t", with: "\\t")
-        return "\"\(escaped)\""
     }
 }
