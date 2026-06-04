@@ -15,9 +15,9 @@ final class TableConverterTests: XCTestCase {
         XCTAssertEqual(count, 1)
         XCTAssertEqual(out, """
         - Setting: timeout
-          Value: "30"
+          Value: 30
         - Setting: retries
-          Value: "3"
+          Value: 3
         """)
     }
 
@@ -31,7 +31,7 @@ final class TableConverterTests: XCTestCase {
         XCTAssertEqual(count, 1)
         XCTAssertEqual(out, """
         - Name: Ann
-          Age: "30"
+          Age: 30
           City: NYC
         """)
     }
@@ -47,13 +47,30 @@ final class TableConverterTests: XCTestCase {
         let (out, count) = TableConverter.convertMarkdownTables(in: md, format: .toml)
         XCTAssertEqual(count, 1)
         XCTAssertEqual(out, """
-        [[rows]]
-        Setting = "timeout"
-        Value = "30"
+        Setting = timeout
+        Value = 30
         """)
     }
 
-    func testTOMLQuotesNonBareHeaderKey() {
+    func testTOMLMultipleRowsAreBlankLineSeparated() {
+        let md = """
+        | Setting | Value |
+        |---------|-------|
+        | timeout | 30 |
+        | retries | 3 |
+        """
+        let (out, count) = TableConverter.convertMarkdownTables(in: md, format: .toml)
+        XCTAssertEqual(count, 1)
+        XCTAssertEqual(out, """
+        Setting = timeout
+        Value = 30
+
+        Setting = retries
+        Value = 3
+        """)
+    }
+
+    func testTOMLHeaderWithSpaceEmittedRaw() {
         let md = """
         | Full Name | Age |
         |-----------|-----|
@@ -61,9 +78,8 @@ final class TableConverterTests: XCTestCase {
         """
         let (out, _) = TableConverter.convertMarkdownTables(in: md, format: .toml)
         XCTAssertEqual(out, """
-        [[rows]]
-        "Full Name" = "Ann Lee"
-        Age = "30"
+        Full Name = Ann Lee
+        Age = 30
         """)
     }
 
@@ -84,8 +100,8 @@ final class TableConverterTests: XCTestCase {
         XCTAssertEqual(out, """
         Intro line
 
-        - A: "1"
-          B: "2"
+        - A: 1
+          B: 2
 
         Outro
         """)
@@ -129,8 +145,8 @@ final class TableConverterTests: XCTestCase {
         let (out, count) = TableConverter.convertMarkdownTables(in: md, format: .yaml)
         XCTAssertEqual(count, 1)
         XCTAssertEqual(out, """
-        - A: "1"
-          B: "2"
+        - A: 1
+          B: 2
         """)
     }
 
@@ -168,16 +184,16 @@ final class TableConverterTests: XCTestCase {
         let (out, count) = TableConverter.convertMarkdownTables(in: md, format: .yaml)
         XCTAssertEqual(count, 1)
         XCTAssertEqual(out, """
-        - A: "1"
-          B: ""
-        - A: "2"
-          B: "3"
+        - A: 1
+          B:
+        - A: 2
+          B: 3
         """)
     }
 
-    // MARK: - Scalar quoting
+    // MARK: - Raw (unquoted) values
 
-    func testReservedAndNumericValuesAreQuoted() {
+    func testValuesEmittedRawWithoutQuoting() {
         let md = """
         | K | V |
         |---|---|
@@ -188,9 +204,9 @@ final class TableConverterTests: XCTestCase {
         let (out, _) = TableConverter.convertMarkdownTables(in: md, format: .yaml)
         XCTAssertEqual(out, """
         - K: bool
-          V: "true"
+          V: true
         - K: num
-          V: "3.14"
+          V: 3.14
         - K: text
           V: hello
         """)
@@ -243,7 +259,7 @@ final class TableConverterTests: XCTestCase {
             + "<tr><td>timeout</td><td>30</td></tr></table>"
         let (out, count) = TableConverter.convertHTMLTables(in: html, format: .yaml)
         XCTAssertEqual(count, 1)
-        XCTAssertEqual(out, "<pre>- Setting: timeout\n  Value: \"30\"</pre>")
+        XCTAssertEqual(out, "<pre>- Setting: timeout\n  Value: 30</pre>")
     }
 
     func testHTMLEntitiesDecodedThenReEscaped() {
@@ -257,7 +273,7 @@ final class TableConverterTests: XCTestCase {
         let html = "<p>before</p><table><tr><td>A</td></tr><tr><td>1</td></tr></table><p>after</p>"
         let (out, count) = TableConverter.convertHTMLTables(in: html, format: .yaml)
         XCTAssertEqual(count, 1)
-        XCTAssertEqual(out, "<p>before</p><pre>- A: \"1\"</pre><p>after</p>")
+        XCTAssertEqual(out, "<p>before</p><pre>- A: 1</pre><p>after</p>")
     }
 
     func testHTMLWithoutTableIsUnchanged() {

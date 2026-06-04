@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>sugarfree — menu-bar cleanup cue</title>
+<style>
+  /* Tokens mirrored from Sugarfree/Theme.swift (dark menu-bar context).
+     Glyph base = markGlyph-ish light ink on the translucent dark bar.
+     Cotton stops: g1 #FF8AC4 → g2 #FFB07A → g3 #FFD879 (dark variants). */
+  :root {
+    --bar:        rgba(28,28,30,0.92);
+    --bar-edge:   rgba(255,255,255,0.08);
+    --glyph:      #F4F1EA;     /* monochrome template tint */
+    --glyph-mute: rgba(244,241,234,0.40);
+    --cotton1:    #FF8AC4;
+    --cotton2:    #FFB07A;
+    --cotton3:    #FFD879;
+    --accent:     #FF8AC4;     /* Cotton.accent (dark) */
+    --idle:       #E3B341;     /* Surface.idle (dark) */
+    --paper:      #121214;
+    --card:       #1D1D1F;
+    --hair:       rgba(244,241,234,0.12);
+    --text:       #F4F1EA;
+    --sub:        #A7A39A;
+    --mono:       ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 32px 64px;
+    background: var(--paper);
+    color: var(--text);
+    font: 14px/1.5 -apple-system, "SF Pro Text", system-ui, sans-serif;
+  }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.2px; }
+  .lede { color: var(--sub); max-width: 640px; margin: 0 0 36px; font-size: 13px; }
+  .lede code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: 18px 18px 20px;
+  }
+  .name { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin: 0 0 2px; font-family: var(--mono); }
+  .desc { font-size: 12px; color: var(--sub); margin: 0 0 16px; min-height: 34px; }
+
+  /* Simulated macOS menu bar strip */
+  .bar {
+    display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+    height: 30px; padding: 0 12px;
+    background: var(--bar);
+    border: 1px solid var(--bar-edge);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+  }
+  .bar .sys { color: var(--glyph-mute); font-size: 12px; font-family: var(--mono); }
+
+  .glyph { width: 18px; height: 18px; display: block; overflow: visible; transform-origin: 50% 50%; }
+  .glyph path { stroke: var(--glyph); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  /* the sweeping slash overlay (hidden until its animation runs) */
+  .slash { stroke: var(--cotton1); stroke-width: 2.4; stroke-linecap: round; opacity: 0;
+           stroke-dasharray: 26; stroke-dashoffset: 26; }
+
+  .ctl { margin-top: 16px; display: flex; gap: 8px; align-items: center; }
+  .ctl button {
+    font: 600 11px/1 var(--mono); letter-spacing: 0.4px;
+    color: var(--paper); background: var(--accent);
+    border: 0; border-radius: 7px; padding: 7px 11px; cursor: pointer;
+  }
+  .ctl .note { font-size: 10.5px; color: var(--sub); font-family: var(--mono); }
+
+  /* ============ A — POP (baseline, shipping now: monochrome) ============ */
+  .pop.run { animation: popMove 0.62s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes popMove {
+    0%   { transform: scale(1)    rotate(0deg); }
+    14%  { transform: scale(1.22) rotate(-10deg); }
+    34%  { transform: scale(0.96) rotate(7deg); }
+    54%  { transform: scale(1.08) rotate(-4deg); }
+    74%  { transform: scale(0.99) rotate(2deg); }
+    100% { transform: scale(1)    rotate(0deg); }
+  }
+
+  /* ============ B — SPARK (pop + one-shot cotton tint flash) ============ */
+  .spark.run { animation: popMove 0.62s cubic-bezier(.36,.07,.19,.97); }
+  .spark.run path { animation: tintFlash 0.62s ease-out; }
+  @keyframes tintFlash {
+    0%   { stroke: var(--glyph); }
+    18%  { stroke: var(--cotton1); }
+    40%  { stroke: var(--cotton3); }
+    100% { stroke: var(--glyph); }
+  }
+
+  /* ============ C — SLICE (plain lollipop ⇄ real lollipop-off, slash draws on) ============
+     Accurate: the two glyphs are *different drawings* (lollipop-off's candy strokes are
+     broken where the slash crosses), so we cross-fade the actual #lolliOn ↔ #lolli marks
+     rather than overlaying a line on the plain one. The pink slash is the action; the held
+     result is the genuine mono lollipop-off mark. */
+  .slice .on, .slice .off, .slice .slash { transform-box: fill-box; }
+  .slice .off { opacity: 0; }
+  .slice.run             { animation: nudge     1.3s ease-out; }
+  .slice.run .on         { animation: onFade    1.3s ease-out; }
+  .slice.run .off        { animation: offFade   1.3s ease-out; }
+  .slice.run .slash      { animation: slashDraw 1.3s ease-out; }
+  @keyframes nudge {
+    0%   { transform: scale(1)    rotate(0); }
+    16%  { transform: scale(1.14) rotate(-5deg); }
+    38%  { transform: scale(1)    rotate(0); }
+    100% { transform: scale(1)    rotate(0); }
+  }
+  @keyframes onFade {   /* plain lollipop: hide while crossed, return at rest */
+    0%,28% { opacity: 1; }
+    36%    { opacity: 0; }
+    72%    { opacity: 0; }
+    86%,100% { opacity: 1; }
+  }
+  @keyframes offFade {  /* real lollipop-off mark: shown while crossed */
+    0%,28% { opacity: 0; }
+    36%    { opacity: 1; }
+    72%    { opacity: 1; }
+    86%,100% { opacity: 0; }
+  }
+  @keyframes slashDraw { /* pink slice draws across, then fades to reveal the mono off-mark */
+    0%   { opacity: 0; stroke-dashoffset: 26; }
+    8%   { opacity: 1; stroke-dashoffset: 26; }
+    30%  { opacity: 1; stroke-dashoffset: 0; }   /* fully drawn */
+    52%  { opacity: 0; stroke-dashoffset: 0; }   /* fade pink → leaves mono lollipop-off */
+    100% { opacity: 0; stroke-dashoffset: 0; }
+  }
+
+  /* state row */
+  .states { margin-top: 40px; }
+  .states h2 { font-size: 13px; font-weight: 600; margin: 0 0 12px; }
+  .state-row { display: flex; gap: 28px; align-items: center; }
+  .state { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .state .lbl { font-size: 10.5px; font-family: var(--mono); color: var(--sub); letter-spacing: 0.4px; }
+  .state .badge { width: 5px; height: 5px; border-radius: 50%; }
+  .gwrap { position: relative; width: 18px; height: 18px; }
+  .gwrap .badge { position: absolute; right: -2px; bottom: -1px; }
+</style>
+</head>
+<body>
+  <h1>menu-bar cleanup cue</h1>
+  <p class="lede">
+    When automatic cleanup strips a clipboard, the menu-bar glyph fires a one-shot cue.
+    The brand rule says the menu-bar glyph is <strong>always monochrome</strong> — so a colored
+    flash is a deliberate, momentary exception. Three named directions below; the cards loop
+    automatically, or click <code>play</code>. Pick one by name.
+  </p>
+
+  <div class="grid">
+    <!-- A -->
+    <div class="card">
+      <p class="name">A · Pop</p>
+      <p class="desc">Scale pop + spring wiggle, fully monochrome. The version shipping now — no exception to the brand rule.</p>
+      <div class="bar">
+        <span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <svg class="glyph pop" viewBox="0 0 24 24" data-anim="pop">
+          <use href="#lolli"/>
+        </svg>
+      </div>
+      <div class="ctl"><button data-target="pop">play</button><span class="note">monochrome</span></div>
+    </div>
+
+    <!-- B -->
+    <div class="card">
+      <p class="name">B · Spark</p>
+      <p class="desc">Same pop, plus a one-shot cotton-pink → gold tint flash washes the glyph for ~0.3s, then back to mono.</p>
+      <div class="bar">
+        <span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <svg class="glyph spark" viewBox="0 0 24 24" data-anim="spark">
+          <use href="#lolli"/>
+        </svg>
+      </div>
+      <div class="ctl"><button data-target="spark">play</button><span class="note">brand-rule exception</span></div>
+    </div>
+
+    <!-- C -->
+    <div class="card">
+      <p class="name">C · Slice</p>
+      <p class="desc">Rest is the <em>plain</em> lollipop. On clean, a cotton-pink slash draws across — crossing it into the <code>lollipop-off</code> brand mark — then settles back. The sugar, sliced off.</p>
+      <div class="bar">
+        <span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <svg class="glyph slice" viewBox="0 0 24 24" data-anim="slice">
+          <g class="on"><use href="#lolliOn"/></g>
+          <g class="off"><use href="#lolli"/></g>
+          <line class="slash" x1="3" y1="3" x2="21" y2="21"/>
+        </svg>
+      </div>
+      <div class="ctl"><button data-target="slice">play</button><span class="note">on → off, the slash is the cue</span></div>
+    </div>
+  </div>
+
+  <!-- enabled / disabled state reference (request #1) -->
+  <div class="states card" style="margin-top:28px;">
+    <h2>Resting states — enabled mutes vs. paused mutes (request #1)</h2>
+    <div class="state-row">
+      <div class="state">
+        <div class="gwrap">
+          <svg class="glyph" viewBox="0 0 24 24" style="opacity:1"><use href="#lolli"/></svg>
+          <span class="badge" style="background:var(--accent)"></span>
+        </div>
+        <span class="lbl">ACTIVE · 1.0</span>
+      </div>
+      <div class="state">
+        <div class="gwrap">
+          <svg class="glyph" viewBox="0 0 24 24" style="opacity:0.7"><use href="#lolli"/></svg>
+          <span class="badge" style="background:var(--idle);opacity:0.7"></span>
+        </div>
+        <span class="lbl">IDLE · 0.7</span>
+      </div>
+      <div class="state">
+        <div class="gwrap">
+          <svg class="glyph" viewBox="0 0 24 24" style="opacity:0.4"><use href="#lolli"/></svg>
+          <span class="badge" style="background:#999;opacity:0.4"></span>
+        </div>
+        <span class="lbl">PAUSED · 0.4</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- shared glyph definitions: tabler lollipop-off (mark) + plain lollipop -->
+  <svg width="0" height="0" style="position:absolute">
+    <g id="lolli">
+      <path d="M7.462 7.493a7 7 0 0 0 9.06 9.039m2.416 -1.57a7 7 0 1 0 -9.884 -9.915" />
+      <path d="M21 10a3.5 3.5 0 0 0 -7 0" />
+      <path d="M12.71 12.715a3.5 3.5 0 0 1 -5.71 -2.715" />
+      <path d="M14 17c.838 0 1.607 -.294 2.209 -.785m1.291 -2.715a3.5 3.5 0 0 0 -3.5 -3.5" />
+      <path d="M14 3a3.5 3.5 0 0 0 -3.5 3.5" />
+      <path d="M3 21l6 -6" />
+      <path d="M3 3l18 18" />
+    </g>
+    <g id="lolliOn">
+      <path d="M7 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+      <path d="M21 10a3.5 3.5 0 0 0 -7 0" />
+      <path d="M14 10a3.5 3.5 0 0 1 -7 0" />
+      <path d="M14 17a3.5 3.5 0 0 0 0 -7" />
+      <path d="M14 3a3.5 3.5 0 0 0 0 7" />
+      <path d="M3 21l6 -6" />
+    </g>
+  </svg>
+
+<script>
+  // Auto-loop every card so the cue is judged in motion, and wire the play buttons.
+  function fire(svg) {
+    svg.classList.remove('run');
+    void svg.offsetWidth;          // reflow to restart the CSS animation
+    svg.classList.add('run');
+  }
+  const anims = [...document.querySelectorAll('.glyph[data-anim]')];
+  document.querySelectorAll('.ctl button').forEach(b =>
+    b.addEventListener('click', () =>
+      fire(document.querySelector('.glyph.' + b.dataset.target))));
+  // staggered ambient loop
+  anims.forEach((svg, i) => {
+    setTimeout(() => { fire(svg); setInterval(() => fire(svg), 2600); }, 500 + i * 500);
+  });
+</script>
+</body>
+</html>

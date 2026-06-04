@@ -19,7 +19,7 @@ text you paste is the text you wanted.
 - Works across representations — RTF font traits and underline/strikethrough
   attributes, HTML tags + inline styles, and markdown markers.
 - Structural transforms — optionally reshape content after stripping. Currently
-  **Tables → list**: convert Markdown/HTML tables into YAML or TOML list items.
+  **Tables → list**: convert Markdown/HTML tables into YAML-style or TOML-style list items.
   Transforms are lossy, so they're off by default and live in their own section.
 - Non-destructive — only changed representations are rewritten; unrelated
   pasteboard types and items are preserved.
