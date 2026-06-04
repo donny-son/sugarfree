@@ -1,8 +1,10 @@
 # Sugarfree
 
+## Save tokens. Save time.
+
 <img width="160" height="235" alt="SCR-20260603-osry" src="https://github.com/user-attachments/assets/0fb53c57-4ea4-47f9-b602-382efcc78f4c" />
 
-A tiny macOS menu bar app that strips formatting "sugar" from whatever you copy.
+Sugarfree is a tiny macOS app that strips formatting "sugar" from whatever you copy and lives in your menubar.
 
 AI chat tools (Claude, ChatGPT, Gemini) love to copy text with formatting baked
 in — HTML `<strong>`/`<em>`/`<u>`/`<s>`, RTF font traits, markdown `**`/`*`/`~~`.
