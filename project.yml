@@ -45,6 +45,7 @@ targets:
     sources:
       - path: Tests
       - path: Sugarfree/TableConverter.swift
+      - path: Sugarfree/DashNormalizer.swift
     settings:
       base:
         PRODUCT_NAME: SugarfreeTests

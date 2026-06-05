@@ -139,6 +139,7 @@ struct CleanupEvent {
     let timestamp: Date
     let sugars: [Sugar]
     let transforms: [Transform]
+    let punctuation: [Punctuation]
     let tableCount: Int
     let itemCount: Int
     let wasManual: Bool
@@ -155,6 +156,7 @@ struct CleanupEvent {
 
     private var summary: String {
         var parts = sugars.map(\.title)
+        parts.append(contentsOf: punctuation.map(\.title))
         if tableCount > 0 {
             parts.append(tableCount == 1 ? "1 table" : "\(tableCount) tables")
         }
@@ -188,6 +190,13 @@ final class PasteboardMonitor: ObservableObject {
     @Published var outputFormat: TransformOutputFormat {
         didSet {
             defaults.set(outputFormat.rawValue, forKey: DefaultsKey.outputFormat.rawValue)
+        }
+    }
+
+    /// Which dash kinds the user wants normalized to a spaced hyphen (off by default — lossy).
+    @Published var enabledPunctuation: Set<Punctuation> {
+        didSet {
+            defaults.set(enabledPunctuation.map(\.rawValue), forKey: DefaultsKey.enabledPunctuation.rawValue)
         }
     }
 
@@ -226,6 +235,7 @@ final class PasteboardMonitor: ObservableObject {
         case enabledSugars
         case enabledTransforms
         case outputFormat
+        case enabledPunctuation
         case pollingInterval
         case cleanupCount
     }
@@ -234,10 +244,11 @@ final class PasteboardMonitor: ObservableObject {
         let didChange: Bool
         let sugars: [Sugar]
         let transforms: [Transform]
+        let punctuation: [Punctuation]
         let tableCount: Int
         let itemCount: Int
 
-        static let unchanged = RewriteResult(didChange: false, sugars: [], transforms: [], tableCount: 0, itemCount: 0)
+        static let unchanged = RewriteResult(didChange: false, sugars: [], transforms: [], punctuation: [], tableCount: 0, itemCount: 0)
     }
 
     static let allowedPollingIntervals: [Double] = [0.25, 0.5, 1.0, 1.5]
@@ -248,6 +259,8 @@ final class PasteboardMonitor: ObservableObject {
     /// Transforms reshape content and are lossy, so they stay off until opted into.
     static let defaultTransforms: Set<Transform> = []
     static let defaultOutputFormat: TransformOutputFormat = .yaml
+    /// Dash normalization rewrites punctuation (lossy), so it stays off until opted into.
+    static let defaultPunctuation: Set<Punctuation> = []
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -267,6 +280,12 @@ final class PasteboardMonitor: ObservableObject {
 
         let storedFormat = defaults.string(forKey: DefaultsKey.outputFormat.rawValue)
         self.outputFormat = storedFormat.flatMap(TransformOutputFormat.init(rawValue:)) ?? Self.defaultOutputFormat
+
+        if let storedPunctuation = defaults.array(forKey: DefaultsKey.enabledPunctuation.rawValue) as? [String] {
+            self.enabledPunctuation = Set(storedPunctuation.compactMap(Punctuation.init(rawValue:)))
+        } else {
+            self.enabledPunctuation = Self.defaultPunctuation
+        }
 
         let storedInterval = defaults.object(forKey: DefaultsKey.pollingInterval.rawValue) as? Double ?? Self.defaultPollingInterval
         self.pollingInterval = Self.allowedPollingIntervals.contains(storedInterval) ? storedInterval : Self.defaultPollingInterval
@@ -303,6 +322,18 @@ final class PasteboardMonitor: ObservableObject {
         enabledTransforms.contains(transform)
     }
 
+    func setPunctuation(_ punctuation: Punctuation, enabled: Bool) {
+        if enabled {
+            enabledPunctuation.insert(punctuation)
+        } else {
+            enabledPunctuation.remove(punctuation)
+        }
+    }
+
+    func isEnabled(_ punctuation: Punctuation) -> Bool {
+        enabledPunctuation.contains(punctuation)
+    }
+
     var hasEnabledSugars: Bool {
         !enabledSugars.isEmpty
     }
@@ -311,9 +342,13 @@ final class PasteboardMonitor: ObservableObject {
         !enabledTransforms.isEmpty
     }
 
-    /// Whether there's anything for the monitor to do (any sugar or transform on).
+    var hasEnabledPunctuation: Bool {
+        !enabledPunctuation.isEmpty
+    }
+
+    /// Whether there's anything for the monitor to do (any sugar, transform, or dash rule on).
     var hasWork: Bool {
-        hasEnabledSugars || hasEnabledTransforms
+        hasEnabledSugars || hasEnabledTransforms || hasEnabledPunctuation
     }
 
     var interfaceState: MonitorInterfaceState {
@@ -333,7 +368,7 @@ final class PasteboardMonitor: ObservableObject {
         case .paused:
             return "Automatic cleanup is paused"
         case .idle:
-            return "Enable a sugar or transform"
+            return "Enable a sugar, transform, or dash rule"
         }
     }
 
@@ -412,6 +447,7 @@ final class PasteboardMonitor: ObservableObject {
             timestamp: Date(),
             sugars: result.sugars,
             transforms: result.transforms,
+            punctuation: result.punctuation,
             tableCount: result.tableCount,
             itemCount: result.itemCount,
             wasManual: wasManual
@@ -428,11 +464,13 @@ final class PasteboardMonitor: ObservableObject {
         }
 
         let sugars = enabledSugars
+        let dashes = enabledPunctuation
         let convertTables = enabledTransforms.contains(.tablesToList)
         let format = outputFormat.converterFormat
 
         var updatedItems: [NSPasteboardItem] = []
         var removedSugars = Set<Sugar>()
+        var removedPunctuation = Set<Punctuation>()
         var appliedTransforms = Set<Transform>()
         var tableCount = 0
 
@@ -456,7 +494,8 @@ final class PasteboardMonitor: ObservableObject {
                 if type == .html, let originalData = originalItem.data(forType: type) {
                     let originalHTML = decodeClipboardString(from: originalData)
                     let (strippedHTML, removed) = stripHTML(originalHTML, sugars: sugars)
-                    var html = strippedHTML
+                    let (normalizedHTML, removedDashes) = DashNormalizer.normalizeHTML(strippedHTML, kinds: dashes)
+                    var html = normalizedHTML
                     if convertTables {
                         let (converted, count) = TableConverter.convertHTMLTables(in: html, format: format)
                         if count > 0 {
@@ -470,6 +509,7 @@ final class PasteboardMonitor: ObservableObject {
                     if html != originalHTML, let processedData = html.data(using: .utf8) {
                         _ = updatedItem.setData(processedData, forType: type)
                         removedSugars.formUnion(removed)
+                        removedPunctuation.formUnion(removedDashes)
                     } else {
                         _ = updatedItem.setData(originalData, forType: type)
                     }
@@ -479,7 +519,8 @@ final class PasteboardMonitor: ObservableObject {
 
                 if type == .string, let originalString = originalItem.string(forType: type) {
                     let (strippedString, removed) = stripPlainText(originalString, sugars: sugars)
-                    var string = strippedString
+                    let (normalizedString, removedDashes) = DashNormalizer.normalizePlainText(strippedString, kinds: dashes)
+                    var string = normalizedString
                     if convertTables {
                         let (converted, count) = TableConverter.convertMarkdownTables(in: string, format: format)
                         if count > 0 {
@@ -493,6 +534,7 @@ final class PasteboardMonitor: ObservableObject {
                     if string != originalString {
                         _ = updatedItem.setString(string, forType: type)
                         removedSugars.formUnion(removed)
+                        removedPunctuation.formUnion(removedDashes)
                     } else if let originalData = originalItem.data(forType: type) {
                         _ = updatedItem.setData(originalData, forType: type)
                     } else {
@@ -517,10 +559,11 @@ final class PasteboardMonitor: ObservableObject {
             // Replay the deferred RTF: strip it normally, unless a table conversion
             // fired in this item — then drop it so the converted reps win.
             if let rtfData, !(convertTables && transformFiredInItem) {
-                let (processed, removed) = stripRTF(rtfData, sugars: sugars)
-                if let processed, !removed.isEmpty {
+                let (processed, removed, removedDashes) = stripRTF(rtfData, sugars: sugars, punctuation: dashes)
+                if let processed, !(removed.isEmpty && removedDashes.isEmpty) {
                     _ = updatedItem.setData(processed, forType: .rtf)
                     removedSugars.formUnion(removed)
+                    removedPunctuation.formUnion(removedDashes)
                 } else {
                     _ = updatedItem.setData(rtfData, forType: .rtf)
                 }
@@ -534,7 +577,7 @@ final class PasteboardMonitor: ObservableObject {
             }
         }
 
-        guard !removedSugars.isEmpty || !appliedTransforms.isEmpty, !updatedItems.isEmpty else {
+        guard !removedSugars.isEmpty || !appliedTransforms.isEmpty || !removedPunctuation.isEmpty, !updatedItems.isEmpty else {
             return .unchanged
         }
 
@@ -543,10 +586,12 @@ final class PasteboardMonitor: ObservableObject {
 
         let orderedSugars = Sugar.allCases.filter { removedSugars.contains($0) }
         let orderedTransforms = Transform.allCases.filter { appliedTransforms.contains($0) }
+        let orderedPunctuation = Punctuation.allCases.filter { removedPunctuation.contains($0) }
         return RewriteResult(
             didChange: true,
             sugars: orderedSugars,
             transforms: orderedTransforms,
+            punctuation: orderedPunctuation,
             tableCount: tableCount,
             itemCount: updatedItems.count
         )
@@ -565,10 +610,11 @@ final class PasteboardMonitor: ObservableObject {
     // MARK: - Strippers (one rule set, gated per sugar)
 
     /// RTF: bold/italic are symbolic font traits; underline/strikethrough are their own
-    /// attributes. Returns the rewritten data and the set of sugars actually removed.
-    private func stripRTF(_ data: Data, sugars: Set<Sugar>) -> (Data?, Set<Sugar>) {
+    /// attributes; dashes are literal characters in the text. Returns the rewritten data and
+    /// the sets of sugars and dash kinds actually changed.
+    private func stripRTF(_ data: Data, sugars: Set<Sugar>, punctuation: Set<Punctuation>) -> (Data?, Set<Sugar>, Set<Punctuation>) {
         guard let attr = NSMutableAttributedString(rtf: data, documentAttributes: nil) else {
-            return (nil, [])
+            return (nil, [], [])
         }
 
         let full = NSRange(location: 0, length: attr.length)
@@ -606,8 +652,12 @@ final class PasteboardMonitor: ObservableObject {
             removeAttributeIfPresent(.strikethroughStyle, in: attr, range: full) { removed.insert(.strikethrough) }
         }
 
-        guard !removed.isEmpty else { return (nil, []) }
-        return (attr.rtf(from: full, documentAttributes: [:]), removed)
+        // Normalize dashes in the backing text (mutating via mutableString keeps attributes aligned).
+        let removedDashes = DashNormalizer.normalizeMutableString(attr.mutableString, kinds: punctuation)
+
+        guard !removed.isEmpty || !removedDashes.isEmpty else { return (nil, [], []) }
+        let outputRange = NSRange(location: 0, length: attr.length)
+        return (attr.rtf(from: outputRange, documentAttributes: [:]), removed, removedDashes)
     }
 
     /// Collect non-zero ranges first, then clear — avoids mutating the attribute mid-enumeration.

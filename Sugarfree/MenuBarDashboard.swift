@@ -13,6 +13,8 @@ struct MenuBarDashboard: View {
             SurfaceRule()
             formatsSection
             SurfaceRule()
+            punctuationSection
+            SurfaceRule()
             transformsSection
             SurfaceRule()
             footerRow
@@ -107,6 +109,19 @@ struct MenuBarDashboard: View {
         }
     }
 
+    private var punctuationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionLabel(text: "Normalize dashes")
+
+            ForEach(Punctuation.allCases) { punctuation in
+                PunctuationToggleRow(
+                    punctuation: punctuation,
+                    isEnabled: binding(for: punctuation)
+                )
+            }
+        }
+    }
+
     private var transformsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionLabel(text: "Transforms")
@@ -168,6 +183,13 @@ struct MenuBarDashboard: View {
         Binding(
             get: { monitor.isEnabled(transform) },
             set: { monitor.setTransform(transform, enabled: $0) }
+        )
+    }
+
+    private func binding(for punctuation: Punctuation) -> Binding<Bool> {
+        Binding(
+            get: { monitor.isEnabled(punctuation) },
+            set: { monitor.setPunctuation(punctuation, enabled: $0) }
         )
     }
 
@@ -275,6 +297,36 @@ private struct SugarToggleRow: View {
                 .foregroundStyle(Surface.text)
 
             Text(sugar.example)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(Surface.tertiary)
+
+            Spacer()
+
+            Toggle("", isOn: $isEnabled)
+                .labelsHidden()
+                .controlSize(.small)
+                .tint(Cotton.accent)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct PunctuationToggleRow: View {
+    let punctuation: Punctuation
+    @Binding var isEnabled: Bool
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: punctuation.symbolName)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Surface.tertiary)
+                .frame(width: 16)
+
+            Text(punctuation.title)
+                .font(.system(size: 12.5))
+                .foregroundStyle(Surface.text)
+
+            Text(punctuation.example)
                 .font(.system(size: 10.5, design: .monospaced))
                 .foregroundStyle(Surface.tertiary)
 

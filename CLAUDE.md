@@ -28,6 +28,10 @@ clipboard representation that carries it.
   rule set (`Sugar`) gated per sugar, in `PasteboardMonitor`
 - Rewrites only changed clipboard representations and preserves unrelated pasteboard
   types/items
+- Optionally normalizes punctuation after stripping — currently dash normalization
+  (`Punctuation`, `DashNormalizer`, pure Foundation), replacing em/en dashes with a spaced
+  hyphen across every representation. Lossy substitution, so it defaults to off and lives in
+  its own "Normalize dashes" dashboard section
 - Applies optional structural transforms after stripping — currently Tables → list
   (`Transform`, `TransformOutputFormat`), converting Markdown/HTML tables into YAML or
   TOML list items via `TableConverter` (pure Foundation). Transforms reshape content
@@ -124,3 +128,25 @@ dashboard section. Source of truth: `Transform` / `TransformOutputFormat` in
   converted; HTML parsing is regex-based (no DOM), so nested tables aren't handled; because
   values are unquoted, a numeric-looking cell will read as a number to a strict parser (the
   text is preserved verbatim, which is the priority for paste).
+
+## Punctuation (normalization)
+
+Distinct from both Sugars (lossless emphasis-marker removal) and structural Transforms: dash
+normalization rewrites *punctuation*. A dash is content, not a marker, so this is lossy
+substitution — independently toggleable, off by default, in its own "Normalize dashes"
+dashboard section. Source of truth: `Punctuation` enum + `DashNormalizer` in
+`DashNormalizer.swift` (pure Foundation, unit-tested in `Tests/DashNormalizerTests.swift`).
+
+| Kind | Catches | Output |
+|---|---|---|
+| Em-dash | `—` (U+2014) and `&mdash;`/`&#8212;`/`&#x2014;` | spaced hyphen ` - ` |
+| En-dash | `–` (U+2013) and `&ndash;`/`&#8211;`/`&#x2013;` | spaced hyphen ` - ` |
+
+- The match absorbs surrounding ASCII spaces/tabs, so `a — b`, `a—b`, and `a   —   b` all
+  normalize to `a - b`. Applied across plain text, HTML (literal char + entities), and RTF
+  (literal char in the attributed string's backing, mutated via `mutableString` so attribute
+  ranges stay aligned).
+- Caveats (best-effort, documented): only spaces/tabs are absorbed (newlines survive), so a
+  dash at the start of a line yields a leading space (`— note` → ` - note`); ASCII `--` is
+  intentionally not caught (it collides with CLI flags and code); HTML entity handling is
+  regex-based (no DOM).
