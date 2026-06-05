@@ -25,7 +25,14 @@ clipboard representation that carries it.
 - Polls `NSPasteboard.general.changeCount` on a configurable interval (`PasteboardMonitor`)
 - Strips the enabled sugars from RTF (font traits + underline/strikethrough attributes),
   HTML (tag unwrap + inline-style removal), and plain text (markdown markers) — one typed
-  rule set (`Sugar`) gated per sugar, in `PasteboardMonitor`
+  rule set (`Sugar`) gated per sugar. The HTML + plain-text strippers are Foundation-only
+  and live in `SugarStripper` (`Sugarfree/SugarStripper.swift`); `PasteboardMonitor` layers
+  the AppKit-only RTF stripping on top and delegates the text reps to `SugarStripper`
+- Ships a companion `sugarfree` CLI (`cli/main.swift`, built via `Package.swift`) — a
+  stdin→stdout filter for LLM pipelines / shell workflows / Claude Code hooks. It reuses
+  the same `SugarStripper` + `TableConverter` core (no AppKit), so the pipe and the
+  clipboard strip text identically; the shared core keeps the app and CLI in parity by
+  construction (see "CLI" below)
 - Rewrites only changed clipboard representations and preserves unrelated pasteboard
   types/items
 - Applies optional structural transforms after stripping — currently Tables → list
@@ -43,8 +50,33 @@ clipboard representation that carries it.
 open Sugarfree.xcodeproj   # open in Xcode
 ```
 
+The CLI builds separately via SwiftPM (no Xcode/XcodeGen needed):
+
+```bash
+swift build -c release          # produces .build/release/sugarfree
+swift run sugarfree --help      # run without installing
+```
+
 For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 `Configs/LocalSigning.xcconfig` and fill in your team identity.
+
+## CLI (`sugarfree`)
+
+A stdin→stdout filter mirroring the app's stripping, for pipelines/hooks where
+the clipboard isn't involved. Source: `cli/main.swift`; manifest: `Package.swift`.
+
+- Reuses `SugarStripper` (HTML + plain-text/markdown) and `TableConverter` — the
+  same Foundation-only core the app uses. No AppKit, so RTF is out of scope (you
+  pipe text, not clipboard items) and it builds on macOS and Linux.
+- Defaults to stripping bold + italic (parity with the app, via `Sugar.defaults`).
+  `--all`, `--bold`/`--italic`/`--underline`/`--strikethrough`/`--headers`,
+  `--strip a,b`, and `--no-<sugar>` select the set. `--html` switches the input
+  format; `--tables <yaml|toml>` enables the table→list transform.
+- Reads stdin (or file args / `-`) and writes the processed text verbatim to
+  stdout. `--help` / `--version` print and exit; bad args exit non-zero.
+- Parity: any change to the stripping rules lives in `SugarStripper` /
+  `TableConverter`, so the app and CLI never drift. Keep "Sugar types handled"
+  accurate for both.
 
 > Build settings live in `Configs/Base.xcconfig` (PRODUCT_NAME, bundle ID, INFOPLIST_FILE)
 > — these override `project.yml`'s base settings, so change names in both.

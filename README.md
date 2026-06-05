@@ -29,6 +29,8 @@ text you paste is the text you wanted.
 - Manual mode — "Clean Now" cleans the current clipboard on demand.
 - Keyboard shortcuts — `⌘⇧P` toggle automatic cleanup, `⌘⇧K` clean now.
 - Activity tracking — total cleanups and last action shown in the dashboard.
+- Command-line filter — the same stripping as a `sugarfree` stdin → stdout CLI for
+  LLM pipelines, shell workflows, and Claude Code hooks (see below).
 
 ## Requirements
 
@@ -75,6 +77,58 @@ open Sugarfree.xcodeproj
    "Clean Now", choose which sugars to strip, enable structural transforms,
    set the polling interval, and see an activity summary — all in one place.
 3. Copy formatted text from anywhere — paste it, and the sugar is gone.
+
+## Command-line interface (`sugarfree`)
+
+For power users, LLM pipelines, shell workflows, and Claude Code hooks, the same
+stripping is available as a stdin → stdout filter. It reuses the exact same rule
+set as the app, so the pipe and the clipboard clean text identically — just
+without the clipboard (it works on text, so RTF is out of scope).
+
+### Build & install
+
+The CLI builds with SwiftPM — no Xcode or XcodeGen needed (it's Foundation-only,
+so it builds on macOS and Linux):
+
+```bash
+swift build -c release
+cp .build/release/sugarfree /usr/local/bin/   # put it on your PATH
+```
+
+### Usage
+
+```text
+sugarfree [OPTIONS] [FILE ...]
+```
+
+Reads stdin when no file is given. With no flags it strips **bold + italic** —
+the same defaults as the app.
+
+| Option | Effect |
+|---|---|
+| `--all` | Strip every sugar (bold, italic, underline, strikethrough, headers) |
+| `--bold` `--italic` `--underline` `--strikethrough` `--headers` | Strip a specific sugar |
+| `--strip a,b` | Strip a comma-separated set, e.g. `--strip bold,headers` |
+| `--no-<sugar>` | Remove one sugar from the set (e.g. `--all --no-headers`) |
+| `--html` | Treat input as HTML (default is Markdown / plain text) |
+| `--tables <yaml\|toml>` | Convert Markdown/HTML tables into list items |
+| `-h`, `--help` / `--version` | Help / version |
+
+Naming any sugar flag replaces the bold+italic default with exactly the set you
+list; `--no-<sugar>` flags are applied last.
+
+### Examples
+
+```bash
+llm "summarize this" | sugarfree              # strip bold + italic
+pbpaste | sugarfree --all | pbcopy            # strip everything, back to clipboard
+sugarfree --strip headers,bold notes.md       # clean a file
+sugarfree --html < email.html                 # HTML input
+sugarfree --tables toml < report.md           # also flatten tables to TOML-style
+```
+
+In a Claude Code hook, pipe tool output or transcript text through `sugarfree`
+to get plain, sugar-free text for downstream steps.
 
 ## How it works
 

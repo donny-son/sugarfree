@@ -1,65 +1,9 @@
 import AppKit
 import Foundation
 
-/// A kind of formatting "sugar" the app can strip. The user toggles each one;
-/// every enabled sugar is removed across whichever clipboard representations
-/// carry it (RTF traits/attributes, HTML tags/styles, markdown markers).
-enum Sugar: String, CaseIterable, Identifiable {
-    case bold
-    case italic
-    case underline
-    case strikethrough
-    case heading
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .bold: return "Bold"
-        case .italic: return "Italic"
-        case .underline: return "Underline"
-        case .strikethrough: return "Strikethrough"
-        case .heading: return "Headers"
-        }
-    }
-
-    /// Short syntax hint shown beside the toggle.
-    var example: String {
-        switch self {
-        case .bold: return "**bold**"
-        case .italic: return "*italic*"
-        case .underline: return "<u>under</u>"
-        case .strikethrough: return "~~strike~~"
-        case .heading: return "# Heading"
-        }
-    }
-
-    /// Longer description for the Settings rows.
-    var detail: String {
-        switch self {
-        case .bold:
-            return "Removes bold — RTF traits, <strong>/<b>, font-weight, and ** __ markers."
-        case .italic:
-            return "Removes italic — RTF traits, <em>/<i>, font-style, and * _ markers."
-        case .underline:
-            return "Removes underline — RTF underline, <u>, and text-decoration."
-        case .strikethrough:
-            return "Removes strikethrough — RTF, <s>/<del>, text-decoration, and ~~ markers."
-        case .heading:
-            return "Removes heading markers — leading #..###### at the start of a line, and <h1>–<h6> tags. Keeps the text."
-        }
-    }
-
-    var symbolName: String {
-        switch self {
-        case .bold: return "bold"
-        case .italic: return "italic"
-        case .underline: return "underline"
-        case .strikethrough: return "strikethrough"
-        case .heading: return "number"
-        }
-    }
-}
+// `Sugar` and the pure HTML/plain-text strippers live in `SugarStripper.swift`
+// (Foundation-only) so the same rule set is shared with the `sugarfree` CLI.
+// `PasteboardMonitor` layers the AppKit-only RTF stripping on top.
 
 /// A structural rewrite of clipboard content. Distinct from `Sugar` (which only
 /// *removes* inline emphasis markers): a transform *reshapes* content into another
@@ -243,8 +187,9 @@ final class PasteboardMonitor: ObservableObject {
     static let allowedPollingIntervals: [Double] = [0.25, 0.5, 1.0, 1.5]
     static let defaultPollingInterval = 0.5
     /// Bold + italic are the everyday annoyances; underline/strikethrough often carry
-    /// meaning, so they stay off until the user opts in.
-    static let defaultSugars: Set<Sugar> = [.bold, .italic]
+    /// meaning, so they stay off until the user opts in. Canonical set lives on `Sugar`
+    /// so the app and the CLI default to the same thing.
+    static let defaultSugars: Set<Sugar> = Sugar.defaults
     /// Transforms reshape content and are lossy, so they stay off until opted into.
     static let defaultTransforms: Set<Transform> = []
     static let defaultOutputFormat: TransformOutputFormat = .yaml
@@ -455,7 +400,7 @@ final class PasteboardMonitor: ObservableObject {
 
                 if type == .html, let originalData = originalItem.data(forType: type) {
                     let originalHTML = decodeClipboardString(from: originalData)
-                    let (strippedHTML, removed) = stripHTML(originalHTML, sugars: sugars)
+                    let (strippedHTML, removed) = SugarStripper.stripHTML(originalHTML, sugars: sugars)
                     var html = strippedHTML
                     if convertTables {
                         let (converted, count) = TableConverter.convertHTMLTables(in: html, format: format)
@@ -478,7 +423,7 @@ final class PasteboardMonitor: ObservableObject {
                 }
 
                 if type == .string, let originalString = originalItem.string(forType: type) {
-                    let (strippedString, removed) = stripPlainText(originalString, sugars: sugars)
+                    let (strippedString, removed) = SugarStripper.stripPlainText(originalString, sugars: sugars)
                     var string = strippedString
                     if convertTables {
                         let (converted, count) = TableConverter.convertMarkdownTables(in: string, format: format)
@@ -562,7 +507,7 @@ final class PasteboardMonitor: ObservableObject {
         return String(decoding: data, as: UTF8.self)
     }
 
-    // MARK: - Strippers (one rule set, gated per sugar)
+    // MARK: - RTF stripper (AppKit-only; HTML/plain text live in SugarStripper)
 
     /// RTF: bold/italic are symbolic font traits; underline/strikethrough are their own
     /// attributes. Returns the rewritten data and the set of sugars actually removed.
@@ -624,82 +569,5 @@ final class PasteboardMonitor: ObservableObject {
         guard !ranges.isEmpty else { return }
         ranges.forEach { attr.removeAttribute(name, range: $0) }
         onRemoval()
-    }
-
-    /// HTML: unwrap tags + drop inline-style declarations, per sugar. Best-effort regex.
-    private func stripHTML(_ html: String, sugars: Set<Sugar>) -> (String, Set<Sugar>) {
-        var result = html
-        var removed: Set<Sugar> = []
-
-        func strip(_ sugar: Sugar, tags: [String], styles: [String]) {
-            guard sugars.contains(sugar) else { return }
-            let before = result
-            for pattern in tags {
-                result = result.replacingOccurrences(of: pattern, with: "$1",
-                                                      options: [.regularExpression, .caseInsensitive])
-            }
-            for pattern in styles {
-                result = result.replacingOccurrences(of: pattern, with: "",
-                                                      options: [.regularExpression, .caseInsensitive])
-            }
-            if result != before { removed.insert(sugar) }
-        }
-
-        strip(.bold,
-              tags: ["<strong[^>]*>(.*?)</strong>", "<b[^>]*>(.*?)</b>"],
-              styles: ["font-weight\\s*:\\s*[^;\"']+;?"])
-        strip(.italic,
-              tags: ["<em[^>]*>(.*?)</em>", "<i[^>]*>(.*?)</i>"],
-              styles: ["font-style\\s*:\\s*italic\\s*;?"])
-        strip(.underline,
-              tags: ["<u[^>]*>(.*?)</u>"],
-              styles: ["text-decoration(?:-line)?\\s*:\\s*underline\\s*;?"])
-        strip(.strikethrough,
-              tags: ["<s[^>]*>(.*?)</s>", "<del[^>]*>(.*?)</del>", "<strike[^>]*>(.*?)</strike>"],
-              styles: ["text-decoration(?:-line)?\\s*:\\s*line-through\\s*;?"])
-
-        // Headings: unwrap <h1>–<h6> to their inner text. Uses a backreference so the close
-        // tag matches the open level, so it can't fold through the generic `strip` helper
-        // (which always replaces with $1).
-        if sugars.contains(.heading) {
-            let before = result
-            result = result.replacingOccurrences(
-                of: "<h([1-6])[^>]*>(.*?)</h\\1>",
-                with: "$2",
-                options: [.regularExpression, .caseInsensitive])
-            if result != before { removed.insert(.heading) }
-        }
-
-        return (result, removed)
-    }
-
-    /// Plain text / markdown markers. Underline has no markdown form, so it's skipped here.
-    /// Bold runs before italic so `**` isn't half-consumed by the single-`*` rule.
-    private func stripPlainText(_ text: String, sugars: Set<Sugar>) -> (String, Set<Sugar>) {
-        var result = text
-        var removed: Set<Sugar> = []
-
-        func strip(_ sugar: Sugar, _ patterns: [String]) {
-            guard sugars.contains(sugar) else { return }
-            let before = result
-            for pattern in patterns {
-                result = result.replacingOccurrences(of: pattern, with: "$1", options: .regularExpression)
-            }
-            if result != before { removed.insert(sugar) }
-        }
-
-        // Headings: leading #..###### at the start of a line (ATX). Anchored to line start
-        // (multiline `^`) and requires whitespace after the hashes, so a `#` used as a
-        // regular character mid-line — or `#tag` with no space — is left untouched. An
-        // optional trailing closing run of `#` is dropped too. Keeps the heading text.
-        strip(.heading, ["(?m)^[ \\t]{0,3}#{1,6}[ \\t]+(.*?)(?:[ \\t]+#+)?[ \\t]*$"])
-        strip(.strikethrough, ["~~(.+?)~~"])
-        strip(.bold, ["\\*\\*(.+?)\\*\\*", "__(.+?)__"])
-        // Italic: single * (not part of **), and _ only at non-alphanumeric boundaries so
-        // snake_case identifiers survive.
-        strip(.italic, ["(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)",
-                        "(?<![A-Za-z0-9])_(.+?)_(?![A-Za-z0-9])"])
-
-        return (result, removed)
     }
 }
