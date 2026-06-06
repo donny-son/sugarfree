@@ -81,18 +81,23 @@ open Sugarfree.xcodeproj
 ## Command-line interface (`sugarfree`)
 
 For power users, LLM pipelines, shell workflows, and Claude Code hooks, the same
-stripping is available as a stdin → stdout filter. It reuses the exact same rule
-set as the app, so the pipe and the clipboard clean text identically — just
-without the clipboard (it works on text, so RTF is out of scope).
+stripping is available as a stdin → stdout filter. It mirrors the app's rule set
+so the pipe and the clipboard clean text identically — just without the clipboard
+(it works on text, so RTF is out of scope). The two implementations are kept in
+lock-step by a shared golden test corpus (`Tests/SugarParityCorpus.json`).
+
+The CLI is a small Go program (`cmd/sugarfree` + `internal/sugar`), separate from
+the Swift app — a single static binary that's trivial to install and
+cross-compile, with no Swift toolchain required.
 
 ### Build & install
 
-The CLI builds with SwiftPM — no Xcode or XcodeGen needed (it's Foundation-only,
-so it builds on macOS and Linux):
-
 ```bash
-swift build -c release
-cp .build/release/sugarfree /usr/local/bin/   # put it on your PATH
+go install github.com/donny-son/sugarfree/cmd/sugarfree@latest   # to $GOBIN / $GOPATH/bin
+# or, from a clone:
+go build -o sugarfree ./cmd/sugarfree && cp sugarfree /usr/local/bin/
+# cross-compile, e.g. for Linux:
+GOOS=linux GOARCH=amd64 go build -o sugarfree-linux ./cmd/sugarfree
 ```
 
 ### Usage

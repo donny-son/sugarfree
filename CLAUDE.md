@@ -28,11 +28,11 @@ clipboard representation that carries it.
   rule set (`Sugar`) gated per sugar. The HTML + plain-text strippers are Foundation-only
   and live in `SugarStripper` (`Sugarfree/SugarStripper.swift`); `PasteboardMonitor` layers
   the AppKit-only RTF stripping on top and delegates the text reps to `SugarStripper`
-- Ships a companion `sugarfree` CLI (`cli/main.swift`, built via `Package.swift`) — a
-  stdin→stdout filter for LLM pipelines / shell workflows / Claude Code hooks. It reuses
-  the same `SugarStripper` + `TableConverter` core (no AppKit), so the pipe and the
-  clipboard strip text identically; the shared core keeps the app and CLI in parity by
-  construction (see "CLI" below)
+- Ships a companion `sugarfree` CLI written in **Go** (`cmd/sugarfree` + `internal/sugar`,
+  built via `go build`) — a stdin→stdout filter for LLM pipelines / shell workflows /
+  Claude Code hooks. It's a separate implementation of the same stripping (a single static
+  binary, easy to distribute), kept in lock-step with the Swift app by a shared golden test
+  corpus rather than shared code — parity by test, not by construction (see "CLI" below)
 - Rewrites only changed clipboard representations and preserves unrelated pasteboard
   types/items
 - Applies optional structural transforms after stripping — currently Tables → list
@@ -50,11 +50,12 @@ clipboard representation that carries it.
 open Sugarfree.xcodeproj   # open in Xcode
 ```
 
-The CLI builds separately via SwiftPM (no Xcode/XcodeGen needed):
+The CLI is a separate Go program (no Xcode/XcodeGen/Swift needed):
 
 ```bash
-swift build -c release          # produces .build/release/sugarfree
-swift run sugarfree --help      # run without installing
+go build -o sugarfree ./cmd/sugarfree   # build the binary
+go test ./...                           # unit tests + parity corpus
+go run ./cmd/sugarfree --help           # run without installing
 ```
 
 For release signing, copy `Configs/LocalSigning.xcconfig.example` to
@@ -62,21 +63,29 @@ For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 
 ## CLI (`sugarfree`)
 
-A stdin→stdout filter mirroring the app's stripping, for pipelines/hooks where
-the clipboard isn't involved. Source: `cli/main.swift`; manifest: `Package.swift`.
+A Go stdin→stdout filter mirroring the app's stripping, for pipelines/hooks where
+the clipboard isn't involved. Module root `go.mod`; entry `cmd/sugarfree/main.go`;
+core `internal/sugar/` (`sugar.go`, `stripper.go`, `tables.go`).
 
-- Reuses `SugarStripper` (HTML + plain-text/markdown) and `TableConverter` — the
-  same Foundation-only core the app uses. No AppKit, so RTF is out of scope (you
-  pipe text, not clipboard items) and it builds on macOS and Linux.
-- Defaults to stripping bold + italic (parity with the app, via `Sugar.defaults`).
+- Re-implements the app's HTML + plain-text/markdown strippers and the table
+  converter in Go. RTF is out of scope (you pipe text, not clipboard items).
+- Regex engine: the strippers need lookbehind/lookahead/backreferences, which
+  Go's stdlib `regexp` (RE2) lacks, so `internal/sugar/stripper.go` uses
+  `github.com/dlclark/regexp2` to port the Swift ICU patterns near-verbatim.
+  `tables.go` uses stdlib `regexp` (no lookarounds needed). Per-pattern flags must
+  match Swift exactly: HTML = case-insensitive, no dotall; plain text =
+  case-sensitive, multiline only on the heading rule; table HTML = dotall.
+- Defaults to stripping bold + italic (parity with the app, `sugar.Defaults`).
   `--all`, `--bold`/`--italic`/`--underline`/`--strikethrough`/`--headers`,
   `--strip a,b`, and `--no-<sugar>` select the set. `--html` switches the input
-  format; `--tables <yaml|toml>` enables the table→list transform.
-- Reads stdin (or file args / `-`) and writes the processed text verbatim to
-  stdout. `--help` / `--version` print and exit; bad args exit non-zero.
-- Parity: any change to the stripping rules lives in `SugarStripper` /
-  `TableConverter`, so the app and CLI never drift. Keep "Sugar types handled"
-  accurate for both.
+  format; `--tables <yaml|toml>` enables the table→list transform. Reads stdin (or
+  file args / `-`), writes processed text verbatim; `--help`/`--version` exit 0,
+  bad args exit 2.
+- **Parity is by test, not shared code.** `Tests/SugarParityCorpus.json` is the
+  single source of expected behavior; both `internal/sugar/corpus_test.go` (Go)
+  and `Tests/SugarParityCorpusTests.swift` (Swift) assert against it. Any change
+  to a stripping rule must update the Swift `SugarStripper`/`TableConverter`, the
+  Go `internal/sugar`, AND the corpus. Keep "Sugar types handled" accurate for both.
 
 > Build settings live in `Configs/Base.xcconfig` (PRODUCT_NAME, bundle ID, INFOPLIST_FILE)
 > — these override `project.yml`'s base settings, so change names in both.

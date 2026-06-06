@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  go:
+    name: Go CLI (vet + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Build binary
+        run: go build -o sugarfree ./cmd/sugarfree
+
+  swift:
+    name: macOS app + parity corpus
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate --spec project.yml
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project Sugarfree.xcodeproj \
+            -scheme Sugarfree \
+            -destination 'platform=macOS'

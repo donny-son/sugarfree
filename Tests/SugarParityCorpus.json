@@ -1,0 +1,314 @@
+[
+  {
+    "name": "md_bold_italic_basic",
+    "input": "**bold** and *italic*",
+    "format": "markdown",
+    "sugars": ["bold", "italic"],
+    "tables": null,
+    "expected": "bold and italic"
+  },
+  {
+    "name": "md_bold_before_italic_guard",
+    "input": "**bold**",
+    "format": "markdown",
+    "sugars": ["italic"],
+    "tables": null,
+    "expected": "**bold**"
+  },
+  {
+    "name": "md_unselected_left_alone",
+    "input": "**bold** ~~strike~~",
+    "format": "markdown",
+    "sugars": ["bold"],
+    "tables": null,
+    "expected": "bold ~~strike~~"
+  },
+  {
+    "name": "md_snake_case_survives_italic",
+    "input": "call some_function now",
+    "format": "markdown",
+    "sugars": ["italic"],
+    "tables": null,
+    "expected": "call some_function now"
+  },
+  {
+    "name": "md_italic_underscore_boundary",
+    "input": "a _em_ b",
+    "format": "markdown",
+    "sugars": ["italic"],
+    "tables": null,
+    "expected": "a em b"
+  },
+  {
+    "name": "md_bold_underscore",
+    "input": "__bold__",
+    "format": "markdown",
+    "sugars": ["bold"],
+    "tables": null,
+    "expected": "bold"
+  },
+  {
+    "name": "md_heading_keeps_text",
+    "input": "# Title\nbody",
+    "format": "markdown",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "Title\nbody"
+  },
+  {
+    "name": "md_heading_closing_hashes_dropped",
+    "input": "## Title ##",
+    "format": "markdown",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "Title"
+  },
+  {
+    "name": "md_heading_h6",
+    "input": "###### h6",
+    "format": "markdown",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "h6"
+  },
+  {
+    "name": "md_seven_hashes_not_heading",
+    "input": "####### too many",
+    "format": "markdown",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "####### too many"
+  },
+  {
+    "name": "md_hashtag_not_heading",
+    "input": "#tag and issue #42",
+    "format": "markdown",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "#tag and issue #42"
+  },
+  {
+    "name": "md_strikethrough",
+    "input": "~~gone~~",
+    "format": "markdown",
+    "sugars": ["strikethrough"],
+    "tables": null,
+    "expected": "gone"
+  },
+  {
+    "name": "md_underline_has_no_markdown_form",
+    "input": "_italic_",
+    "format": "markdown",
+    "sugars": ["underline"],
+    "tables": null,
+    "expected": "_italic_"
+  },
+  {
+    "name": "md_empty_sugar_set_is_noop",
+    "input": "**bold**",
+    "format": "markdown",
+    "sugars": [],
+    "tables": null,
+    "expected": "**bold**"
+  },
+  {
+    "name": "html_unwrap_strong_em",
+    "input": "<strong>a</strong> <em>b</em>",
+    "format": "html",
+    "sugars": ["bold", "italic"],
+    "tables": null,
+    "expected": "a b"
+  },
+  {
+    "name": "html_drop_font_weight_style",
+    "input": "<span style=\"font-weight:700;\">x</span>",
+    "format": "html",
+    "sugars": ["bold"],
+    "tables": null,
+    "expected": "<span style=\"\">x</span>"
+  },
+  {
+    "name": "html_drop_font_style_italic",
+    "input": "<span style=\"font-style:italic;\">x</span>",
+    "format": "html",
+    "sugars": ["italic"],
+    "tables": null,
+    "expected": "<span style=\"\">x</span>"
+  },
+  {
+    "name": "html_drop_text_decoration_underline",
+    "input": "<span style=\"text-decoration:underline;\">x</span>",
+    "format": "html",
+    "sugars": ["underline"],
+    "tables": null,
+    "expected": "<span style=\"\">x</span>"
+  },
+  {
+    "name": "html_drop_text_decoration_line_through",
+    "input": "<span style=\"text-decoration:line-through;\">x</span>",
+    "format": "html",
+    "sugars": ["strikethrough"],
+    "tables": null,
+    "expected": "<span style=\"\">x</span>"
+  },
+  {
+    "name": "html_underline_tag",
+    "input": "<u>x</u>",
+    "format": "html",
+    "sugars": ["underline"],
+    "tables": null,
+    "expected": "x"
+  },
+  {
+    "name": "html_strike_variants",
+    "input": "<s>a</s><del>b</del><strike>c</strike>",
+    "format": "html",
+    "sugars": ["strikethrough"],
+    "tables": null,
+    "expected": "abc"
+  },
+  {
+    "name": "html_heading_unwrap",
+    "input": "<h2>Title</h2>",
+    "format": "html",
+    "sugars": ["heading"],
+    "tables": null,
+    "expected": "Title"
+  },
+  {
+    "name": "html_leaves_unselected",
+    "input": "<u>keep</u> <b>drop</b>",
+    "format": "html",
+    "sugars": ["bold"],
+    "tables": null,
+    "expected": "<u>keep</u> drop"
+  },
+  {
+    "name": "table_md_two_col_yaml",
+    "input": "| Setting | Value |\n|---------|-------|\n| timeout | 30 |\n| retries | 3 |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- Setting: timeout\n  Value: 30\n- Setting: retries\n  Value: 3"
+  },
+  {
+    "name": "table_md_three_col_yaml",
+    "input": "| Name | Age | City |\n|------|-----|------|\n| Ann | 30 | NYC |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- Name: Ann\n  Age: 30\n  City: NYC"
+  },
+  {
+    "name": "table_md_two_col_toml",
+    "input": "| Setting | Value |\n|---------|-------|\n| timeout | 30 |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "toml",
+    "expected": "Setting = timeout\nValue = 30"
+  },
+  {
+    "name": "table_md_toml_multiple_rows",
+    "input": "| Setting | Value |\n|---------|-------|\n| timeout | 30 |\n| retries | 3 |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "toml",
+    "expected": "Setting = timeout\nValue = 30\n\nSetting = retries\nValue = 3"
+  },
+  {
+    "name": "table_md_surrounding_preserved",
+    "input": "Intro line\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\nOutro",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "Intro line\n\n- A: 1\n  B: 2\n\nOutro"
+  },
+  {
+    "name": "table_md_without_outer_pipes",
+    "input": "A | B\n---|---\n1 | 2",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- A: 1\n  B: 2"
+  },
+  {
+    "name": "table_md_alignment_colons",
+    "input": "| Left | Right |\n|:-----|------:|\n| a | b |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- Left: a\n  Right: b"
+  },
+  {
+    "name": "table_md_escaped_pipe",
+    "input": "| Key | Val |\n|-----|-----|\n| a | x \\| y |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- Key: a\n  Val: x | y"
+  },
+  {
+    "name": "table_md_ragged_padded_truncated",
+    "input": "| A | B |\n|---|---|\n| 1 |\n| 2 | 3 | 4 |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- A: 1\n  B:\n- A: 2\n  B: 3"
+  },
+  {
+    "name": "table_md_raw_values",
+    "input": "| K | V |\n|---|---|\n| bool | true |\n| num | 3.14 |\n| text | hello |",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "- K: bool\n  V: true\n- K: num\n  V: 3.14\n- K: text\n  V: hello"
+  },
+  {
+    "name": "table_md_setext_not_a_table",
+    "input": "Heading\n---\nbody text",
+    "format": "markdown",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "Heading\n---\nbody text"
+  },
+  {
+    "name": "table_html_to_yaml_pre",
+    "input": "<table><tr><th>Setting</th><th>Value</th></tr><tr><td>timeout</td><td>30</td></tr></table>",
+    "format": "html",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "<pre>- Setting: timeout\n  Value: 30</pre>"
+  },
+  {
+    "name": "table_html_entities_decoded_reescaped",
+    "input": "<table><tr><th>Name</th></tr><tr><td>A &amp; B</td></tr></table>",
+    "format": "html",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "<pre>- Name: A &amp; B</pre>"
+  },
+  {
+    "name": "table_html_preserves_surrounding",
+    "input": "<p>before</p><table><tr><td>A</td></tr><tr><td>1</td></tr></table><p>after</p>",
+    "format": "html",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "<p>before</p><pre>- A: 1</pre><p>after</p>"
+  },
+  {
+    "name": "table_html_without_table_unchanged",
+    "input": "<p>hello</p>",
+    "format": "html",
+    "sugars": [],
+    "tables": "yaml",
+    "expected": "<p>hello</p>"
+  },
+  {
+    "name": "compose_strip_then_table_md",
+    "input": "# Header\n\n| A | B |\n|---|---|\n| **x** | y |",
+    "format": "markdown",
+    "sugars": ["bold", "heading"],
+    "tables": "yaml",
+    "expected": "Header\n\n- A: x\n  B: y"
+  }
+]
