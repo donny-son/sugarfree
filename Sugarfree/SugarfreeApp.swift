@@ -12,20 +12,6 @@ struct SugarfreeApp: App {
             MenuBarStatusIcon(monitor: monitor)
         }
         .menuBarExtraStyle(.window)
-        .commands {
-            CommandMenu("Sugarfree") {
-                Button(monitor.isEnabled ? "Pause Automatic Cleanup" : "Resume Automatic Cleanup") {
-                    monitor.isEnabled.toggle()
-                }
-                .keyboardShortcut("P", modifiers: [.command, .shift])
-
-                Button("Clean Clipboard Now") {
-                    monitor.cleanClipboardManually()
-                }
-                .keyboardShortcut("k", modifiers: [.command, .shift])
-                .disabled(!monitor.hasWork)
-            }
-        }
     }
 }
 

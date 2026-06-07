@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import Foundation
 
 /// A kind of formatting "sugar" the app can strip. The user toggles each one;
@@ -277,6 +278,20 @@ final class PasteboardMonitor: ObservableObject {
         self.selfWriteCount = currentCount
 
         startMonitoring()
+        registerGlobalHotkeys()
+    }
+
+    /// Wire the menu-bar utility's two actions to system-wide hotkeys. These mirror the hints
+    /// shown in the dashboard: ⌘⇧P toggles automatic cleanup, ⌘⇧K cleans the clipboard now.
+    /// Global (Carbon) hotkeys are required because an `LSUIElement` accessory is never the
+    /// frontmost app, so SwiftUI `.keyboardShortcut` commands would never fire.
+    private func registerGlobalHotkeys() {
+        GlobalHotkeyCenter.shared.register(keyCode: kVK_ANSI_P, modifiers: cmdKey | shiftKey) { [weak self] in
+            self?.isEnabled.toggle()
+        }
+        GlobalHotkeyCenter.shared.register(keyCode: kVK_ANSI_K, modifiers: cmdKey | shiftKey) { [weak self] in
+            self?.cleanClipboardManually()
+        }
     }
 
     func setSugar(_ sugar: Sugar, enabled: Bool) {

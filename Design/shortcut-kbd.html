@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>sugarfree — shortcut keycaps</title>
+<style>
+  /* Tokens mirrored from Sugarfree/Theme.swift (light "paper" popover context).
+     Surface: desk #ECE9E1, surface #FAF8F3, text #161616, secondary #6A665D,
+     tertiary #8F8A7E, border/hairline #161616 (hairline @12%).
+     Cotton accent #F0469B, ink #C8327E, tint #FF6FB5@16%. */
+  :root {
+    --desk:      #ECE9E1;
+    --surface:   #FAF8F3;
+    --text:      #161616;
+    --secondary: #6A665D;
+    --tertiary:  #8F8A7E;
+    --border:    #161616;
+    --hairline:  rgba(22,22,22,0.12);
+    --accent:    #F0469B;
+    --ink:       #C8327E;
+    --tint:      rgba(255,111,181,0.16);
+    --mono:      ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    --sans:      -apple-system, "SF Pro Text", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 32px 64px;
+    background: var(--desk);
+    color: var(--text);
+    font: 14px/1.5 var(--sans);
+  }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.2px; }
+  .lede { color: var(--secondary); max-width: 640px; margin: 0 0 32px; font-size: 13px; }
+  .lede code { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px; align-items: start;
+  }
+  .card { display: flex; flex-direction: column; gap: 10px; }
+  .name { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+          color: var(--ink); margin: 0; font-family: var(--mono); }
+  .desc { font-size: 12px; color: var(--secondary); margin: 0 0 4px; min-height: 50px; }
+
+  /* The real popover control block (320pt sheet, scaled context) */
+  .sheet {
+    width: 300px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; position: relative;
+  }
+  .sheet::after {                       /* hard offset shadow block (brand language) */
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: var(--border); border-radius: 14px; transform: translate(4px,4px);
+  }
+  .seclabel { font: 600 10px/1 var(--mono); letter-spacing: 1.2px; text-transform: uppercase;
+              color: var(--secondary); margin: 0 0 8px; }
+  .cleanbtn {
+    display: block; width: 100%; text-align: center; border: 0; cursor: default;
+    font: 600 13px/1 var(--sans); color: #fff; padding: 9px 0; border-radius: 9px;
+    background: linear-gradient(90deg, #F0469B, #FF7A4D);
+    box-shadow: 0 2px 8px rgba(240,70,155,0.35); margin-bottom: 12px;
+  }
+
+  /* ============ keycap atoms ============ */
+  .keys { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .keys + .keys { margin-top: 8px; }
+  .grp { display: inline-flex; gap: 4px; }
+  .verb { font: 12px/1 var(--sans); color: var(--secondary); }
+  kbd { font-family: var(--mono); font-feature-settings: "tnum"; }
+
+  /* A — KEYCAP: paper cap, hard 1px ink border + hard offset shadow (matches the sheet) */
+  .a kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; padding: 0 6px;
+    font-size: 11px; font-weight: 600; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; box-shadow: 1.5px 1.5px 0 var(--border);
+  }
+
+  /* B — CHIP: calm hairline cap, soft fill, no offset shadow */
+  .b kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 21px; height: 21px; padding: 0 6px;
+    font-size: 11px; font-weight: 600; color: var(--secondary);
+    background: var(--desk); border: 1px solid var(--hairline);
+    border-radius: 6px;
+  }
+
+  /* C — COTTON CAP: tinted keycaps in the brand accent (pink ink on cotton tint) */
+  .c kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; padding: 0 6px;
+    font-size: 11px; font-weight: 700; color: var(--ink);
+    background: var(--tint); border: 1px solid rgba(240,70,155,0.30);
+    border-radius: 6px;
+  }
+
+  .current { margin-top: 40px; }
+  .current .old { font: 10px var(--mono); color: var(--tertiary); }
+</style>
+</head>
+<body>
+  <h1>shortcut keycaps — issue #4</h1>
+  <p class="lede">
+    The shortcut hint under <strong>Clean Now</strong> is currently one line of tiny tertiary
+    monospace text (<code>⌘⇧P toggle · ⌘⇧K clean</code>) — hard to read. Below, each modifier
+    becomes its own keycap (shadcn <code>kbd</code> style), shown inside the real control block so
+    weight and contrast are judged in context. Three named directions — pick one by name.
+  </p>
+
+  <div class="grid">
+    <!-- A -->
+    <div class="card">
+      <p class="name">A · Keycap</p>
+      <p class="desc">Paper keycaps with the brand's hard 1px ink border and a hard offset shadow — the same language as the sheet. Highest contrast, most "physical".</p>
+      <div class="sheet a">
+        <p class="seclabel">Shortcuts</p>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="verb">toggle cleanup</span></div>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>K</kbd></span><span class="verb">clean now</span></div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="card">
+      <p class="name">B · Chip</p>
+      <p class="desc">Calmer hairline caps on the desk tone, no offset shadow. Quieter and lighter — reads as a hint, not a control.</p>
+      <div class="sheet b">
+        <p class="seclabel">Shortcuts</p>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="verb">toggle cleanup</span></div>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>K</kbd></span><span class="verb">clean now</span></div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="card">
+      <p class="name">C · Cotton cap</p>
+      <p class="desc">Keycaps tinted with the Cotton accent (pink ink on cotton tint). Most on-brand, but uses the accent on a body surface — closest to the contract's "accent only" line.</p>
+      <div class="sheet c">
+        <p class="seclabel">Shortcuts</p>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="verb">toggle cleanup</span></div>
+        <div class="keys"><span class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>K</kbd></span><span class="verb">clean now</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="current">
+    <p class="old">current:&nbsp;&nbsp;⌘⇧P toggle · ⌘⇧K clean&nbsp;&nbsp;(10px, tertiary)</p>
+  </div>
+</body>
+</html>

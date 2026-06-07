@@ -88,9 +88,13 @@ struct MenuBarDashboard: View {
             .buttonStyle(CottonPrimaryButtonStyle())
             .disabled(!monitor.hasWork)
 
-            Text("⌘⇧P toggle · ⌘⇧K clean")
-                .font(.system(size: 10, design: .monospaced))
-                .foregroundStyle(Surface.tertiary)
+            VStack(alignment: .leading, spacing: 6) {
+                SectionLabel(text: "Shortcuts")
+
+                ShortcutHint(keys: ["⌘", "⇧", "P"], action: "toggle cleanup")
+                ShortcutHint(keys: ["⌘", "⇧", "K"], action: "clean now")
+            }
+            .padding(.top, 2)
         }
     }
 
