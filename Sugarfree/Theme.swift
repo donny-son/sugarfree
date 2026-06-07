@@ -83,6 +83,11 @@ enum Cotton {
     static let tint = Color(lightHex: 0xFF6FB5, darkHex: 0xFF8AC4, alpha: 0.16)
     /// Deep-pink text on a cotton tint.
     static let ink = Color(lightHex: 0xC8327E, darkHex: 0xFF9ECB)
+
+    /// Discrete candy colors for celebratory bursts — the gradient stops as individual
+    /// chips (menu-bar crush shards, popover confetti). A momentary, deliberate exception
+    /// to "no gradient/brand color on a body surface".
+    static let candy: [Color] = [g1, g2, g3]
 }
 
 // MARK: - Wordmark

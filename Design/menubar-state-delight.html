@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>sugarfree — menu-bar state + cleanup delight</title>
+<style>
+  /* Tokens mirrored from Sugarfree/Theme.swift (dark menu-bar context + light popover).
+     Cotton (dark): g1 #FF8AC4 → g2 #FFB07A → g3 #FFD879; accent #FF8AC4.
+     Surface idle (dark) #E3B341. Paper popover: surface #FAF8F3, text #161616. */
+  :root {
+    --paper:      #121214;
+    --card:       #1D1D1F;
+    --bar:        rgba(28,28,30,0.92);
+    --bar-edge:   rgba(255,255,255,0.08);
+    --glyph:      #F4F1EA;
+    --glyph-mute: rgba(244,241,234,0.40);
+    --cotton1:    #FF8AC4;
+    --cotton2:    #FFB07A;
+    --cotton3:    #FFD879;
+    --accent:     #FF8AC4;
+    --idle:       #E3B341;
+    --hair:       rgba(244,241,234,0.12);
+    --text:       #F4F1EA;
+    --sub:        #A7A39A;
+    --ter:        #76726A;
+    --mono:       ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    --sans:       -apple-system, "SF Pro Text", system-ui, sans-serif;
+    /* light popover */
+    --p-surface:  #FAF8F3;
+    --p-desk:     #ECE9E1;
+    --p-text:     #161616;
+    --p-sub:      #6A665D;
+    --p-border:   #161616;
+    --p-ink:      #C8327E;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 40px 32px 72px; background: var(--paper); color: var(--text);
+         font: 14px/1.5 var(--sans); }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.2px; }
+  h2 { font-size: 13px; font-weight: 600; margin: 36px 0 14px; color: var(--text); }
+  .lede { color: var(--sub); max-width: 680px; margin: 0 0 8px; font-size: 13px; }
+  .lede code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .note { color: var(--ter); font-size: 11.5px; max-width: 680px; margin: 0 0 8px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--hair); border-radius: 14px; padding: 18px; }
+  .name { font: 700 11px/1 var(--mono); letter-spacing: 1.2px; text-transform: uppercase;
+          color: var(--accent); margin: 0 0 2px; }
+  .desc { font-size: 12px; color: var(--sub); margin: 0 0 16px; min-height: 52px; }
+
+  /* macOS menu-bar strip */
+  .bar { display:flex; align-items:center; justify-content:flex-end; gap:16px; height:30px;
+         padding:0 12px; background:var(--bar); border:1px solid var(--bar-edge);
+         border-radius:8px; backdrop-filter: blur(8px); }
+  .bar .sys { color:var(--glyph-mute); font:12px var(--mono); }
+  .gwrap { position:relative; width:18px; height:18px; }
+  .glyph { width:18px; height:18px; display:block; overflow:visible; transform-origin:50% 50%; }
+  .glyph path { stroke:var(--glyph); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; fill:none; }
+
+  .ctl { margin-top:14px; display:flex; gap:8px; align-items:center; }
+  .ctl button { font:600 11px/1 var(--mono); color:var(--paper); background:var(--accent);
+                border:0; border-radius:7px; padding:7px 11px; cursor:pointer; }
+  .ctl .tag { font:10.5px var(--mono); color:var(--sub); }
+
+  /* ===== state row: resting indicators ===== */
+  .states { display:flex; gap:30px; flex-wrap:wrap; }
+  .st { display:flex; flex-direction:column; align-items:center; gap:9px; }
+  .st .lbl { font:10.5px var(--mono); color:var(--sub); letter-spacing:.4px; }
+  .badge { position:absolute; right:-3px; bottom:-2px; width:7px; height:7px; border-radius:50%;
+           border:1.5px solid var(--paper); }
+
+  /* S1 · off-mark: active=intact, idle=intact dim, paused=lollipop-off */
+  /* S2 · status dot: dot color encodes state */
+
+  /* ===== C1 · Juicy pop ===== */
+  .juicy.run { animation: juicy .7s cubic-bezier(.34,1.56,.64,1); }
+  .juicy.run path { animation: tint .7s ease-out; }
+  @keyframes juicy {
+    0%{transform:scale(1) rotate(0)} 18%{transform:scale(1.35,.7) rotate(-8deg)}
+    40%{transform:scale(.82,1.22) rotate(6deg)} 62%{transform:scale(1.12,.94) rotate(-3deg)}
+    82%{transform:scale(.98,1.03) rotate(1deg)} 100%{transform:scale(1) rotate(0)} }
+  @keyframes tint { 0%{stroke:var(--glyph)} 22%{stroke:var(--cotton1)} 50%{stroke:var(--cotton3)} 100%{stroke:var(--glyph)} }
+
+  /* ===== C2 · Sparkle burst ===== */
+  .spark.run { animation: pop .6s cubic-bezier(.34,1.56,.64,1); }
+  .spark.run path { animation: tint .6s ease-out; }
+  @keyframes pop { 0%{transform:scale(1)} 22%{transform:scale(1.22)} 55%{transform:scale(.95)} 100%{transform:scale(1)} }
+  .spk { position:absolute; width:3px; height:3px; border-radius:50%; left:50%; top:50%;
+         opacity:0; pointer-events:none; }
+  .spark.run .spk { animation: fling .6s ease-out forwards; }
+  .spk:nth-child(2){--dx: 12px;--dy:-11px;background:var(--cotton1)}
+  .spk:nth-child(3){--dx:-13px;--dy:-7px; background:var(--cotton3);animation-delay:.04s}
+  .spk:nth-child(4){--dx: 13px;--dy: 9px; background:var(--cotton2);animation-delay:.02s}
+  .spk:nth-child(5){--dx:-10px;--dy: 12px;background:var(--cotton1);animation-delay:.06s}
+  .spk:nth-child(6){--dx:  1px;--dy:-15px;background:var(--cotton3);animation-delay:.03s}
+  @keyframes fling { 0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+    20%{opacity:1} 100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1)} }
+
+  /* ===== C3 · Crush (shatter → reform) ===== */
+  .crush .whole, .crush .shard { transform-box:fill-box; transform-origin:center; }
+  .crush.run .whole { animation: wholeFade 1s ease-out; }
+  .crush.run .shard { animation: shatter 1s cubic-bezier(.3,.7,.4,1); }
+  @keyframes wholeFade { 0%,30%{opacity:1} 38%{opacity:0} 80%{opacity:0} 92%,100%{opacity:1} }
+  .crush .shard { opacity:0; }
+  @keyframes shatter { 0%,30%{opacity:0;transform:translate(0,0) scale(1) rotate(0)}
+    40%{opacity:1;transform:translate(0,0) scale(1)}
+    75%{opacity:1} 100%{opacity:0} }
+  .crush.run .s1 { animation: sh1 1s ease-out; }
+  .crush.run .s2 { animation: sh2 1s ease-out; }
+  .crush.run .s3 { animation: sh3 1s ease-out; }
+  .crush.run .s4 { animation: sh4 1s ease-out; }
+  @keyframes sh1 {0%,32%{opacity:0;transform:none}40%{opacity:1}100%{opacity:0;transform:translate(-10px,-9px) rotate(-40deg)}}
+  @keyframes sh2 {0%,32%{opacity:0;transform:none}40%{opacity:1}100%{opacity:0;transform:translate(11px,-7px) rotate(35deg)}}
+  @keyframes sh3 {0%,32%{opacity:0;transform:none}40%{opacity:1}100%{opacity:0;transform:translate(-8px,11px) rotate(28deg)}}
+  @keyframes sh4 {0%,32%{opacity:0;transform:none}40%{opacity:1}100%{opacity:0;transform:translate(10px,10px) rotate(-30deg)}}
+  .crush .shard { fill:var(--cotton1); stroke:none; }
+  .crush .s2{fill:var(--cotton2)} .crush .s3{fill:var(--cotton3)} .crush .s4{fill:var(--cotton1)}
+
+  /* ===== popover celebration (C4) ===== */
+  .pop-wrap { display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; }
+  .sheet { width:240px; background:var(--p-surface); border:1px solid var(--p-border);
+           border-radius:14px; padding:16px; position:relative; color:var(--p-text); }
+  .sheet::after { content:""; position:absolute; inset:0; z-index:-1; background:var(--p-border);
+                  border-radius:14px; transform:translate(4px,4px); }
+  .row { display:flex; align-items:center; justify-content:space-between; }
+  .hd { font:600 13px var(--sans); }
+  .tile { display:flex; align-items:baseline; gap:5px; margin-top:10px; position:relative; }
+  .tile .n { font:600 22px var(--mono); color:var(--p-text); display:inline-block; }
+  .tile .k { font:10px var(--mono); color:var(--ter); }
+  .tile.run .n { animation: bump .6s cubic-bezier(.34,1.56,.64,1); color:var(--p-ink); }
+  @keyframes bump { 0%{transform:scale(1)} 35%{transform:scale(1.45)} 100%{transform:scale(1)} }
+  .confetti { position:absolute; left:8px; top:6px; width:0; height:0; }
+  .cf { position:absolute; width:5px; height:5px; border-radius:1px; opacity:0; }
+  .tile.run .cf { animation: burst .7s ease-out forwards; }
+  .cf:nth-child(1){--dx:-14px;--dy:-12px;background:#FF6FB5}
+  .cf:nth-child(2){--dx:10px;--dy:-16px;background:#FF9A6B;animation-delay:.03s}
+  .cf:nth-child(3){--dx:22px;--dy:-6px;background:#FFC857;animation-delay:.05s}
+  .cf:nth-child(4){--dx:-20px;--dy:2px;background:#FF6FB5;animation-delay:.02s}
+  .cf:nth-child(5){--dx:6px;--dy:-22px;background:#FFC857;animation-delay:.06s}
+  @keyframes burst {0%{opacity:0;transform:translate(0,0) rotate(0) scale(.5)}
+    20%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(180deg) scale(1)}}
+  .toast { margin-top:12px; font:600 11px var(--mono); color:var(--p-ink); opacity:0; }
+  .pop-wrap .sheet.run .toast { animation: toast 1.4s ease-out; }
+  @keyframes toast { 0%{opacity:0;transform:translateY(4px)} 15%{opacity:1;transform:none} 80%{opacity:1} 100%{opacity:0} }
+</style>
+</head>
+<body>
+  <h1>menu-bar state + cleanup delight</h1>
+  <p class="lede">Two asks: (1) the icon should say <strong>at a glance</strong> whether Sugarfree is
+    active or paused — today it's only a faint opacity shift. (2) automatic cleanup should feel
+    <strong>juicy &amp; delightful</strong>, Candy-Crush style. Everything loops; click <code>play</code> to refire.</p>
+  <p class="note">Brand rule: the menu-bar glyph is normally monochrome — a colored flash during a clean is a
+    deliberate momentary exception (already established by the shipping cue). Smooth motion in the menu bar is best
+    done as a short timer-driven frame sequence; the popover (paper sheet) can animate freely.</p>
+
+  <h2>① Resting state — &ldquo;is it on?&rdquo;</h2>
+  <div class="grid">
+    <div class="card">
+      <p class="name">S1 · Off-mark</p>
+      <p class="desc">Active = intact lollipop; paused = the <code>lollipop-off</code> mark (candy crossed out); idle = intact, dimmed. Strongest semantics, reuses brand assets — the shape itself tells the state.</p>
+      <div class="states">
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24"><use href="#on"/></svg></div><span class="lbl">ACTIVE</span></div>
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24" style="opacity:.55"><use href="#on"/></svg></div><span class="lbl">IDLE</span></div>
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24" style="opacity:.7"><use href="#off"/></svg></div><span class="lbl">PAUSED</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="name">S2 · Status dot</p>
+      <p class="desc">Glyph stays the intact lollipop; a tiny corner dot encodes state — cotton-pink (active), amber (idle), hollow gray (paused). Familiar &ldquo;notification badge&rdquo; read, color-coded.</p>
+      <div class="states">
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24"><use href="#on"/></svg><span class="badge" style="background:var(--accent)"></span></div><span class="lbl">ACTIVE</span></div>
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24" style="opacity:.85"><use href="#on"/></svg><span class="badge" style="background:var(--idle)"></span></div><span class="lbl">IDLE</span></div>
+        <div class="st"><div class="gwrap"><svg class="glyph" viewBox="0 0 24 24" style="opacity:.5"><use href="#on"/></svg><span class="badge" style="background:transparent;border-color:var(--glyph-mute)"></span></div><span class="lbl">PAUSED</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>② Cleanup cue — make it juicy</h2>
+  <div class="grid">
+    <div class="card">
+      <p class="name">C1 · Juicy pop</p>
+      <p class="desc">Big squash &amp; stretch with a springy overshoot + a cotton tint flash. Candy-Crush &ldquo;gummy&rdquo; bounce. Cheap, reliable as a frame sequence.</p>
+      <div class="bar"><span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <div class="gwrap"><svg class="glyph juicy" viewBox="0 0 24 24" data-anim="juicy"><use href="#on"/></svg></div></div>
+      <div class="ctl"><button data-t="juicy">play</button><span class="tag">squash + tint</span></div>
+    </div>
+    <div class="card">
+      <p class="name">C2 · Sparkle burst</p>
+      <p class="desc">A pop plus little cotton-gradient sparkles flinging outward — the &ldquo;ding!&rdquo; reward moment. Most overtly delightful.</p>
+      <div class="bar"><span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <div class="gwrap">
+          <svg class="glyph spark" viewBox="0 0 24 24" data-anim="spark"><use href="#on"/></svg>
+          <span class="spk"></span><span class="spk"></span><span class="spk"></span><span class="spk"></span><span class="spk"></span>
+        </div></div>
+      <div class="ctl"><button data-t="spark">play</button><span class="tag">pop + sparkles</span></div>
+    </div>
+    <div class="card">
+      <p class="name">C3 · Crush</p>
+      <p class="desc">The candy shatters into cotton-colored shards that scatter, then reforms clean — the literal &ldquo;crush&rdquo;. Most ambitious; needs a real frame sequence.</p>
+      <div class="bar"><span class="sys">100%&nbsp;&nbsp;Wed&nbsp;3:14</span>
+        <div class="gwrap"><svg class="glyph crush" viewBox="0 0 24 24" data-anim="crush">
+          <g class="whole"><use href="#on"/></g>
+          <rect class="shard s1" x="9" y="5" width="4" height="4"/>
+          <rect class="shard s2" x="13" y="8" width="4" height="3"/>
+          <rect class="shard s3" x="8" y="11" width="3" height="4"/>
+          <rect class="shard s4" x="12" y="12" width="4" height="4"/>
+        </svg></div></div>
+      <div class="ctl"><button data-t="crush">play</button><span class="tag">shatter → reform</span></div>
+    </div>
+  </div>
+
+  <h2>③ Popover celebration (C4) — where rich motion is free</h2>
+  <p class="note">The dashboard popover is a real SwiftUI window, so it can animate fully. On a clean, the
+    <code>cleaned</code> count bumps with a number pop + a small cotton confetti burst (and an optional toast). Pairs with any menu-bar cue above.</p>
+  <div class="pop-wrap">
+    <div class="sheet" id="cel">
+      <div class="row"><span class="hd">sugarfree</span><span style="font:600 9px var(--mono);color:var(--p-ink);background:rgba(255,111,181,.16);padding:3px 8px;border-radius:20px">ACTIVE</span></div>
+      <div class="tile" id="tile">
+        <span class="confetti"><i class="cf"></i><i class="cf"></i><i class="cf"></i><i class="cf"></i><i class="cf"></i></span>
+        <span class="n" id="num">12</span><span class="k">cleaned</span>
+      </div>
+      <div class="toast">✨ bold &amp; italic stripped</div>
+    </div>
+    <div class="ctl" style="margin-top:0"><button id="celebrate">play clean</button><span class="tag">count pop + confetti</span></div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute">
+    <g id="on">
+      <path d="M7 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 10a3.5 3.5 0 0 0 -7 0" />
+      <path d="M14 10a3.5 3.5 0 0 1 -7 0" /><path d="M14 17a3.5 3.5 0 0 0 0 -7" />
+      <path d="M14 3a3.5 3.5 0 0 0 0 7" /><path d="M3 21l6 -6" />
+    </g>
+    <g id="off">
+      <path d="M7.462 7.493a7 7 0 0 0 9.06 9.039m2.416 -1.57a7 7 0 1 0 -9.884 -9.915" />
+      <path d="M21 10a3.5 3.5 0 0 0 -7 0" /><path d="M12.71 12.715a3.5 3.5 0 0 1 -5.71 -2.715" />
+      <path d="M14 17c.838 0 1.607 -.294 2.209 -.785m1.291 -2.715a3.5 3.5 0 0 0 -3.5 -3.5" />
+      <path d="M14 3a3.5 3.5 0 0 0 -3.5 3.5" /><path d="M3 21l6 -6" /><path d="M3 3l18 18" />
+    </g>
+  </svg>
+
+<script>
+  function fire(el){ el.classList.remove('run'); void el.offsetWidth; el.classList.add('run'); }
+  const anims = [...document.querySelectorAll('.glyph[data-anim]')];
+  document.querySelectorAll('.ctl button[data-t]').forEach(b =>
+    b.addEventListener('click', () => fire(document.querySelector('.glyph.' + b.dataset.t))));
+  anims.forEach((el,i)=> setTimeout(()=>{ fire(el); setInterval(()=>fire(el), 2800); }, 500 + i*450));
+
+  // popover celebration
+  const tile = document.getElementById('tile'), sheet = document.getElementById('cel'), num = document.getElementById('num');
+  let count = 12;
+  function celebrate(){ count++; num.textContent = count;
+    tile.classList.remove('run'); sheet.classList.remove('run'); void tile.offsetWidth;
+    tile.classList.add('run'); sheet.classList.add('run'); }
+  document.getElementById('celebrate').addEventListener('click', celebrate);
+  setTimeout(()=>{ celebrate(); setInterval(celebrate, 3000); }, 900);
+</script>
+</body>
+</html>
