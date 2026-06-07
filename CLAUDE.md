@@ -51,6 +51,11 @@ clipboard representation that carries it.
   and build-workflow recipes in `hooks/README.md`.
 - Logic tests live in SwiftPM (`Tests/SugarCoreTests/`, run with `swift test`) — they
   replace the old Xcode `SugarfreeTests` target.
+- Distribution differs by platform: the macOS `.dmg` **bundles** the universal CLI
+  inside the app (`Contents/Resources/sugarfree`, embedded + signed in `release.sh`),
+  and the app symlinks it to `/usr/local/bin/sugarfree` on first launch (`CLIInstaller`,
+  admin-prompt only if needed). Linux/Windows ship the CLI **only** (no app), as binaries
+  from the tagged `release.yml` build.
 
 ## Build
 

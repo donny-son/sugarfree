@@ -106,6 +106,49 @@ xcodebuild -exportArchive \
     -exportPath "$EXPORT_DIR" \
     -exportOptionsPlist "$EXPORT_OPTIONS"
 
+# --- 3.5 embed the universal CLI in the app bundle ----------------------------
+#
+# Ship `sugarfree` (the cross-platform CLI) inside the app so a DMG install also
+# provides the command line. The app symlinks it onto PATH on first launch
+# (CLIInstaller). The binary is signed (hardened runtime) and the app is then
+# re-signed so its resource seal covers the new file — both required for
+# notarization.
+
+echo "==> Building universal sugarfree CLI..."
+require swift "install Xcode command line tools"
+swift build -c release --arch arm64 --arch x86_64 --product sugarfree
+CLI_SRC="$SCRIPT_DIR/.build/apple/Products/Release/sugarfree"
+if [[ ! -f "$CLI_SRC" ]]; then
+    echo "error: built CLI not found at $CLI_SRC" >&2
+    exit 1
+fi
+
+CLI_DEST="$APP_PATH/Contents/Resources/sugarfree"
+cp "$CLI_SRC" "$CLI_DEST"
+chmod +x "$CLI_DEST"
+
+# Resolve the Developer ID Application identity (SHA-1) for signing.
+SIGN_HASH=$(security find-identity -v -p codesigning \
+    | awk '/Developer ID Application/ {print $2; exit}')
+if [[ -z "$SIGN_HASH" ]]; then
+    echo "error: could not resolve a Developer ID Application identity" >&2
+    exit 1
+fi
+
+echo "==> Signing embedded CLI..."
+codesign --force --options runtime --timestamp -s "$SIGN_HASH" "$CLI_DEST"
+
+echo "==> Re-signing app bundle (resealing resources)..."
+APP_ENT="$BUILD_DIR/app-entitlements.plist"
+codesign -d --entitlements - --xml "$APP_PATH" > "$APP_ENT" 2>/dev/null || true
+if [[ -s "$APP_ENT" ]]; then
+    codesign --force --options runtime --timestamp \
+        --entitlements "$APP_ENT" -s "$SIGN_HASH" "$APP_PATH"
+else
+    codesign --force --options runtime --timestamp -s "$SIGN_HASH" "$APP_PATH"
+fi
+codesign --verify --deep --strict "$APP_PATH"
+
 # --- 4. package a styled DMG --------------------------------------------------
 
 echo "==> Building DMG..."

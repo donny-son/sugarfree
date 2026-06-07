@@ -90,9 +90,17 @@ sugarfree --all notes.md                             # strip every sugar from a 
 sugarfree --none --tables in.md                      # just flatten tables to YAML
 ```
 
-Prebuilt binaries for macOS (universal), Linux (x86_64 / arm64), and Windows are
-attached to each [release](https://github.com/donny-son/sugarfree/releases). See
-[`cli/README.md`](cli/README.md) for the full flag reference and
+**How to get it per platform:**
+
+- **macOS** — the `.dmg` app **bundles the CLI**. On first launch Sugarfree symlinks
+  `sugarfree` into `/usr/local/bin` for you (prompting for admin only if needed), so
+  it just works in your terminal after you install the app. A standalone macOS CLI
+  tarball is also attached to each release if you want only the CLI.
+- **Linux / Windows** — download the CLI binary for your platform from the
+  [releases](https://github.com/donny-son/sugarfree/releases) (there's no desktop app
+  on these platforms — it's CLI-only).
+
+See [`cli/README.md`](cli/README.md) for the full flag reference and
 [`hooks/README.md`](hooks/README.md) for harness/CI recipes.
 
 ## How it works

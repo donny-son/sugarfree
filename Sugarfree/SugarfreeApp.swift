@@ -36,6 +36,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard !UserDefaults.standard.bool(forKey: Self.hasCompletedOnboardingKey) else {
+            // Returning user (including the first launch after an update): make sure
+            // the bundled CLI is linked onto PATH. Runs at most once per machine.
+            CLIInstaller.installIfNeeded()
             return
         }
         // Delay so the app finishes launching and can properly activate
@@ -78,6 +81,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         onboardingWindow?.close()
         onboardingWindow = nil
         NSApp.setActivationPolicy(.accessory)
+        // First run done — now link the bundled CLI onto PATH (may prompt for admin).
+        CLIInstaller.installIfNeeded()
     }
 }
 
