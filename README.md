@@ -76,6 +76,25 @@ open Sugarfree.xcodeproj
    set the polling interval, and see an activity summary — all in one place.
 3. Copy formatted text from anywhere — paste it, and the sugar is gone.
 
+## Command-line tool
+
+The same stripping and table-transform logic ships as a cross-platform CLI,
+`sugarfree`, for use in shell pipelines, AI-harness hooks, and build steps. It
+reuses the shared [`SugarCore`](Sources/SugarCore) package, so its behavior never
+drifts from the app.
+
+```bash
+swift build -c release --product sugarfree          # build it
+printf '**bold** and *italic*' | sugarfree           # → "bold and italic"
+sugarfree --all notes.md                             # strip every sugar from a file
+sugarfree --none --tables in.md                      # just flatten tables to YAML
+```
+
+Prebuilt binaries for macOS (universal), Linux (x86_64 / arm64), and Windows are
+attached to each [release](https://github.com/donny-son/sugarfree/releases). See
+[`cli/README.md`](cli/README.md) for the full flag reference and
+[`hooks/README.md`](hooks/README.md) for harness/CI recipes.
+
 ## How it works
 
 Sugarfree polls `NSPasteboard.general.changeCount` on the chosen interval. When

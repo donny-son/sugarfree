@@ -18,6 +18,12 @@ settings:
     ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     ENABLE_HARDENED_RUNTIME: YES
 
+# SugarCore is the shared logic, vended by the SwiftPM package at the repo root
+# (Package.swift). The app links it so the stripping rules never drift from the CLI.
+packages:
+  SugarCore:
+    path: .
+
 targets:
   Sugarfree:
     type: application
@@ -32,26 +38,12 @@ targets:
           - Fonts
       - path: Sugarfree/Fonts
         type: folder
+    dependencies:
+      - package: SugarCore
+        product: SugarCore
     settings:
       base:
         PRODUCT_MODULE_NAME: Sugarfree
-        CODE_SIGN_ENTITLEMENTS: ""
-
-  SugarfreeTests:
-    type: bundle.unit-test
-    platform: macOS
-    # Logic tests: compile the (pure-Foundation) converter straight into the test
-    # module so no app test-host / @testable wiring is needed.
-    sources:
-      - path: Tests
-      - path: Sugarfree/TableConverter.swift
-    settings:
-      base:
-        PRODUCT_NAME: SugarfreeTests
-        PRODUCT_MODULE_NAME: SugarfreeTests
-        PRODUCT_BUNDLE_IDENTIFIER: com.sugarfree.tests
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_FILE: ""
         CODE_SIGN_ENTITLEMENTS: ""
 
 schemes:
@@ -59,10 +51,6 @@ schemes:
     build:
       targets:
         Sugarfree: all
-        SugarfreeTests: [test]
-    test:
-      targets:
-        - SugarfreeTests
     run:
       config: Debug
     archive:

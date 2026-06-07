@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: build & test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # macOS ships Swift with Xcode; Linux needs the toolchain installed.
+      - name: Set up Swift (Linux)
+        if: runner.os == 'Linux'
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.10"
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build SugarCore + CLI
+        run: swift build
+
+      - name: Run logic tests
+        run: swift test
+
+      - name: Smoke-test the CLI
+        run: |
+          OUT=$(printf '**bold** and *italic*' | swift run sugarfree)
+          echo "got: [$OUT]"
+          [ "$OUT" = "bold and italic" ]
