@@ -191,50 +191,33 @@ struct MenuBarDashboard: View {
     }
 }
 
-struct MenuBarStatusIcon: View {
-    @ObservedObject var monitor: PasteboardMonitor
-
-    /// Drives the "crush" cleanup cue. A `MenuBarExtra` label is snapshotted by AppKit, so
-    /// implicit SwiftUI animation doesn't render in the bar — instead a timer advances an
-    /// explicit 0…1 keyframe value and the glyph is rebuilt per tick (a real frame sequence).
-    @StateObject private var crush = CrushAnimator()
-
-    private var state: MonitorInterfaceState { monitor.interfaceState }
+/// The menu-bar icon as a pure, presentational view: the crush glyph for a given keyframe plus
+/// the state dot. `MenuBarStatusItemController` renders this to an `NSImage` with
+/// `isTemplate = false`, so the dot's state color survives (a `MenuBarExtra` label would be
+/// forced monochrome, collapsing active and idle). The glyph stays monochrome — it's drawn in
+/// `Color.primary`, which the controller resolves against the menu bar's current appearance.
+struct MenuBarIcon: View {
+    let state: MonitorInterfaceState
+    var progress: Double = 1
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            CrushGlyph(progress: crush.progress, baseOpacity: glyphOpacity)
+            CrushGlyph(progress: progress, baseOpacity: glyphOpacity)
 
             // The status dot is the at-a-glance "is it on?" signal (cotton = active,
-            // amber = idle, hollow = paused). It's an indicator, not the glyph, so a solid
-            // color here doesn't break the "menu-bar glyph stays monochrome" rule.
+            // amber = idle, hollow = paused). It's an indicator, not the glyph, so its color
+            // doesn't break the "menu-bar glyph stays monochrome" rule.
             StatusDot(state: state)
         }
         .frame(width: 18, height: 18)
-        .accessibilityLabel(accessibilityLabel)
-        .onChange(of: monitor.cleanupPulse) { _ in crush.start() }
     }
 
     // The dot carries the state; opacity just reinforces paused as clearly "off".
     private var glyphOpacity: Double {
         switch state {
-        case .active:
-            return 1.0
-        case .idle:
-            return 0.85
-        case .paused:
-            return 0.5
-        }
-    }
-
-    private var accessibilityLabel: String {
-        switch state {
-        case .active:
-            return "Sugarfree active"
-        case .paused:
-            return "Sugarfree paused"
-        case .idle:
-            return "Sugarfree needs a format enabled"
+        case .active: return 1.0
+        case .idle:   return 0.85
+        case .paused: return 0.5
         }
     }
 }
@@ -267,43 +250,6 @@ private struct StatusDot: View {
 
     private var strokeWidth: CGFloat {
         state == .paused ? 1.5 : 0
-    }
-}
-
-/// Timer-driven keyframe for the menu-bar crush cue. `progress` rests at `1` (plain glyph)
-/// and runs `0 → 1` over `duration` whenever `start()` is called.
-@MainActor
-private final class CrushAnimator: ObservableObject {
-    @Published private(set) var progress: Double = 1
-
-    private var timer: Timer?
-    private var startedAt: Date?
-    private let duration: Double = 0.62
-    private let frameInterval: Double = 1.0 / 30.0
-
-    func start() {
-        stop()
-        startedAt = Date()
-        progress = 0
-
-        let timer = Timer(timeInterval: frameInterval, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                guard let self, let startedAt = self.startedAt else { return }
-                let elapsed = Date().timeIntervalSince(startedAt)
-                self.progress = min(1, elapsed / self.duration)
-                if self.progress >= 1 {
-                    self.stop()
-                }
-            }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        self.timer = timer
-    }
-
-    private func stop() {
-        timer?.invalidate()
-        timer = nil
-        startedAt = nil
     }
 }
 
