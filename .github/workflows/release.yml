@@ -3,11 +3,13 @@ name: Release CLI
 # Builds the cross-platform `sugarfree` CLI for every target and attaches the
 # archives (+ SHA256 checksums) to the GitHub Release for the pushed tag.
 #
-# This is additive: the macOS *app* DMG is still produced by release.sh and is
-# untouched here.
+# The CLI and the macOS app are released on SEPARATE tracks so they never share a
+# GitHub release. This workflow owns the CLI track and fires ONLY on `cli-v*` tags
+# (e.g. cli-v1.4.0). The macOS app DMG is its own track: `app-v*` tags, built and
+# published by release.sh — see RELEASING.md.
 on:
   push:
-    tags: ["v*"]
+    tags: ["cli-v*"]
   workflow_dispatch:
 
 permissions:
@@ -72,7 +74,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Tag is `cli-v1.4.0`; drop the track prefix so assets read sugarfree-v1.4.0-…
           VERSION="${GITHUB_REF_NAME:-dev}"
+          VERSION="${VERSION#cli-}"
           DIST="sugarfree-${VERSION}-${{ matrix.name }}"
           mkdir -p "dist/${DIST}"
           cp "${{ matrix.bin }}" "dist/${DIST}/"

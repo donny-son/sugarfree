@@ -1,5 +1,18 @@
 # Releasing Sugarfree
 
+Sugarfree ships on **two independent release tracks** — they never share a tag or a
+GitHub release:
+
+| Track | Tag prefix | Produced by | Assets |
+|---|---|---|---|
+| macOS app | `app-v<version>` | `./release.sh` (local, notarized) | `Sugarfree-<version>.dmg` |
+| Cross-platform CLI | `cli-v<version>` | `.github/workflows/release.yml` (CI) | `sugarfree-<version>-<platform>` tarballs/zip + `.sha256` |
+
+The two can version independently (they happen to both be 1.4.0 today). The app DMG
+still bundles a copy of the CLI inside it, but the standalone CLI binaries are a
+separate, CI-built release. The rest of this doc covers the **macOS app** track; the
+CLI track is just "push a `cli-v*` tag" (see the bottom).
+
 How to cut a signed, **notarized** `.dmg` and publish it. The whole pipeline is one
 command — `./release.sh` — once the one-time setup below is in place.
 
@@ -48,8 +61,9 @@ All of this is done once per machine; none of it is in the repo.
    > Because the CLI ships inside the app, a DMG install also provides the
    > command line: the app symlinks it to `/usr/local/bin/sugarfree` on first launch
    > (`CLIInstaller`, prompting for admin only if that directory isn't writable).
-   > Standalone CLI binaries for Linux/Windows (and a macOS-only tarball) come from
-   > the separate `.github/workflows/release.yml` tag build.
+   > Standalone CLI binaries for Linux/Windows (and a macOS-only tarball) are a
+   > **separate track** — pushed as `cli-v*` tags (see below), never mixed into the
+   > app's `app-v*` release.
 
 ## Verify (already done by the script, but to double-check)
 
@@ -67,13 +81,29 @@ Note: `spctl -t open` on the **DMG** reports "no usable signature" — that's ex
 authoritative checks are `stapler validate` and the app's `Notarized Developer ID`
 assessment above.
 
-## Publish to GitHub
+## Publish the app to GitHub (`app-v*` track)
 
 ```bash
-gh release upload v<version> dist/Sugarfree-<version>.dmg --clobber
+gh release upload app-v<version> dist/Sugarfree-<version>.dmg --clobber
 # or, for a brand-new tag:
-gh release create v<version> dist/Sugarfree-<version>.dmg --title "Sugarfree v<version>" --generate-notes
+git tag app-v<version> && git push origin app-v<version>
+gh release create app-v<version> dist/Sugarfree-<version>.dmg \
+  --title "Sugarfree <version>" --generate-notes
 ```
+
+## Cut a CLI release (`cli-v*` track)
+
+The CLI is built entirely by CI — no local toolchain dance. Just push a `cli-v*` tag
+and `.github/workflows/release.yml` builds macOS-universal, Linux x86_64/arm64, and
+Windows, then attaches the archives (+ `.sha256`) to a `cli-v<version>` GitHub release:
+
+```bash
+# bump version: Sources/sugarfree/Sugarfree.swift (CommandConfiguration version:)
+git tag cli-v<version> && git push origin cli-v<version>
+```
+
+Watch it: `gh run watch "$(gh run list --workflow=release.yml -L1 --json databaseId -q '.[0].databaseId')"`.
+Windows is `continue-on-error` (the least-stable leg), so it never blocks the release.
 
 ## Troubleshooting
 

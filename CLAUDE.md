@@ -65,7 +65,11 @@ clipboard representation that carries it.
   inside the app (`Contents/Resources/sugarfree`, embedded + signed in `release.sh`),
   and the app symlinks it to `/usr/local/bin/sugarfree` on first launch (`CLIInstaller`,
   admin-prompt only if needed). Linux/Windows ship the CLI **only** (no app), as binaries
-  from the tagged `release.yml` build.
+  from the CLI release build.
+- The app and the CLI are **separate release tracks** — they never share a tag or a
+  GitHub release. macOS app: `app-v*` tags, DMG built/published by `release.sh`. CLI:
+  `cli-v*` tags, archives built by `release.yml` CI. They may version independently.
+  See `RELEASING.md`.
 
 ## Build
 
@@ -85,9 +89,10 @@ swift test                               # run SugarCore logic tests
 swift build -c release --product sugarfree
 ```
 
-CI builds/tests on macOS + Linux (`.github/workflows/ci.yml`); tagged releases produce
-CLI binaries for macOS-universal, Linux x86_64/arm64, and Windows
-(`.github/workflows/release.yml`). The macOS app DMG is still produced by `release.sh`.
+CI builds/tests on macOS + Linux (`.github/workflows/ci.yml`). Pushing a `cli-v*` tag
+produces CLI binaries for macOS-universal, Linux x86_64/arm64, and Windows
+(`.github/workflows/release.yml`) on a `cli-v*` GitHub release. The macOS app DMG is a
+separate track — `app-v*` tags, produced by `release.sh`.
 
 For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 `Configs/LocalSigning.xcconfig` and fill in your team identity.
