@@ -2,8 +2,9 @@
 
 Strip formatting "sugar" from clipboard content — a macOS menu-bar utility.
 
-> This repo is the macOS app (at the repo root). A Chrome extension counterpart solves the
-> same problem at copy-time but lives in a separate repo and is not included here; the parity
+> This repo is the macOS app (at the repo root) **plus** a cross-platform `sugarfree` CLI
+> that shares the same stripping logic. A Chrome extension counterpart solves the same
+> problem at copy-time but lives in a separate repo and is not included here; the parity
 > note in the design contract applies if/when that counterpart changes.
 
 ## Why
@@ -43,15 +44,50 @@ clipboard representation that carries it.
   TOML list items via `TableConverter` (pure Foundation). Transforms reshape content
   (lossy), so they default to off and live in their own dashboard section
 - Tracks `selfWriteCount` to prevent infinite loops
-- Bundle ID `com.sugarfree.app`; source lives in `Sugarfree/`
+- Bundle ID `com.sugarfree.app`; app source lives in `Sugarfree/`
+
+## Shared core + CLI (cross-platform)
+
+- The stripping/transform logic is the **single source of truth** in the SwiftPM
+  package at the repo root (`Package.swift`): the `SugarCore` library holds `Sugar`,
+  `Transform`, `TransformOutputFormat`, `stripHTML`/`stripPlainText`/`stripRTF`
+  (`Sources/SugarCore/`), and `TableConverter`. The macOS app links `SugarCore`
+  (via `packages:`/`dependencies:` in `project.yml`) instead of defining these itself —
+  so the app and CLI can never drift. **Change stripping behavior in `SugarCore` only.**
+- `stripRTF` needs AppKit, so it is gated `#if canImport(AppKit)` — macOS only. The
+  pure HTML/plain-text/table logic compiles on Linux and Windows too.
+- `sugarfree` (`Sources/sugarfree/`) is a `swift-argument-parser` CLI: a stdin→stdout
+  filter mirroring the app's defaults (bold+italic on). Docs in `cli/README.md`; AI-harness
+  and build-workflow recipes in `hooks/README.md`.
+- Logic tests live in SwiftPM (`Tests/SugarCoreTests/`, run with `swift test`) — they
+  replace the old Xcode `SugarfreeTests` target.
+- Distribution differs by platform: the macOS `.dmg` **bundles** the universal CLI
+  inside the app (`Contents/Resources/sugarfree`, embedded + signed in `release.sh`),
+  and the app symlinks it to `/usr/local/bin/sugarfree` on first launch (`CLIInstaller`,
+  admin-prompt only if needed). Linux/Windows ship the CLI **only** (no app), as binaries
+  from the tagged `release.yml` build.
 
 ## Build
+
+macOS app (unchanged):
 
 ```bash
 ./build.sh            # generate the xcodeproj (XcodeGen) + xcodebuild
 ./build.sh --run      # build then launch
 open Sugarfree.xcodeproj   # open in Xcode
 ```
+
+CLI + shared core (any platform with Swift 5.9+):
+
+```bash
+swift build                              # build SugarCore + sugarfree
+swift test                               # run SugarCore logic tests
+swift build -c release --product sugarfree
+```
+
+CI builds/tests on macOS + Linux (`.github/workflows/ci.yml`); tagged releases produce
+CLI binaries for macOS-universal, Linux x86_64/arm64, and Windows
+(`.github/workflows/release.yml`). The macOS app DMG is still produced by `release.sh`.
 
 For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 `Configs/LocalSigning.xcconfig` and fill in your team identity.

@@ -39,9 +39,17 @@ All of this is done once per machine; none of it is in the repo.
    ./release.sh
    ```
    This generates the project, archives the Release config (Developer ID signed,
-   hardened runtime), exports the app, packages a styled DMG with `create-dmg`,
+   hardened runtime), exports the app, **builds the universal `sugarfree` CLI and
+   embeds it in the app bundle** (`Contents/Resources/sugarfree`, signed; the app is
+   re-signed to reseal its resources), packages a styled DMG with `create-dmg`,
    submits it to Apple's notary service (`notarytool --wait`), then staples and
    validates the ticket. Output: `dist/Sugarfree-<version>.dmg`.
+
+   > Because the CLI ships inside the app, a DMG install also provides the
+   > command line: the app symlinks it to `/usr/local/bin/sugarfree` on first launch
+   > (`CLIInstaller`, prompting for admin only if that directory isn't writable).
+   > Standalone CLI binaries for Linux/Windows (and a macOS-only tarball) come from
+   > the separate `.github/workflows/release.yml` tag build.
 
 ## Verify (already done by the script, but to double-check)
 

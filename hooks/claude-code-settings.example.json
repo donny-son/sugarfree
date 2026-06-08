@@ -1,0 +1,31 @@
+{
+  "// note": "Illustrative Claude Code hooks wiring sugarfree in. Merge the pieces you want into your .claude/settings.json. Adjust the absolute path to the sugarfree binary (or the strip-clipboard.sh wrapper).",
+
+  "hooks": {
+    "// Stop": "After Claude finishes a turn, clean any rich text left on the clipboard so the next paste is plain.",
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/local/bin/sugarfree --clipboard --all || true"
+          }
+        ]
+      }
+    ],
+
+    "// UserPromptSubmit": "Strip emphasis markers out of a submitted prompt before Claude sees it. Reads the hook JSON on stdin, rewrites the 'prompt' field through sugarfree, and prints it back.",
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json,subprocess; d=json.load(sys.stdin); p=d.get('prompt',''); out=subprocess.run(['/usr/local/bin/sugarfree','--all'],input=p,capture_output=True,text=True).stdout; print(out)\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -9,8 +9,8 @@ import Foundation
 /// every following row becomes one list entry mapping `header: cell`. This is
 /// lossless for any column count and avoids guessing which column is the "key".
 /// Best-effort by design — regex-based HTML parsing (no DOM), like the strippers.
-enum TableConverter {
-    enum Format {
+public enum TableConverter {
+    public enum Format: Sendable {
         case yaml
         case toml
     }
@@ -19,7 +19,7 @@ enum TableConverter {
 
     /// Replaces every Markdown pipe table in `text` with its converted form.
     /// Returns the rewritten text and the number of tables converted (0 = unchanged).
-    static func convertMarkdownTables(in text: String, format: Format) -> (String, Int) {
+    public static func convertMarkdownTables(in text: String, format: Format) -> (String, Int) {
         let lines = text.components(separatedBy: "\n")
         var output: [String] = []
         var count = 0
@@ -139,7 +139,7 @@ enum TableConverter {
 
     /// Replaces every `<table>…</table>` with a `<pre>` block holding the converted
     /// list, so rich paste targets receive the YAML/TOML instead of the table.
-    static func convertHTMLTables(in html: String, format: Format) -> (String, Int) {
+    public static func convertHTMLTables(in html: String, format: Format) -> (String, Int) {
         guard let regex = try? NSRegularExpression(pattern: "<table[^>]*>.*?</table>",
                                                    options: [.caseInsensitive, .dotMatchesLineSeparators]) else {
             return (html, 0)

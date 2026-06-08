@@ -1,4 +1,5 @@
 import AppKit
+import SugarCore
 import SwiftUI
 
 struct MenuBarDashboard: View {
