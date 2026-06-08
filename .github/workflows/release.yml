@@ -22,29 +22,38 @@ jobs:
         include:
           - name: macos-universal
             os: macos-latest
+            container: ""
             setup_swift: false
             build: swift build -c release --arch arm64 --arch x86_64 --product sugarfree
             bin: .build/apple/Products/Release/sugarfree
             archive: tar
+          # Linux legs build inside the official Swift images — far more reliable than
+          # provisioning a toolchain on the bare runner (the setup-swift action is flaky
+          # on arm64). The image is multi-arch, so the same tag pulls the arm64 variant
+          # on the arm runner.
           - name: linux-x86_64
             os: ubuntu-latest
-            setup_swift: true
+            container: swift:6.0-jammy
+            setup_swift: false
             build: swift build -c release --static-swift-stdlib --product sugarfree
             bin: .build/release/sugarfree
             archive: tar
           - name: linux-arm64
             os: ubuntu-24.04-arm
-            setup_swift: true
+            container: swift:6.0-jammy
+            setup_swift: false
             build: swift build -c release --static-swift-stdlib --product sugarfree
             bin: .build/release/sugarfree
             archive: tar
           - name: windows-x86_64
             os: windows-latest
+            container: ""
             setup_swift: true
             build: swift build -c release --product sugarfree
             bin: .build/release/sugarfree.exe
             archive: zip
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     # Swift-on-Windows CI is the least stable leg; don't let it block the others.
     continue-on-error: ${{ matrix.name == 'windows-x86_64' }}
     steps:
@@ -54,7 +63,7 @@ jobs:
         if: matrix.setup_swift
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "5.10"
+          swift-version: "6.0"
 
       - name: Build
         run: ${{ matrix.build }}
