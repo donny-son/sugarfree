@@ -89,16 +89,52 @@ swift test                               # run SugarCore logic tests
 swift build -c release --product sugarfree
 ```
 
-CI builds/tests on macOS + Linux (`.github/workflows/ci.yml`). Pushing a `cli-v*` tag
-produces CLI binaries for macOS-universal, Linux x86_64/arm64, and Windows
-(`.github/workflows/release.yml`) on a `cli-v*` GitHub release. The macOS app DMG is a
-separate track — `app-v*` tags, produced by `release.sh`.
+CI builds/tests on macOS + Linux (`.github/workflows/ci.yml`). Releases are two
+independent tracks (app + CLI) — see **Releasing** below.
 
 For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 `Configs/LocalSigning.xcconfig` and fill in your team identity.
 
 > Build settings live in `Configs/Base.xcconfig` (PRODUCT_NAME, bundle ID, INFOPLIST_FILE)
 > — these override `project.yml`'s base settings, so change names in both.
+
+## Releasing
+
+The macOS app and the cross-platform CLI ship on **two independent tracks** that never
+share a tag or a GitHub release (they may version independently — they happen to both be
+at 1.4.0 today). Full runbook in `RELEASING.md`; the summary:
+
+| Track | Tag | Built by | Published assets |
+|---|---|---|---|
+| macOS app | `app-v<ver>` | `./release.sh` (local) | `Sugarfree-<ver>.dmg` — Developer ID-signed + notarized; **bundles the CLI** |
+| CLI | `cli-v<ver>` | `.github/workflows/release.yml` (CI) | `sugarfree-<ver>-<platform>` tarballs/zip + `.sha256` |
+
+Both start by bumping the version, then pushing a track-prefixed tag:
+
+- **App** — bump `MARKETING_VERSION` (+ `CURRENT_PROJECT_VERSION`) in **both**
+  `Configs/Base.xcconfig` and `project.yml`. Run `./release.sh` (archives Release,
+  embeds + signs the universal CLI in the bundle, then builds + notarizes + staples the
+  DMG into `dist/`). Then `git tag app-v<ver> && git push origin app-v<ver>` and
+  `gh release create app-v<ver> dist/Sugarfree-<ver>.dmg`. Needs Apple Developer ID +
+  notary creds locally — CI cannot do this leg.
+- **CLI** — bump `version:` in `Sources/sugarfree/Sugarfree.swift`, then
+  `git tag cli-v<ver> && git push origin cli-v<ver>`. CI builds and publishes the rest.
+
+`release.yml` is shaped around two failure modes already fixed (don't regress them):
+
+- **Build matrix uploads artifacts only; a single `release` job (`needs: build`)
+  downloads them all and attaches in one `action-gh-release` call.** Attaching from each
+  matrix leg in parallel raced — duplicate draft releases + intermittent "Server Error"
+  uploads.
+- **Linux legs build inside the official `swift:6.0-jammy` container** (multi-arch, so the
+  same tag covers arm64); the `setup-swift` action was unreliable on the bare arm64
+  runner. The job strips the `cli-` tag prefix so assets read `sugarfree-<ver>-…`.
+- **Windows is best-effort (`continue-on-error`)** — `setup-swift` can't currently resolve
+  a Swift version on its runner, so no Windows binary is produced. It never blocks the
+  release; this is a known open item.
+
+Current published releases: `app-v1.4.0` (DMG) and `cli-v1.4.0` (macOS-universal + Linux
+x86_64/arm64; no Windows).
 
 ## Design workflow (contract)
 
