@@ -83,6 +83,11 @@ enum Cotton {
     static let tint = Color(lightHex: 0xFF6FB5, darkHex: 0xFF8AC4, alpha: 0.16)
     /// Deep-pink text on a cotton tint.
     static let ink = Color(lightHex: 0xC8327E, darkHex: 0xFF9ECB)
+
+    /// Discrete candy colors for celebratory bursts — the gradient stops as individual
+    /// chips (menu-bar crush shards, popover confetti). A momentary, deliberate exception
+    /// to "no gradient/brand color on a body surface".
+    static let candy: [Color] = [g1, g2, g3]
 }
 
 // MARK: - Wordmark
@@ -212,6 +217,59 @@ struct CottonPrimaryButtonStyle: ButtonStyle {
             .shadow(color: Cotton.accent.opacity(0.35), radius: 8, y: 2)
             .opacity(isEnabled ? (configuration.isPressed ? 0.7 : 1) : 0.35)
             .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Keycap (shortcut hint)
+
+/// A single keyboard keycap — paper surface, hard 1px ink border, and the brand's hard
+/// offset shadow (the same language as `SurfaceSheet`). Renders one glyph (`⌘`, `⇧`, `P`…)
+/// in mono at a fixed height so a row of caps lines up cleanly.
+struct Keycap: View {
+    let label: String
+
+    var body: some View {
+        Text(label)
+            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+            .foregroundStyle(Surface.text)
+            .frame(minWidth: 12)
+            .frame(height: 20)
+            .padding(.horizontal, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Surface.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .strokeBorder(Surface.border, lineWidth: 1)
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Surface.border)
+                    .offset(x: 1.5, y: 1.5)
+            )
+    }
+}
+
+/// A shortcut hint: a run of `Keycap`s for the key combo, then a plain-language action label.
+struct ShortcutHint: View {
+    let keys: [String]
+    let action: String
+
+    var body: some View {
+        HStack(spacing: 7) {
+            HStack(spacing: 4) {
+                ForEach(Array(keys.enumerated()), id: \.offset) { _, key in
+                    Keycap(label: key)
+                }
+            }
+
+            Text(action)
+                .font(.system(size: 12))
+                .foregroundStyle(Surface.secondary)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(keys.joined(separator: " ")) \(action)")
     }
 }
 

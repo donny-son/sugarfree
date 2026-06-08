@@ -18,9 +18,19 @@ clipboard representation that carries it.
 
 ## Architecture (macOS app)
 
-- SwiftUI `MenuBarExtra` utility (macOS 13+), `LSUIElement` (no Dock icon)
-- Single custom menu-bar dashboard (`MenuBarDashboard`) holding all status, controls,
-  format preferences, and the polling-interval picker (no separate Settings window)
+- macOS 13+ menu-bar utility, `LSUIElement` (no Dock icon). The `App` scene is an empty
+  `Settings` window; the menu bar is an AppKit `NSStatusItem` driven by
+  `MenuBarStatusItemController` (see below), not SwiftUI `MenuBarExtra`
+- Why `NSStatusItem` and not `MenuBarExtra`: a `MenuBarExtra` label is snapshotted into a
+  *template* image (`isTemplate = true`), so macOS strips all color — the state dot and the
+  crush shards would render flat monochrome. The controller renders the SwiftUI icon
+  (`MenuBarIcon`) to an `NSImage` with `isTemplate = false` (color survives), advances the
+  crush keyframe via a timer (`CrushAnimator`) re-rendering each tick, and toggles an
+  `NSPopover` hosting the dashboard. The glyph stays monochrome by rendering in the menu
+  bar's current appearance (`Color.primary`); only the dot/shards carry color
+- Single custom menu-bar dashboard (`MenuBarDashboard`, shown in the `NSPopover`) holding all
+  status, controls, format preferences, and the polling-interval picker (no separate Settings
+  window)
 - Built as a real Xcode macOS app target generated from `project.yml` via XcodeGen
 - Polls `NSPasteboard.general.changeCount` on a configurable interval (`PasteboardMonitor`)
 - Strips the enabled sugars from RTF (font traits + underline/strikethrough attributes),

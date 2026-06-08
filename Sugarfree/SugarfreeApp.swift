@@ -1,30 +1,16 @@
+import AppKit
 import SwiftUI
 
 @main
 struct SugarfreeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var monitor = PasteboardMonitor()
 
     var body: some Scene {
-        MenuBarExtra {
-            MenuBarDashboard(monitor: monitor)
-        } label: {
-            MenuBarStatusIcon(monitor: monitor)
-        }
-        .menuBarExtraStyle(.window)
-        .commands {
-            CommandMenu("Sugarfree") {
-                Button(monitor.isEnabled ? "Pause Automatic Cleanup" : "Resume Automatic Cleanup") {
-                    monitor.isEnabled.toggle()
-                }
-                .keyboardShortcut("P", modifiers: [.command, .shift])
-
-                Button("Clean Clipboard Now") {
-                    monitor.cleanClipboardManually()
-                }
-                .keyboardShortcut("k", modifiers: [.command, .shift])
-                .disabled(!monitor.hasWork)
-            }
+        // The menu bar is driven entirely by an AppKit `NSStatusItem` (see
+        // `MenuBarStatusItemController`) so the icon can render in color. This empty Settings
+        // scene just gives the `App` a valid (window-less) body for the `LSUIElement` agent.
+        Settings {
+            EmptyView()
         }
     }
 }
@@ -32,9 +18,13 @@ struct SugarfreeApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private static let hasCompletedOnboardingKey = "hasCompletedOnboarding"
+    private let monitor = PasteboardMonitor()
+    private var statusController: MenuBarStatusItemController?
     private var onboardingWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        statusController = MenuBarStatusItemController(monitor: monitor)
+
         guard !UserDefaults.standard.bool(forKey: Self.hasCompletedOnboardingKey) else {
             return
         }

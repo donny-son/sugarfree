@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */; };
 		18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2975DF2D8E1211A515BD8062 /* Assets.xcassets */; };
+		3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */; };
 		3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29844F5D499475158B4A3B16 /* SugarfreeApp.swift */; };
 		5B481C143364B04163DAB076 /* TableConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6A53106C43643CD3F2D76 /* TableConverter.swift */; };
 		6482549107DE60E8EF4FE393 /* TableConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F039957957BF58FE85955C06 /* TableConverterTests.swift */; };
+		7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */; };
 		85098E9C7450F48405750CAF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7AA4787798EC5F8ACC2945 /* Theme.swift */; };
 		8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C97977678FA753EF4085E8 /* OnboardingView.swift */; };
 		AA80AE2BF1A1B00B477F3A6F /* TableConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6A53106C43643CD3F2D76 /* TableConverter.swift */; };
@@ -20,12 +22,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusItemController.swift; sourceTree = "<group>"; };
 		2975DF2D8E1211A515BD8062 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29844F5D499475158B4A3B16 /* SugarfreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SugarfreeApp.swift; sourceTree = "<group>"; };
 		2CB6A53106C43643CD3F2D76 /* TableConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableConverter.swift; sourceTree = "<group>"; };
 		31A32B4DA0CEEC75380FCF6D /* SugarfreeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SugarfreeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
 		6E7AA4787798EC5F8ACC2945 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyCenter.swift; sourceTree = "<group>"; };
 		967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardMonitor.swift; sourceTree = "<group>"; };
 		A04C1E63E156CF7944EAB36C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		B567B04475BDB071F6BC6012 /* Sugarfree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sugarfree.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,7 +45,9 @@
 			children = (
 				2975DF2D8E1211A515BD8062 /* Assets.xcassets */,
 				CDEA90900F98C506136BAE77 /* Fonts */,
+				78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */,
 				5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */,
+				0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */,
 				B6C97977678FA753EF4085E8 /* OnboardingView.swift */,
 				967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */,
 				29844F5D499475158B4A3B16 /* SugarfreeApp.swift */,
@@ -173,7 +179,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */,
 				DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */,
+				3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */,
 				8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */,
 				00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */,
 				3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */,
