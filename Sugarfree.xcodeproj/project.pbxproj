@@ -8,42 +8,60 @@
 
 /* Begin PBXBuildFile section */
 		00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */; };
+		1426D04B3B48988F5B969C6C /* SugarCore in Frameworks */ = {isa = PBXBuildFile; productRef = C4D9CAB2CA5A9404F71AB63B /* SugarCore */; };
 		18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2975DF2D8E1211A515BD8062 /* Assets.xcassets */; };
 		3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */; };
 		3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29844F5D499475158B4A3B16 /* SugarfreeApp.swift */; };
-		5B481C143364B04163DAB076 /* TableConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6A53106C43643CD3F2D76 /* TableConverter.swift */; };
-		6482549107DE60E8EF4FE393 /* TableConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F039957957BF58FE85955C06 /* TableConverterTests.swift */; };
 		7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */; };
 		85098E9C7450F48405750CAF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7AA4787798EC5F8ACC2945 /* Theme.swift */; };
 		8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C97977678FA753EF4085E8 /* OnboardingView.swift */; };
-		AA80AE2BF1A1B00B477F3A6F /* TableConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6A53106C43643CD3F2D76 /* TableConverter.swift */; };
 		DA377B697B631C69293608D9 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = CDEA90900F98C506136BAE77 /* Fonts */; };
 		DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */; };
+		F727DDEE950DE8F8EA606596 /* CLIInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1120B6C3CA46468F4B42029 /* CLIInstaller.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusItemController.swift; sourceTree = "<group>"; };
 		2975DF2D8E1211A515BD8062 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29844F5D499475158B4A3B16 /* SugarfreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SugarfreeApp.swift; sourceTree = "<group>"; };
-		2CB6A53106C43643CD3F2D76 /* TableConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableConverter.swift; sourceTree = "<group>"; };
-		31A32B4DA0CEEC75380FCF6D /* SugarfreeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SugarfreeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
 		6E7AA4787798EC5F8ACC2945 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyCenter.swift; sourceTree = "<group>"; };
+		865BF735A7C0B8423C984071 /* sugarfree */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sugarfree; path = .; sourceTree = SOURCE_ROOT; };
 		967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardMonitor.swift; sourceTree = "<group>"; };
 		A04C1E63E156CF7944EAB36C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		B567B04475BDB071F6BC6012 /* Sugarfree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sugarfree.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C97977678FA753EF4085E8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		CDEA90900F98C506136BAE77 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Sugarfree/Fonts; sourceTree = SOURCE_ROOT; };
-		F039957957BF58FE85955C06 /* TableConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableConverterTests.swift; sourceTree = "<group>"; };
+		D1120B6C3CA46468F4B42029 /* CLIInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIInstaller.swift; sourceTree = "<group>"; };
 		FBB48E3AEA70189DBA1A30E4 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		864C7D82B2C1E871C7901F15 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1426D04B3B48988F5B969C6C /* SugarCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
+		0E9C6F6832B923FD858A49CD /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				865BF735A7C0B8423C984071 /* sugarfree */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		31780DF0626532B29EE8FA7B /* Sugarfree */ = {
 			isa = PBXGroup;
 			children = (
 				2975DF2D8E1211A515BD8062 /* Assets.xcassets */,
+				D1120B6C3CA46468F4B42029 /* CLIInstaller.swift */,
 				CDEA90900F98C506136BAE77 /* Fonts */,
 				78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */,
 				5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */,
@@ -51,25 +69,15 @@
 				B6C97977678FA753EF4085E8 /* OnboardingView.swift */,
 				967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */,
 				29844F5D499475158B4A3B16 /* SugarfreeApp.swift */,
-				2CB6A53106C43643CD3F2D76 /* TableConverter.swift */,
 				6E7AA4787798EC5F8ACC2945 /* Theme.swift */,
 			);
 			path = Sugarfree;
-			sourceTree = "<group>";
-		};
-		36C793F2ECF9FE2161CAE5D9 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F039957957BF58FE85955C06 /* TableConverterTests.swift */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 		43C3BA6AA6A3D8FA26735D31 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				B567B04475BDB071F6BC6012 /* Sugarfree.app */,
-				31A32B4DA0CEEC75380FCF6D /* SugarfreeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,8 +86,8 @@
 			isa = PBXGroup;
 			children = (
 				F5814E79CC2DE4BFE5AA7880 /* Configs */,
+				0E9C6F6832B923FD858A49CD /* Packages */,
 				31780DF0626532B29EE8FA7B /* Sugarfree */,
-				36C793F2ECF9FE2161CAE5D9 /* Tests */,
 				43C3BA6AA6A3D8FA26735D31 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,29 +104,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		098771A4F5B8BC7E2A60A5A2 /* SugarfreeTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 703FF3BF66425B4FF3513DFA /* Build configuration list for PBXNativeTarget "SugarfreeTests" */;
-			buildPhases = (
-				F1B9CC6D5B76E77CE594F52E /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SugarfreeTests;
-			packageProductDependencies = (
-			);
-			productName = SugarfreeTests;
-			productReference = 31A32B4DA0CEEC75380FCF6D /* SugarfreeTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		6DDB155A10877F12B42F184F /* Sugarfree */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3ED0EABE17AE7410EA2CF10D /* Build configuration list for PBXNativeTarget "Sugarfree" */;
 			buildPhases = (
 				85C8E7E481C5ACF829306A95 /* Sources */,
 				C08E8F48108676373B018C3A /* Resources */,
+				864C7D82B2C1E871C7901F15 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -126,6 +118,7 @@
 			);
 			name = Sugarfree;
 			packageProductDependencies = (
+				C4D9CAB2CA5A9404F71AB63B /* SugarCore */,
 			);
 			productName = Sugarfree;
 			productReference = B567B04475BDB071F6BC6012 /* Sugarfree.app */;
@@ -151,13 +144,15 @@
 			);
 			mainGroup = B6DF8CD7097E73D89D151245;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2EAA6FDA3BCE77812C1DE9BE /* XCLocalSwiftPackageReference "." */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43C3BA6AA6A3D8FA26735D31 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				6DDB155A10877F12B42F184F /* Sugarfree */,
-				098771A4F5B8BC7E2A60A5A2 /* SugarfreeTests */,
 			);
 		};
 /* End PBXProject section */
@@ -179,23 +174,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F727DDEE950DE8F8EA606596 /* CLIInstaller.swift in Sources */,
 				7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */,
 				DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */,
 				3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */,
 				8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */,
 				00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */,
 				3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */,
-				AA80AE2BF1A1B00B477F3A6F /* TableConverter.swift in Sources */,
 				85098E9C7450F48405750CAF /* Theme.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F1B9CC6D5B76E77CE594F52E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5B481C143364B04163DAB076 /* TableConverter.swift in Sources */,
-				6482549107DE60E8EF4FE393 /* TableConverterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,26 +251,6 @@
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
-		};
-		2031C8A02700367476573731 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				COMBINE_HIDPI_IMAGES = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sugarfree.tests;
-				PRODUCT_MODULE_NAME = SugarfreeTests;
-				PRODUCT_NAME = SugarfreeTests;
-				SDKROOT = macosx;
-			};
-			name = Debug;
 		};
 		6C9B24719707520A95591002 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -389,26 +355,6 @@
 			};
 			name = Debug;
 		};
-		BFB48A9073EF29F3BF820F18 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				COMBINE_HIDPI_IMAGES = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sugarfree.tests;
-				PRODUCT_MODULE_NAME = SugarfreeTests;
-				PRODUCT_NAME = SugarfreeTests;
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -417,15 +363,6 @@
 			buildConfigurations = (
 				B7E8649BA23DEC1AE3A0311E /* Debug */,
 				7C2FF1E4276C164E356BC143 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		703FF3BF66425B4FF3513DFA /* Build configuration list for PBXNativeTarget "SugarfreeTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2031C8A02700367476573731 /* Debug */,
-				BFB48A9073EF29F3BF820F18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -440,6 +377,20 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2EAA6FDA3BCE77812C1DE9BE /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C4D9CAB2CA5A9404F71AB63B /* SugarCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SugarCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 986537778880F2CC866F6973 /* Project object */;
 }

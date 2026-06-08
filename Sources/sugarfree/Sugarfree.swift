@@ -41,7 +41,7 @@ struct Sugarfree: ParsableCommand {
           cat page.html | sugarfree --html    strip from HTML
           sugarfree --clipboard --all         clean the system clipboard in place
         """,
-        version: "0.1.0"
+        version: "1.4.0"
     )
 
     @Argument(help: "Input file. Omit to read from stdin (unless --clipboard).")
