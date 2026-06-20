@@ -47,7 +47,8 @@ clipboard representation that carries it.
 - Three system-wide hotkeys are **user-configurable** via the
   [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) package (app-only
   dependency; not in `SugarCore`/CLI). Actions + defaults live in `ShortcutNames.swift`:
-  `toggleCleanup` (⌘⇧P), `cleanNow` (⌘⇧K), and `togglePopover` (⌘⇧S, opens the dashboard).
+  `toggleCleanup` (⌃⌥P), `cleanNow` (⌃⌥K), and `togglePopover` (⌃⌥S, opens the dashboard).
+  Defaults use control+option (not ⌘⇧) to avoid colliding with common editor shortcuts.
   Handlers are wired where the action lives — `PasteboardMonitor` for the first two,
   `MenuBarStatusItemController` for the popover. Global hotkeys (not SwiftUI
   `.keyboardShortcut`) are required because an `LSUIElement` accessory is never frontmost.
