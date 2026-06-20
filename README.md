@@ -2,7 +2,7 @@
 
 ## Save tokens. Save time.
 
-<img width="160" height="235" alt="SCR-20260603-osry" src="https://github.com/user-attachments/assets/0fb53c57-4ea4-47f9-b602-382efcc78f4c" />
+<img width="173" height="383" alt="SCR-20260620-pdfl" src="https://github.com/user-attachments/assets/6b7c1eb3-d3c1-4e0d-ab69-5aa1dd221844" />
 
 Sugarfree is a tiny macOS app that strips formatting "sugar" from whatever you copy and lives in your menubar.
 
