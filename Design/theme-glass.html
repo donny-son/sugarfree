@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>sugarfree — Liquid Glass directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   sugarfree · Liquid Glass theme exploration
+   Keeps locked brand: DynaPuff wordmark + cotton-candy palette.
+   Drops: warm paper, hard ink borders, hard offset shadow.
+   Adds:  Apple-native translucent glass, soft float shadows,
+          specular edge highlights, vibrancy.
+   Two named directions: FROST (neutral clear glass) and
+   AURORA (glass with a faint cotton aura behind the header).
+   ============================================================ */
+
+:root{
+  /* Cotton palette — UNCHANGED brand tokens */
+  --cotton:linear-gradient(100deg,#FF6FB5 0%,#FF9A6B 52%,#FFC857 100%);
+  --cotton-btn:linear-gradient(100deg,#F0469B 0%,#FF7A4D 100%);
+  --cotton-accent:#F0469B;
+  --cotton-ink:#C8327E;
+  --cotton-tint:rgba(255,111,181,.16);
+  --cotton-ring:rgba(240,70,155,.40);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; padding:48px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+  background:#0e0e12;
+  display:flex; flex-wrap:wrap; gap:56px; align-items:flex-start; justify-content:center;
+}
+.lane{display:flex;flex-direction:column;gap:14px;align-items:center}
+.lane > .cap{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:600}
+.lane > .sub{font-size:11px;color:rgba(255,255,255,.38);margin-top:-8px}
+
+/* ---- Scenes: the colorful backdrop a glass panel floats over ----
+   (mimics desktop wallpaper showing through the translucency) */
+.scene{
+  position:relative; width:360px; padding:26px;
+  border-radius:32px; overflow:hidden;
+  display:flex; justify-content:center;
+}
+.scene.light{ background:#cfd6e6; }
+.scene.dark{ background:#15151b; }
+/* soft wallpaper blobs so the glass actually reads as glass */
+.scene::before, .scene::after{
+  content:""; position:absolute; border-radius:50%; filter:blur(46px); opacity:.9;
+}
+.scene.light::before{ width:280px;height:280px; top:-60px;left:-40px;
+  background:radial-gradient(circle,#ff9ec6,transparent 70%); }
+.scene.light::after{ width:300px;height:300px; bottom:-80px;right:-60px;
+  background:radial-gradient(circle,#ffd27a,transparent 70%); }
+.scene.dark::before{ width:300px;height:300px; top:-70px;left:-50px;
+  background:radial-gradient(circle,#9a3a78,transparent 72%); }
+.scene.dark::after{ width:320px;height:320px; bottom:-90px;right:-60px;
+  background:radial-gradient(circle,#5a3a1f,transparent 72%); }
+
+/* ============================================================
+   THE GLASS POPOVER
+   ============================================================ */
+.pop{
+  position:relative; z-index:1; width:308px;
+  border-radius:26px; padding:4px;
+  /* the float shadow — soft, layered, NO hard offset */
+  box-shadow:
+    0 1px 1px rgba(0,0,0,.04),
+    0 22px 60px -12px rgba(0,0,0,.45);
+}
+/* glass material */
+.light .pop{
+  background:rgba(255,255,255,.52);
+  -webkit-backdrop-filter:blur(34px) saturate(190%);
+  backdrop-filter:blur(34px) saturate(190%);
+  /* specular top edge + thin hairline ring */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 0 0 1px rgba(255,255,255,.35),
+    0 1px 1px rgba(0,0,0,.04),
+    0 22px 60px -14px rgba(0,0,0,.40);
+  color:#1d1d1f;
+}
+.dark .pop{
+  background:rgba(38,38,44,.58);
+  -webkit-backdrop-filter:blur(34px) saturate(180%);
+  backdrop-filter:blur(34px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 1px 1px rgba(0,0,0,.3),
+    0 22px 64px -14px rgba(0,0,0,.65);
+  color:#f5f5f7;
+}
+.pop-inner{ padding:16px 17px 13px; }
+
+/* AURORA: a faint cotton aura blooming behind the header only */
+.aurora .pop::before{
+  content:""; position:absolute; inset:0; z-index:-1; border-radius:26px;
+  background:
+    radial-gradient(120% 70% at 22% -10%, rgba(255,111,181,.30), transparent 60%),
+    radial-gradient(120% 70% at 90% -6%, rgba(255,200,87,.22), transparent 58%);
+  pointer-events:none;
+}
+
+/* color helpers honoring vibrancy per mode */
+.light .secondary{color:rgba(0,0,0,.5)}
+.light .tertiary{color:rgba(0,0,0,.34)}
+.dark  .secondary{color:rgba(255,255,255,.58)}
+.dark  .tertiary{color:rgba(255,255,255,.4)}
+.light .sep{background:rgba(0,0,0,.09)}
+.dark  .sep{background:rgba(255,255,255,.12)}
+
+/* ---- wordmark (DynaPuff + cotton gradient) — UNCHANGED brand ---- */
+.wm{font-family:"DynaPuff",system-ui,sans-serif;font-weight:600;letter-spacing:-.01em;line-height:1;
+  background:var(--cotton);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:saturate(1.05)}
+
+/* ---- header ---- */
+.head{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.head .wm{font-size:24px}
+.pill{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;background:var(--cotton-tint);color:var(--cotton-ink);
+  box-shadow:inset 0 0 0 .5px rgba(255,111,181,.35)}
+.dark .pill{color:#FF9ECB;background:rgba(255,138,196,.18)}
+
+/* ---- status block ---- */
+.status .title{font-size:14px;font-weight:600;letter-spacing:-.01em;margin:0}
+.status .detail{font-size:12px;margin:3px 0 0}
+.count{display:flex;align-items:baseline;gap:7px;margin-top:9px}
+.count b{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.count span{font-size:12px}
+.stamp{font-size:11px;margin-top:3px;font-variant-numeric:tabular-nums}
+
+.sep{height:1px;border:0;margin:14px 0}
+
+/* ---- section label (now SF, native grouped-header feel) ---- */
+.sectlabel{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin:0 0 9px}
+
+/* ---- rows ---- */
+.row{display:flex;align-items:center;gap:11px;min-height:34px}
+.row .lbl{font-size:13px;font-weight:500;letter-spacing:-.005em}
+.row .ex{font-size:11.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.row .glyph{width:18px;text-align:center;font-size:13px;font-weight:600;opacity:.55}
+
+/* ---- glass toggle ---- */
+.toggle-row{display:flex;align-items:center;margin-bottom:14px}
+.toggle-row .lbl{font-size:14px;font-weight:600}
+.tog{margin-left:auto;width:40px;height:24px;border-radius:999px;position:relative;cursor:pointer;
+  background:var(--cotton-btn);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.06),0 1px 3px var(--cotton-ring)}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.28);transition:left .18s}
+.tog.on::after{left:18px}
+.tog.off{background:rgba(120,120,128,.32);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.05)}
+.tog.off::after{left:2px}
+
+/* ---- glass segmented control ---- */
+.seg{display:flex;padding:2px;border-radius:11px;gap:2px;
+  background:rgba(120,120,128,.16);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.04)}
+.dark .seg{background:rgba(120,120,128,.28)}
+.seg div{flex:1;text-align:center;font-size:12px;font-weight:500;padding:6px 0;border-radius:9px;cursor:pointer}
+.seg .on{background:var(--cotton-tint);color:var(--cotton-ink);font-weight:600;
+  box-shadow:inset 0 0 0 .5px rgba(255,111,181,.4),0 1px 2px rgba(0,0,0,.08)}
+.dark .seg .on{color:#FF9ECB;background:rgba(255,138,196,.2)}
+
+/* ---- primary button (cotton gradient + glass sheen) ---- */
+.btn{position:relative;overflow:hidden;width:100%;margin-top:13px;border:0;cursor:pointer;
+  padding:11px 14px;border-radius:13px;font:inherit;font-size:14px;font-weight:700;color:#fff;
+  background:var(--cotton-btn);
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 6px 18px var(--cotton-ring),0 1px 2px rgba(0,0,0,.15)}
+.btn::before{content:"";position:absolute;inset:0 0 50% 0;
+  background:linear-gradient(rgba(255,255,255,.32),transparent);pointer-events:none}
+
+/* ---- shortcut recorder (glass capsule) ---- */
+.sc-row{display:flex;align-items:center;gap:8px;margin:7px 0}
+.sc-row .lbl{font-size:13px;width:118px;font-weight:500}
+.recorder{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:28px;border-radius:999px;
+  background:rgba(255,255,255,.5);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.04)}
+.dark .recorder{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14)}
+.recorder.active{box-shadow:inset 0 0 0 1.5px var(--cotton-accent),0 1px 2px var(--cotton-ring)}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;font-weight:600}
+.recorder .x{margin-left:2px;width:15px;height:15px;border-radius:50%;background:rgba(120,120,128,.3);
+  color:#fff;font-size:9px;display:grid;place-items:center}
+.reset{opacity:.4;font-size:13px}
+
+/* ---- checkbox (glass + cotton check) ---- */
+.box{margin-left:auto;width:20px;height:20px;border-radius:6px;
+  background:rgba(120,120,128,.2);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.06)}
+.dark .box{background:rgba(120,120,128,.3)}
+.box.on{background:var(--cotton-accent);box-shadow:0 1px 3px var(--cotton-ring);
+  display:grid;place-items:center}
+.box.on::after{content:"✓";color:#fff;font-size:12px;font-weight:800}
+
+.row + .row{border-top:1px solid;border-color:inherit}
+.list{border-radius:14px;padding:2px 12px;
+  background:rgba(255,255,255,.32);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.4)}
+.dark .list{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08)}
+.list .row + .row{border-top:1px solid rgba(120,120,128,.18)}
+.dark .list .row + .row{border-top:1px solid rgba(255,255,255,.08)}
+
+/* ---- footer ---- */
+.foot{display:flex;margin-top:14px;padding-top:12px;border-top:1px solid;border-color:inherit}
+.light .foot{border-top-color:rgba(0,0,0,.09)}
+.dark .foot{border-top-color:rgba(255,255,255,.12)}
+.foot a{font-size:12.5px;text-decoration:none;color:inherit;opacity:.85}
+.foot a:last-child{margin-left:auto}
+</style>
+</head>
+<body>
+
+<!-- =========== FROST (light) =========== -->
+<div class="lane">
+  <div class="cap">Frost · light</div>
+  <div class="sub">neutral clear glass</div>
+  <div class="scene light frost">
+    <div class="pop"><div class="pop-inner">
+      <div class="head"><span class="wm">sugarfree</span><span class="pill">Active</span></div>
+      <div class="status">
+        <p class="title">Auto-cleaned Bold</p>
+        <p class="detail secondary">1 clipboard item updated · checks every 0.5s</p>
+        <div class="count"><b>330</b><span class="secondary">cleaned</span></div>
+        <p class="stamp tertiary">1 clipboard item updated · 5 min, 29 sec</p>
+      </div>
+      <hr class="sep">
+      <div class="toggle-row"><span class="lbl">Automatic cleanup</span><div class="tog on"></div></div>
+      <p class="sectlabel secondary">Check interval</p>
+      <div class="seg"><div>0.25s</div><div class="on">0.5s</div><div>1.0s</div><div>1.5s</div></div>
+      <button class="btn">Clean Now</button>
+      <hr class="sep">
+      <p class="sectlabel secondary">Shortcuts</p>
+      <div class="sc-row"><span class="lbl">toggle cleanup</span>
+        <div class="recorder active"><span class="kbd">⇧⌘P</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">clean now</span>
+        <div class="recorder"><span class="kbd">⇧⌘K</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">open dashboard</span>
+        <div class="recorder"><span class="kbd">⇧⌘S</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Sugars to strip</p>
+      <div class="list">
+        <div class="row"><span class="glyph">B</span><span class="lbl">Bold</span><span class="ex secondary">**bold**</span><div class="box on"></div></div>
+        <div class="row"><span class="glyph" style="font-style:italic">I</span><span class="lbl">Italic</span><span class="ex secondary">*italic*</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:underline">U</span><span class="lbl">Underline</span><span class="ex secondary">&lt;u&gt;under&lt;/u&gt;</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:line-through">S</span><span class="lbl">Strikethrough</span><span class="ex secondary">~~strike~~</span><div class="box"></div></div>
+        <div class="row"><span class="glyph">#</span><span class="lbl">Headers</span><span class="ex secondary"># Heading</span><div class="box"></div></div>
+      </div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Transforms</p>
+      <div class="list"><div class="row"><span class="glyph">▦</span><span class="lbl">Tables → list</span><span class="ex secondary">a · b</span><div class="box"></div></div></div>
+      <div class="foot"><a href="#">About</a><a href="#">Quit</a></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- =========== FROST (dark) =========== -->
+<div class="lane">
+  <div class="cap">Frost · dark</div>
+  <div class="sub">neutral clear glass</div>
+  <div class="scene dark frost">
+    <div class="pop"><div class="pop-inner">
+      <div class="head"><span class="wm">sugarfree</span><span class="pill">Active</span></div>
+      <div class="status">
+        <p class="title">Auto-cleaned Bold</p>
+        <p class="detail secondary">1 clipboard item updated · checks every 0.5s</p>
+        <div class="count"><b>330</b><span class="secondary">cleaned</span></div>
+        <p class="stamp tertiary">1 clipboard item updated · 5 min, 29 sec</p>
+      </div>
+      <hr class="sep">
+      <div class="toggle-row"><span class="lbl">Automatic cleanup</span><div class="tog on"></div></div>
+      <p class="sectlabel secondary">Check interval</p>
+      <div class="seg"><div>0.25s</div><div class="on">0.5s</div><div>1.0s</div><div>1.5s</div></div>
+      <button class="btn">Clean Now</button>
+      <hr class="sep">
+      <p class="sectlabel secondary">Shortcuts</p>
+      <div class="sc-row"><span class="lbl">toggle cleanup</span>
+        <div class="recorder active"><span class="kbd">⇧⌘P</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">clean now</span>
+        <div class="recorder"><span class="kbd">⇧⌘K</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">open dashboard</span>
+        <div class="recorder"><span class="kbd">⇧⌘S</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Sugars to strip</p>
+      <div class="list">
+        <div class="row"><span class="glyph">B</span><span class="lbl">Bold</span><span class="ex secondary">**bold**</span><div class="box on"></div></div>
+        <div class="row"><span class="glyph" style="font-style:italic">I</span><span class="lbl">Italic</span><span class="ex secondary">*italic*</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:underline">U</span><span class="lbl">Underline</span><span class="ex secondary">&lt;u&gt;under&lt;/u&gt;</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:line-through">S</span><span class="lbl">Strikethrough</span><span class="ex secondary">~~strike~~</span><div class="box"></div></div>
+        <div class="row"><span class="glyph">#</span><span class="lbl">Headers</span><span class="ex secondary"># Heading</span><div class="box"></div></div>
+      </div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Transforms</p>
+      <div class="list"><div class="row"><span class="glyph">▦</span><span class="lbl">Tables → list</span><span class="ex secondary">a · b</span><div class="box"></div></div></div>
+      <div class="foot"><a href="#">About</a><a href="#">Quit</a></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- =========== AURORA (light) =========== -->
+<div class="lane">
+  <div class="cap">Aurora · light</div>
+  <div class="sub">glass + faint cotton aura</div>
+  <div class="scene light aurora">
+    <div class="pop"><div class="pop-inner">
+      <div class="head"><span class="wm">sugarfree</span><span class="pill">Active</span></div>
+      <div class="status">
+        <p class="title">Auto-cleaned Bold</p>
+        <p class="detail secondary">1 clipboard item updated · checks every 0.5s</p>
+        <div class="count"><b>330</b><span class="secondary">cleaned</span></div>
+        <p class="stamp tertiary">1 clipboard item updated · 5 min, 29 sec</p>
+      </div>
+      <hr class="sep">
+      <div class="toggle-row"><span class="lbl">Automatic cleanup</span><div class="tog on"></div></div>
+      <p class="sectlabel secondary">Check interval</p>
+      <div class="seg"><div>0.25s</div><div class="on">0.5s</div><div>1.0s</div><div>1.5s</div></div>
+      <button class="btn">Clean Now</button>
+      <hr class="sep">
+      <p class="sectlabel secondary">Shortcuts</p>
+      <div class="sc-row"><span class="lbl">toggle cleanup</span>
+        <div class="recorder active"><span class="kbd">⇧⌘P</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">clean now</span>
+        <div class="recorder"><span class="kbd">⇧⌘K</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">open dashboard</span>
+        <div class="recorder"><span class="kbd">⇧⌘S</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Sugars to strip</p>
+      <div class="list">
+        <div class="row"><span class="glyph">B</span><span class="lbl">Bold</span><span class="ex secondary">**bold**</span><div class="box on"></div></div>
+        <div class="row"><span class="glyph" style="font-style:italic">I</span><span class="lbl">Italic</span><span class="ex secondary">*italic*</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:underline">U</span><span class="lbl">Underline</span><span class="ex secondary">&lt;u&gt;under&lt;/u&gt;</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:line-through">S</span><span class="lbl">Strikethrough</span><span class="ex secondary">~~strike~~</span><div class="box"></div></div>
+        <div class="row"><span class="glyph">#</span><span class="lbl">Headers</span><span class="ex secondary"># Heading</span><div class="box"></div></div>
+      </div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Transforms</p>
+      <div class="list"><div class="row"><span class="glyph">▦</span><span class="lbl">Tables → list</span><span class="ex secondary">a · b</span><div class="box"></div></div></div>
+      <div class="foot"><a href="#">About</a><a href="#">Quit</a></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- =========== AURORA (dark) =========== -->
+<div class="lane">
+  <div class="cap">Aurora · dark</div>
+  <div class="sub">glass + faint cotton aura</div>
+  <div class="scene dark aurora">
+    <div class="pop"><div class="pop-inner">
+      <div class="head"><span class="wm">sugarfree</span><span class="pill">Active</span></div>
+      <div class="status">
+        <p class="title">Auto-cleaned Bold</p>
+        <p class="detail secondary">1 clipboard item updated · checks every 0.5s</p>
+        <div class="count"><b>330</b><span class="secondary">cleaned</span></div>
+        <p class="stamp tertiary">1 clipboard item updated · 5 min, 29 sec</p>
+      </div>
+      <hr class="sep">
+      <div class="toggle-row"><span class="lbl">Automatic cleanup</span><div class="tog on"></div></div>
+      <p class="sectlabel secondary">Check interval</p>
+      <div class="seg"><div>0.25s</div><div class="on">0.5s</div><div>1.0s</div><div>1.5s</div></div>
+      <button class="btn">Clean Now</button>
+      <hr class="sep">
+      <p class="sectlabel secondary">Shortcuts</p>
+      <div class="sc-row"><span class="lbl">toggle cleanup</span>
+        <div class="recorder active"><span class="kbd">⇧⌘P</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">clean now</span>
+        <div class="recorder"><span class="kbd">⇧⌘K</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <div class="sc-row"><span class="lbl">open dashboard</span>
+        <div class="recorder"><span class="kbd">⇧⌘S</span><span class="x">✕</span></div><span class="reset">↺</span></div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Sugars to strip</p>
+      <div class="list">
+        <div class="row"><span class="glyph">B</span><span class="lbl">Bold</span><span class="ex secondary">**bold**</span><div class="box on"></div></div>
+        <div class="row"><span class="glyph" style="font-style:italic">I</span><span class="lbl">Italic</span><span class="ex secondary">*italic*</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:underline">U</span><span class="lbl">Underline</span><span class="ex secondary">&lt;u&gt;under&lt;/u&gt;</span><div class="box"></div></div>
+        <div class="row"><span class="glyph" style="text-decoration:line-through">S</span><span class="lbl">Strikethrough</span><span class="ex secondary">~~strike~~</span><div class="box"></div></div>
+        <div class="row"><span class="glyph">#</span><span class="lbl">Headers</span><span class="ex secondary"># Heading</span><div class="box"></div></div>
+      </div>
+      <hr class="sep">
+      <p class="sectlabel secondary">Transforms</p>
+      <div class="list"><div class="row"><span class="glyph">▦</span><span class="lbl">Tables → list</span><span class="ex secondary">a · b</span><div class="box"></div></div></div>
+      <div class="foot"><a href="#">About</a><a href="#">Quit</a></div>
+    </div></div>
+  </div>
+</div>
+
+</body>
+</html>

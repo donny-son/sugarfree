@@ -12,11 +12,12 @@
 		18E36883E767E52A7E048D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2975DF2D8E1211A515BD8062 /* Assets.xcassets */; };
 		3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */; };
 		3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29844F5D499475158B4A3B16 /* SugarfreeApp.swift */; };
-		7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */; };
+		3C2B105CB4288E18103598E7 /* ShortcutNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBC953E1042C5ADB732FC10 /* ShortcutNames.swift */; };
 		85098E9C7450F48405750CAF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7AA4787798EC5F8ACC2945 /* Theme.swift */; };
 		8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C97977678FA753EF4085E8 /* OnboardingView.swift */; };
 		DA377B697B631C69293608D9 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = CDEA90900F98C506136BAE77 /* Fonts */; };
 		DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */; };
+		E7D1517C087AC1CA9EDF4F7C /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 2F54B233267CC8CE40D45579 /* KeyboardShortcuts */; };
 		F727DDEE950DE8F8EA606596 /* CLIInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1120B6C3CA46468F4B42029 /* CLIInstaller.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,9 +27,9 @@
 		29844F5D499475158B4A3B16 /* SugarfreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SugarfreeApp.swift; sourceTree = "<group>"; };
 		5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDashboard.swift; sourceTree = "<group>"; };
 		6E7AA4787798EC5F8ACC2945 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyCenter.swift; sourceTree = "<group>"; };
 		865BF735A7C0B8423C984071 /* sugarfree */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sugarfree; path = .; sourceTree = SOURCE_ROOT; };
 		967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardMonitor.swift; sourceTree = "<group>"; };
+		9DBC953E1042C5ADB732FC10 /* ShortcutNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutNames.swift; sourceTree = "<group>"; };
 		A04C1E63E156CF7944EAB36C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		B567B04475BDB071F6BC6012 /* Sugarfree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sugarfree.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C97977678FA753EF4085E8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -43,6 +44,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1426D04B3B48988F5B969C6C /* SugarCore in Frameworks */,
+				E7D1517C087AC1CA9EDF4F7C /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,11 +65,11 @@
 				2975DF2D8E1211A515BD8062 /* Assets.xcassets */,
 				D1120B6C3CA46468F4B42029 /* CLIInstaller.swift */,
 				CDEA90900F98C506136BAE77 /* Fonts */,
-				78A527832E28E1C5AF9FC60B /* GlobalHotkeyCenter.swift */,
 				5E2427B0BBE89E5A00E77C03 /* MenuBarDashboard.swift */,
 				0814AA7AFBAE10B26EE7F2EF /* MenuBarStatusItemController.swift */,
 				B6C97977678FA753EF4085E8 /* OnboardingView.swift */,
 				967F604D8BE4040DD93F7144 /* PasteboardMonitor.swift */,
+				9DBC953E1042C5ADB732FC10 /* ShortcutNames.swift */,
 				29844F5D499475158B4A3B16 /* SugarfreeApp.swift */,
 				6E7AA4787798EC5F8ACC2945 /* Theme.swift */,
 			);
@@ -119,6 +121,7 @@
 			name = Sugarfree;
 			packageProductDependencies = (
 				C4D9CAB2CA5A9404F71AB63B /* SugarCore */,
+				2F54B233267CC8CE40D45579 /* KeyboardShortcuts */,
 			);
 			productName = Sugarfree;
 			productReference = B567B04475BDB071F6BC6012 /* Sugarfree.app */;
@@ -145,6 +148,7 @@
 			mainGroup = B6DF8CD7097E73D89D151245;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				86802F72ECD7142BD96FAEDE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				2EAA6FDA3BCE77812C1DE9BE /* XCLocalSwiftPackageReference "." */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -175,11 +179,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F727DDEE950DE8F8EA606596 /* CLIInstaller.swift in Sources */,
-				7CA120630FDE36091D112410 /* GlobalHotkeyCenter.swift in Sources */,
 				DA6ADCF5A1D6C74671774FA7 /* MenuBarDashboard.swift in Sources */,
 				3069DD2CC77228450682FE13 /* MenuBarStatusItemController.swift in Sources */,
 				8599C79994C34CEF6037DAE6 /* OnboardingView.swift in Sources */,
 				00A917303D20B2C7E2A7CF1A /* PasteboardMonitor.swift in Sources */,
+				3C2B105CB4288E18103598E7 /* ShortcutNames.swift in Sources */,
 				3208871326EF6318BC65CBC6 /* SugarfreeApp.swift in Sources */,
 				85098E9C7450F48405750CAF /* Theme.swift in Sources */,
 			);
@@ -224,7 +228,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -240,7 +244,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sugarfree/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sugarfree.app;
@@ -288,7 +292,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -310,7 +314,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sugarfree/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -385,7 +389,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		86802F72ECD7142BD96FAEDE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		2F54B233267CC8CE40D45579 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 86802F72ECD7142BD96FAEDE /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
 		C4D9CAB2CA5A9404F71AB63B /* SugarCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SugarCore;

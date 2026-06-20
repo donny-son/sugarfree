@@ -5,8 +5,36 @@ import SwiftUI
 
 struct MenuBarDashboard: View {
     @ObservedObject var monitor: PasteboardMonitor
+    @ObservedObject var phase: PopoverPhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    // Entrance/exit motion state. The window's *alpha* (driven by the controller) owns the
+    // fade in/out of the whole popover — glass frame included — so here we only animate
+    // motion: the content's offset and the aura gradient's scale (the "spun/puff" character).
+    // Never a blur or a scale on text/materials, which is what flickered.
+    @State private var contentOffsetY: CGFloat = 8
+    @State private var auraScale: CGFloat = 1.28
 
     var body: some View {
+        ZStack {
+            // The popover's own vibrant material is the glass; we paint only the faint cotton
+            // aura on top of it (the approved "Aurora" direction). It puffs on enter/exit.
+            AuroraBackground()
+                .scaleEffect(auraScale, anchor: .top)
+
+            dashboardContent
+                .frame(width: 320)
+                .offset(y: contentOffsetY)
+        }
+        // The candy-particle burst rides on top, flung outward from the center as it poofs.
+        .overlay(PoofBurst(trigger: phase.isLeaving))
+        .onAppear(perform: spinUp)
+        .onChange(of: phase.isLeaving) { leaving in
+            if leaving { poof() }
+        }
+    }
+
+    private var dashboardContent: some View {
         VStack(alignment: .leading, spacing: 14) {
             brandRow
             statusSection
@@ -19,10 +47,32 @@ struct MenuBarDashboard: View {
             SurfaceRule()
             footerRow
         }
-        .surfaceSheet(padding: 16)
-        .padding(14)
-        .frame(width: 320)
-        .background(Surface.desk)
+        .padding(18)
+    }
+
+    // Entrance: the candy spins up — aura puffs in from the top and settles while the
+    // content rises into place (the window fades in underneath, via the controller).
+    private func spinUp() {
+        guard !reduceMotion else {
+            contentOffsetY = 0; auraScale = 1
+            return
+        }
+        withAnimation(.spring(response: 0.52, dampingFraction: 0.82)) {
+            contentOffsetY = 0
+            auraScale = 1
+        }
+    }
+
+    // Exit: POOF. The content lifts slightly and the cotton aura puffs outward while the
+    // candy-particle burst fires and the window fades out — a candy cloud vanishing.
+    private func poof() {
+        guard !reduceMotion else { return }
+        withAnimation(.easeOut(duration: 0.20)) {
+            contentOffsetY = -6
+        }
+        withAnimation(.easeOut(duration: 0.34)) {
+            auraScale = 1.45
+        }
     }
 
     private var brandRow: some View {
@@ -105,12 +155,17 @@ struct MenuBarDashboard: View {
         VStack(alignment: .leading, spacing: 10) {
             SectionLabel(text: "Sugars to strip")
 
-            ForEach(Sugar.allCases) { sugar in
-                SugarToggleRow(
-                    sugar: sugar,
-                    isEnabled: binding(for: sugar)
-                )
+            VStack(spacing: 0) {
+                ForEach(Array(Sugar.allCases.enumerated()), id: \.offset) { index, sugar in
+                    if index > 0 { Divider() }
+                    SugarToggleRow(
+                        sugar: sugar,
+                        isEnabled: binding(for: sugar)
+                    )
+                    .padding(.vertical, 7)
+                }
             }
+            .surfaceBlock(padding: 12)
         }
     }
 
@@ -118,12 +173,17 @@ struct MenuBarDashboard: View {
         VStack(alignment: .leading, spacing: 10) {
             SectionLabel(text: "Transforms")
 
-            ForEach(Transform.allCases) { transform in
-                TransformToggleRow(
-                    transform: transform,
-                    isEnabled: binding(for: transform)
-                )
+            VStack(spacing: 0) {
+                ForEach(Array(Transform.allCases.enumerated()), id: \.offset) { index, transform in
+                    if index > 0 { Divider() }
+                    TransformToggleRow(
+                        transform: transform,
+                        isEnabled: binding(for: transform)
+                    )
+                    .padding(.vertical, 7)
+                }
             }
+            .surfaceBlock(padding: 12)
 
             if monitor.isEnabled(.tablesToList) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -435,6 +495,78 @@ private struct ConfettiBurst: View {
     }
 }
 
+/// The dismiss "POOF": a quick candy-particle burst flung outward across the whole popover
+/// when `trigger` flips true (the popover is closing). Bigger spread and more chips than the
+/// inline `ConfettiBurst`, tuned to finish just before the popover actually closes. Honors
+/// Reduce Motion (renders nothing).
+private struct PoofBurst: View {
+    let trigger: Bool
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var active = false
+    @State private var fly = false
+
+    private struct Chip {
+        let dx: CGFloat
+        let dy: CGFloat
+        let color: Color
+        let rotation: Double
+        let size: CGFloat
+    }
+
+    // A radial fan of chips computed from the index (deterministic, no randomness): even
+    // angular spread, staggered distances and sizes so it reads as a candy puff, not a ring.
+    private static let chips: [Chip] = {
+        let candy = Cotton.candy
+        let count = 18
+        return (0..<count).map { i in
+            let angle = (Double(i) / Double(count)) * 2 * .pi + Double(i % 3) * 0.22
+            let distance = CGFloat(86 + (i % 4) * 30)
+            return Chip(
+                dx: CGFloat(cos(angle)) * distance,
+                dy: CGFloat(sin(angle)) * distance,
+                color: candy[i % candy.count],
+                rotation: (i % 2 == 0) ? 170 : -160,
+                size: CGFloat(5 + (i % 3) * 2)
+            )
+        }
+    }()
+
+    var body: some View {
+        ZStack {
+            if active {
+                ForEach(0..<Self.chips.count, id: \.self) { index in
+                    let chip = Self.chips[index]
+                    RoundedRectangle(cornerRadius: 1.5, style: .continuous)
+                        .fill(chip.color)
+                        .frame(width: chip.size, height: chip.size)
+                        .rotationEffect(.degrees(fly ? chip.rotation : 0))
+                        .scaleEffect(fly ? 0.3 : 0.8)
+                        .offset(x: fly ? chip.dx : 0, y: fly ? chip.dy : 0)
+                        .opacity(fly ? 0 : 1)
+                }
+            }
+        }
+        .allowsHitTesting(false)
+        .onChange(of: trigger) { leaving in
+            if leaving { burst() }
+        }
+    }
+
+    private func burst() {
+        guard !reduceMotion else { return }
+        active = true
+        fly = false
+        // Lay the chips at center for one tick, then fling them outward fast.
+        DispatchQueue.main.async {
+            withAnimation(.easeOut(duration: 0.42)) { fly = true }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+            active = false
+        }
+    }
+}
+
 /// One configurable global hotkey: a plain-language action label, the native
 /// `KeyboardShortcuts.Recorder` (click to record, built-in ✕ to clear), and a reset
 /// affordance that restores the action's default combo. The recorder is tinted to sit with
@@ -602,11 +734,11 @@ private struct ExampleCodeBlock: View {
                 .padding(7)
                 .background(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(Surface.desk.opacity(0.55))
+                        .fill(.ultraThinMaterial)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .stroke(Surface.hairline, lineWidth: 1)
+                        .stroke(Surface.hairline, lineWidth: 0.75)
                 )
         }
     }

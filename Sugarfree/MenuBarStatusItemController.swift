@@ -13,15 +13,21 @@ import SwiftUI
 /// keeps the indicator color. The lollipop glyph still adapts to light/dark because we render
 /// it in the menu bar's current appearance (`Color.primary` resolves against that scheme).
 @MainActor
-final class MenuBarStatusItemController: NSObject {
+final class MenuBarStatusItemController: NSObject, NSPopoverDelegate {
     private let monitor: PasteboardMonitor
     private let statusItem: NSStatusItem
     private let popover = NSPopover()
     private let crush = CrushAnimator()
+    /// Drives the dashboard's entrance/exit ("POOF") motion.
+    private let phase = PopoverPhase()
 
     private var cancellables = Set<AnyCancellable>()
     private var appearanceObservation: NSKeyValueObservation?
     private var lastRender: (state: MonitorInterfaceState, progress: Double, dark: Bool)?
+    /// True while we're playing the exit poof and waiting to close for real.
+    private var isClosing = false
+    /// Time the POOF (dissolve + candy-particle burst) needs before the popover actually closes.
+    private static let poofDuration: TimeInterval = 0.44
 
     init(monitor: PasteboardMonitor) {
         self.monitor = monitor
@@ -58,8 +64,17 @@ final class MenuBarStatusItemController: NSObject {
 
     private func configurePopover() {
         popover.behavior = .transient
-        popover.animates = true
-        popover.contentViewController = NSHostingController(rootView: MenuBarDashboard(monitor: monitor))
+        // We own the entrance/exit motion (the bloom + POOF in MenuBarDashboard), so disable
+        // AppKit's own popover scale/fade — otherwise the two stack and overshoot.
+        popover.animates = false
+        popover.delegate = self
+        popover.contentViewController = makeContentController()
+    }
+
+    /// A fresh hosting controller for each open so the dashboard's `onAppear` bloom replays
+    /// every time. State lives in `monitor`, so rebuilding the view tree is cheap and lossless.
+    private func makeContentController() -> NSHostingController<MenuBarDashboard> {
+        NSHostingController(rootView: MenuBarDashboard(monitor: monitor, phase: phase))
     }
 
     private func observe() {
@@ -122,10 +137,61 @@ final class MenuBarStatusItemController: NSObject {
         if popover.isShown {
             popover.performClose(sender)
         } else {
+            // Rebuild the content so the entrance bloom replays on each open, and reset the
+            // exit flag so this fresh dashboard starts "present", not mid-poof.
+            phase.isLeaving = false
+            popover.contentViewController = makeContentController()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
+            fadeWindowIn()
         }
     }
+
+    /// Fade the whole popover window (glass frame + arrow + content) up from transparent,
+    /// in step with the content's bloom. `animates = false` would otherwise pop it in instantly.
+    private func fadeWindowIn() {
+        guard let window = popover.contentViewController?.view.window else { return }
+        window.alphaValue = 0
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.26
+            window.animator().alphaValue = 1
+        }
+    }
+
+    // MARK: - NSPopoverDelegate
+
+    /// Intercept every close (icon re-click, outside click, ⌘⇧S) to play the exit POOF first,
+    /// then close for real. `close()` (unlike `performClose`) skips this delegate, so the
+    /// deferred close doesn't re-trigger the animation.
+    func popoverShouldClose(_ popover: NSPopover) -> Bool {
+        if isClosing { return true }
+        isClosing = true
+        phase.isLeaving = true   // tell the dashboard to dissolve + fire the candy burst
+        // Fade the whole window out alongside the POOF so the glass frame dissolves too.
+        if let window = popover.contentViewController?.view.window {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = Self.poofDuration
+                window.animator().alphaValue = 0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.poofDuration) { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                self.popover.close()
+                self.isClosing = false
+                self.phase.isLeaving = false
+            }
+        }
+        return false
+    }
+}
+
+/// Signals the dashboard's entrance/exit motion across the controller↔SwiftUI boundary. The
+/// controller flips `isLeaving` when a close is requested; the dashboard observes it, plays
+/// the POOF dissolve, and the controller closes the popover for real once it has run.
+@MainActor
+final class PopoverPhase: ObservableObject {
+    @Published var isLeaving = false
 }
 
 /// Timer-driven keyframe for the menu-bar crush cue. `progress` rests at `1` (plain glyph) and
