@@ -12,22 +12,34 @@
 | Bundle ID | `com.sugarfree.app` | |
 | Module / folder | `Sugarfree` / `Sugarfree/` | |
 | Wordmark font | **DynaPuff** (Google), weight 600 | rounded/candy display face; variable 400–700 |
-| Visual theme | **Cotton** — calm paper surfaces + cotton-candy gradient accent | restrained: candy in accents, calm paper surfaces |
+| Visual theme | **Aurora** (Liquid Glass) — translucent Apple-native glass + cotton-candy gradient accent | superseded the "Cotton" paper theme 2026-06-20; candy in accents only |
 | Mark | **lollipop-off** (tabler) | replaces stars-off; `Design/logo-lollipop-off.svg` |
 | App icon | **B** — cotton-gradient lollipop on paper tile | gradient mark only viable on icon, not menubar |
 | Metaphor | diet/clean lead, CS "syntactic sugar" as dev-only wink | |
 
-## Visual — Cotton theme
+## Visual — Aurora (Liquid Glass) theme
 
-**Surfaces & text stay calm paper** for legibility. The **cotton-candy gradient is the
-brand accent**, applied ONLY to: the wordmark, ON toggles, the primary button, the status
-("cleaning") pill, and the app-icon mark. Body surfaces are never gradient-washed.
+> Supersedes the original **Cotton** paper theme (warm paper surfaces + hard ink borders +
+> hard offset shadow). The locked brand — DynaPuff wordmark + cotton-candy palette — is
+> unchanged; only the *surface execution* changed from paper to glass. Mock + named
+> directions in `Design/theme-glass.html` (Frost vs. Aurora); **Aurora approved 2026-06-20**.
 
-Surface/text tokens:
-- desk `#ECE9E1` / dark `#121214`
-- surface `#FAF8F3` / dark `#1D1D1F`
-- text `#161616` / dark `#F4F1EA`
-- markTile `#161616` / markGlyph `#FAF8F3` (inverted in dark)
+**Surfaces are Apple-native translucent glass** (`Material` — real-time blur + vibrancy), not
+paper. Depth comes from soft float shadows and thin specular edge highlights, never a hard
+offset block. Text uses the system label colors so it stays legible over the glass. The
+**cotton-candy gradient is still the brand accent**, applied ONLY to: the wordmark, ON
+toggles, the primary button, the status ("cleaning") pill, the app-icon mark, and — the
+Aurora signature — a faint cotton aura blooming behind the popover header. Body surfaces are
+never gradient-washed.
+
+Surface/text tokens (glass):
+- panel surface = the popover's own vibrant `Material` (light/dark adaptive); `regularMaterial`
+  for real windows (onboarding) over `windowBackground` `#F5F5F7` / dark `#1C1C1E` (clean
+  Apple gray, NOT paper)
+- text = system `.primary` / secondary `.secondary` / tertiary `.tertiaryLabelColor` (vibrant)
+- hairline = system `.separatorColor`; glassEdge = white @22% specular edge highlight
+- aura = `Cotton.candy` stops at ~18–26% alpha, radial bloom at the panel top (Aurora only)
+- markTile `#161616` / markGlyph `#FAF8F3` (inverted in dark) — brand-mark lockup unchanged
 
 New Cotton accent tokens (in the sibling `Cotton` enum):
 

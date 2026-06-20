@@ -68,7 +68,13 @@ struct OnboardingView: View {
         }
         .padding(.horizontal, 36)
         .frame(width: 400, height: 480)
-        .background(Surface.desk)
+        .background {
+            ZStack {
+                Rectangle().fill(.regularMaterial)
+                AuroraBackground()
+            }
+            .ignoresSafeArea()
+        }
     }
 
     private func featureRow(icon: String, title: String, detail: String) -> some View {
