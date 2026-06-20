@@ -1,4 +1,5 @@
 import AppKit
+import KeyboardShortcuts
 import SugarCore
 import SwiftUI
 
@@ -89,11 +90,12 @@ struct MenuBarDashboard: View {
             .buttonStyle(CottonPrimaryButtonStyle())
             .disabled(!monitor.hasWork)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 SectionLabel(text: "Shortcuts")
 
-                ShortcutHint(keys: ["⌘", "⇧", "P"], action: "toggle cleanup")
-                ShortcutHint(keys: ["⌘", "⇧", "K"], action: "clean now")
+                ShortcutRow(name: .toggleCleanup, label: "toggle cleanup")
+                ShortcutRow(name: .cleanNow, label: "clean now")
+                ShortcutRow(name: .togglePopover, label: "open dashboard")
             }
             .padding(.top, 2)
         }
@@ -429,6 +431,41 @@ private struct ConfettiBurst: View {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             active = false
+        }
+    }
+}
+
+/// One configurable global hotkey: a plain-language action label, the native
+/// `KeyboardShortcuts.Recorder` (click to record, built-in ✕ to clear), and a reset
+/// affordance that restores the action's default combo. The recorder is tinted to sit with
+/// the dashboard's other native controls (segmented pickers, switches).
+private struct ShortcutRow: View {
+    let name: KeyboardShortcuts.Name
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(label)
+                .font(.system(size: 12.5))
+                .foregroundStyle(Surface.text)
+                .frame(width: 104, alignment: .leading)
+
+            KeyboardShortcuts.Recorder(for: name)
+                .controlSize(.small)
+                .tint(Cotton.accent)
+
+            Spacer(minLength: 4)
+
+            Button {
+                KeyboardShortcuts.reset(name)
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Surface.tertiary)
+            }
+            .buttonStyle(.plain)
+            .help("Reset to default")
+            .accessibilityLabel("Reset \(label) shortcut to default")
         }
     }
 }

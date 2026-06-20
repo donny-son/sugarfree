@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>sugarfree — shortcut recorder</title>
+<style>
+  /* Tokens mirrored from Sugarfree/Theme.swift (light "paper" popover context).
+     Surface: desk #ECE9E1, surface #FAF8F3, text #161616, secondary #6A665D,
+     tertiary #8F8A7E, border/hairline #161616 (hairline @12%).
+     Cotton accent #F0469B, ink #C8327E, tint #FF6FB5@16%. */
+  :root {
+    --desk:      #ECE9E1;
+    --surface:   #FAF8F3;
+    --text:      #161616;
+    --secondary: #6A665D;
+    --tertiary:  #8F8A7E;
+    --border:    #161616;
+    --hairline:  rgba(22,22,22,0.12);
+    --accent:    #F0469B;
+    --ink:       #C8327E;
+    --tint:      rgba(255,111,181,0.16);
+    --mono:      ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    --sans:      -apple-system, "SF Pro Text", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 32px 64px;
+    background: var(--desk);
+    color: var(--text);
+    font: 14px/1.5 var(--sans);
+  }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.2px; }
+  .lede { color: var(--secondary); max-width: 680px; margin: 0 0 32px; font-size: 13px; }
+  .lede code { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 22px; align-items: start;
+  }
+  .card { display: flex; flex-direction: column; gap: 10px; }
+  .name { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+          color: var(--ink); margin: 0; font-family: var(--mono); }
+  .desc { font-size: 12px; color: var(--secondary); margin: 0 0 4px; min-height: 64px; }
+
+  /* The real popover control block (320pt sheet, scaled context) */
+  .sheet {
+    width: 320px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; position: relative;
+  }
+  .sheet::after {                       /* hard offset shadow block (brand language) */
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: var(--border); border-radius: 14px; transform: translate(4px,4px);
+  }
+  .seclabel { font: 600 10px/1 var(--mono); letter-spacing: 1.2px; text-transform: uppercase;
+              color: var(--secondary); margin: 0 0 12px; }
+  kbd { font-family: var(--mono); }
+
+  /* keycaps: paper cap, hard 1px ink border + hard offset shadow (shipped direction A) */
+  .grp { display: inline-flex; gap: 3px; }
+  .grp kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 5px;
+    font-size: 11px; font-weight: 600; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; box-shadow: 1.5px 1.5px 0 var(--border);
+  }
+
+  .verb { font: 12.5px/1 var(--sans); color: var(--text); }
+  .reset {
+    font: 11px/1 var(--sans); color: var(--tertiary); cursor: default;
+    border: 0; background: none; padding: 2px;
+  }
+  .placeholder { font: 12px/1 var(--sans); color: var(--tertiary); font-style: italic; }
+
+  /* ====== Direction A — Inline field ====== */
+  .a .row { display: flex; align-items: center; gap: 10px; min-height: 30px; }
+  .a .row + .row { margin-top: 8px; }
+  .a .verb { flex: 0 0 104px; }
+  .a .field {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 3px;
+    min-height: 26px; padding: 3px 8px; border-radius: 8px;
+    background: var(--desk); border: 1px solid var(--hairline);
+  }
+  .a .field.recording { border-color: var(--accent); background: var(--tint); }
+  .a .field.recording .placeholder { color: var(--ink); font-style: normal; }
+
+  /* ====== Direction B — Stacked rows ====== */
+  .b .row { padding: 8px 0; }
+  .b .row + .row { border-top: 1px solid var(--hairline); }
+  .b .rhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .b .verb { font-weight: 500; }
+  .b .field {
+    display: flex; align-items: center; gap: 3px; min-height: 26px;
+    padding: 3px 10px; border-radius: 8px;
+    background: var(--desk); border: 1px solid var(--hairline);
+  }
+  .b .field.recording { border-color: var(--accent); background: var(--tint); }
+  .b .field.recording .placeholder { color: var(--ink); font-style: normal; }
+
+  /* ====== Direction C — Cotton field ====== */
+  .c .row { display: flex; align-items: center; gap: 10px; min-height: 32px; }
+  .c .row + .row { margin-top: 8px; }
+  .c .verb { flex: 1; }
+  .c .field {
+    display: inline-flex; align-items: center; gap: 3px; min-height: 26px;
+    padding: 3px 9px; border-radius: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 1.5px 1.5px 0 var(--border);
+  }
+  .c .field.recording { border-color: var(--accent); box-shadow: 1.5px 1.5px 0 var(--accent); background: var(--tint); }
+  .c .field.recording .placeholder { color: var(--ink); font-style: normal; }
+</style>
+</head>
+<body>
+  <h1>shortcut recorder — make keybindings configurable</h1>
+  <p class="lede">
+    The <strong>Shortcuts</strong> section becomes interactive: each of the three actions
+    (<code>toggle cleanup</code>, <code>clean now</code>, <code>open dashboard</code>) gets a
+    recorder field. Click a field to record a new combo; the field's ✕ clears it; a small reset
+    (<code>↺</code>) restores the default. Each direction below shows the three row states — a
+    bound shortcut, the field while recording, and a cleared (unbound) action — inside the real
+    320pt sheet. Pick one by name.
+  </p>
+
+  <div class="grid">
+    <!-- A -->
+    <div class="card">
+      <p class="name">A · Inline field</p>
+      <p class="desc">Action label on the left, a calm hairline recorder field on the right. Compact, scans like a settings list. Recording tints the field with the Cotton accent.</p>
+      <div class="sheet a">
+        <p class="seclabel">Shortcuts</p>
+        <div class="row">
+          <span class="verb">toggle cleanup</span>
+          <span class="field"><kbd class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></kbd></span>
+          <button class="reset">↺</button>
+        </div>
+        <div class="row">
+          <span class="verb">clean now</span>
+          <span class="field recording"><span class="placeholder">press a combo…</span></span>
+          <button class="reset">↺</button>
+        </div>
+        <div class="row">
+          <span class="verb">open dashboard</span>
+          <span class="field"><span class="placeholder">Record</span></span>
+          <button class="reset">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="card">
+      <p class="name">B · Stacked rows</p>
+      <p class="desc">Label and reset on top, a full-width field beneath, hairline dividers between actions. More room for long combos; taller section.</p>
+      <div class="sheet b">
+        <p class="seclabel">Shortcuts</p>
+        <div class="row">
+          <div class="rhead"><span class="verb">toggle cleanup</span><button class="reset">reset</button></div>
+          <span class="field"><kbd class="grp"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></kbd></span>
+        </div>
+        <div class="row">
+          <div class="rhead"><span class="verb">clean now</span><button class="reset">reset</button></div>
+          <span class="field recording"><span class="placeholder">press a combo…</span></span>
+        </div>
+        <div class="row">
+          <div class="rhead"><span class="verb">open dashboard</span><button class="reset">reset</button></div>
+          <span class="field"><span class="placeholder">Record</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="card">
+      <p class="name">C · Cotton field</p>
+      <p class="desc">Recorder field carries the brand's paper cap + hard offset shadow (same language as the sheet/keycaps). Most "physical" and on-brand; the field reads as a real control.</p>
+      <div class="sheet c">
+        <p class="seclabel">Shortcuts</p>
+        <div class="row">
+          <span class="verb">toggle cleanup</span>
+          <span class="field"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span>
+        </div>
+        <div class="row">
+          <span class="verb">clean now</span>
+          <span class="field recording"><span class="placeholder">press a combo…</span></span>
+        </div>
+        <div class="row">
+          <span class="verb">open dashboard</span>
+          <span class="field"><span class="placeholder">Record</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

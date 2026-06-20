@@ -1,6 +1,6 @@
 import AppKit
-import Carbon.HIToolbox
 import Foundation
+import KeyboardShortcuts
 import SugarCore
 
 // Sugar, Transform, TransformOutputFormat, the strippers, and TableConverter now
@@ -169,15 +169,16 @@ final class PasteboardMonitor: ObservableObject {
         registerGlobalHotkeys()
     }
 
-    /// Wire the menu-bar utility's two actions to system-wide hotkeys. These mirror the hints
-    /// shown in the dashboard: ⌘⇧P toggles automatic cleanup, ⌘⇧K cleans the clipboard now.
-    /// Global (Carbon) hotkeys are required because an `LSUIElement` accessory is never the
-    /// frontmost app, so SwiftUI `.keyboardShortcut` commands would never fire.
+    /// Wire this utility's two clipboard actions to user-configurable global hotkeys
+    /// (defaults: ⌘⇧P toggles automatic cleanup, ⌘⇧K cleans now). KeyboardShortcuts handles
+    /// recording, persistence, and global delivery — required because an `LSUIElement`
+    /// accessory is never frontmost, so SwiftUI `.keyboardShortcut` commands never fire.
+    /// The popover-open hotkey lives in `MenuBarStatusItemController`, which owns the popover.
     private func registerGlobalHotkeys() {
-        GlobalHotkeyCenter.shared.register(keyCode: kVK_ANSI_P, modifiers: cmdKey | shiftKey) { [weak self] in
+        KeyboardShortcuts.onKeyUp(for: .toggleCleanup) { [weak self] in
             self?.isEnabled.toggle()
         }
-        GlobalHotkeyCenter.shared.register(keyCode: kVK_ANSI_K, modifiers: cmdKey | shiftKey) { [weak self] in
+        KeyboardShortcuts.onKeyUp(for: .cleanNow) { [weak self] in
             self?.cleanClipboardManually()
         }
     }

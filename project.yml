@@ -20,9 +20,16 @@ settings:
 
 # SugarCore is the shared logic, vended by the SwiftPM package at the repo root
 # (Package.swift). The app links it so the stripping rules never drift from the CLI.
+# KeyboardShortcuts (app-only) powers the user-configurable global hotkeys — recorder
+# UI, UserDefaults persistence, and global registration. It is deliberately NOT added to
+# the shared SugarCore package/CLI (global hotkeys are macOS-app-only), so `swift build`
+# and the CLI stay dependency-free.
 packages:
   SugarCore:
     path: .
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.0.0
 
 targets:
   Sugarfree:
@@ -41,6 +48,8 @@ targets:
     dependencies:
       - package: SugarCore
         product: SugarCore
+      - package: KeyboardShortcuts
+        product: KeyboardShortcuts
     settings:
       base:
         PRODUCT_MODULE_NAME: Sugarfree

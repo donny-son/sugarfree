@@ -1,5 +1,6 @@
 import AppKit
 import Combine
+import KeyboardShortcuts
 import SwiftUI
 
 /// Owns Sugarfree's menu-bar presence as a real `NSStatusItem` instead of SwiftUI's
@@ -29,8 +30,17 @@ final class MenuBarStatusItemController: NSObject {
 
         configureButton()
         configurePopover()
+        registerPopoverHotkey()
         observe()
         renderIcon()
+    }
+
+    /// Bind the user-configurable "open dashboard" global hotkey (default ⌘⇧S) to the same
+    /// toggle the menu-bar button uses. Lives here because this controller owns the popover.
+    private func registerPopoverHotkey() {
+        KeyboardShortcuts.onKeyUp(for: .togglePopover) { [weak self] in
+            self?.togglePopover(nil)
+        }
     }
 
     // MARK: - Setup

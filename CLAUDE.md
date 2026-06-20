@@ -44,6 +44,16 @@ clipboard representation that carries it.
   TOML list items via `TableConverter` (pure Foundation). Transforms reshape content
   (lossy), so they default to off and live in their own dashboard section
 - Tracks `selfWriteCount` to prevent infinite loops
+- Three system-wide hotkeys are **user-configurable** via the
+  [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) package (app-only
+  dependency; not in `SugarCore`/CLI). Actions + defaults live in `ShortcutNames.swift`:
+  `toggleCleanup` (⌘⇧P), `cleanNow` (⌘⇧K), and `togglePopover` (⌘⇧S, opens the dashboard).
+  Handlers are wired where the action lives — `PasteboardMonitor` for the first two,
+  `MenuBarStatusItemController` for the popover. Global hotkeys (not SwiftUI
+  `.keyboardShortcut`) are required because an `LSUIElement` accessory is never frontmost.
+  The dashboard's "Shortcuts" section hosts a `KeyboardShortcuts.Recorder` per action
+  (record / ✕ clear / ↺ reset); KeyboardShortcuts persists changes in `UserDefaults` itself.
+  Recorder layout source of truth: `Design/shortcut-recorder.html` (direction "A · Inline field")
 - Bundle ID `com.sugarfree.app`; app source lives in `Sugarfree/`
 
 ## Shared core + CLI (cross-platform)
