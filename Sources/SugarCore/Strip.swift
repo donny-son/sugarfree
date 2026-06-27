@@ -50,6 +50,17 @@ public func stripHTML(_ html: String, sugars: Set<Sugar>) -> (String, Set<Sugar>
         if result != before { removed.insert(.heading) }
     }
 
+    // Horizontal rules: drop <hr> (void element — <hr>, <hr/>, <hr class="…">). There's
+    // no inner text to keep, so the whole tag is removed.
+    if sugars.contains(.horizontalRule) {
+        let before = result
+        result = result.replacingOccurrences(
+            of: "<hr[^>]*>",
+            with: "",
+            options: [.regularExpression, .caseInsensitive])
+        if result != before { removed.insert(.horizontalRule) }
+    }
+
     return (result, removed)
 }
 
@@ -73,6 +84,21 @@ public func stripPlainText(_ text: String, sugars: Set<Sugar>) -> (String, Set<S
     // regular character mid-line — or `#tag` with no space — is left untouched. An
     // optional trailing closing run of `#` is dropped too. Keeps the heading text.
     strip(.heading, ["(?m)^[ \\t]{0,3}#{1,6}[ \\t]+(.*?)(?:[ \\t]+#+)?[ \\t]*$"])
+
+    // Horizontal rules (CommonMark thematic break): a line of 3+ matching -, *, or _,
+    // optionally space-separated (`---`, `* * *`, `___`). The whole line — including its
+    // trailing newline — is removed, since there's no text to keep. Emphasis markers stay
+    // safe: **bold**/__u__/*i* all carry inner content, so the all-marker `$` anchor here
+    // never matches them. Runs before the emphasis rules below for the same reason.
+    if sugars.contains(.horizontalRule) {
+        let before = result
+        result = result.replacingOccurrences(
+            of: "(?m)^[ \\t]{0,3}([-*_])[ \\t]*(?:\\1[ \\t]*){2,}$\\n?",
+            with: "",
+            options: .regularExpression)
+        if result != before { removed.insert(.horizontalRule) }
+    }
+
     strip(.strikethrough, ["~~(.+?)~~"])
     strip(.bold, ["\\*\\*(.+?)\\*\\*", "__(.+?)__"])
     // Italic: single * (not part of **), and _ only at non-alphanumeric boundaries so

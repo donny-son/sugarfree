@@ -9,6 +9,7 @@ public enum Sugar: String, CaseIterable, Identifiable, Sendable {
     case underline
     case strikethrough
     case heading
+    case horizontalRule
 
     public var id: Self { self }
 
@@ -19,6 +20,7 @@ public enum Sugar: String, CaseIterable, Identifiable, Sendable {
         case .underline: return "Underline"
         case .strikethrough: return "Strikethrough"
         case .heading: return "Headers"
+        case .horizontalRule: return "Horizontal rules"
         }
     }
 
@@ -30,6 +32,7 @@ public enum Sugar: String, CaseIterable, Identifiable, Sendable {
         case .underline: return "<u>under</u>"
         case .strikethrough: return "~~strike~~"
         case .heading: return "# Heading"
+        case .horizontalRule: return "---"
         }
     }
 
@@ -46,6 +49,8 @@ public enum Sugar: String, CaseIterable, Identifiable, Sendable {
             return "Removes strikethrough — RTF, <s>/<del>, text-decoration, and ~~ markers."
         case .heading:
             return "Removes heading markers — leading #..###### at the start of a line, and <h1>–<h6> tags. Keeps the text."
+        case .horizontalRule:
+            return "Removes horizontal rules — a line of --- *** ___ (thematic break) and <hr> tags."
         }
     }
 
@@ -56,6 +61,7 @@ public enum Sugar: String, CaseIterable, Identifiable, Sendable {
         case .underline: return "underline"
         case .strikethrough: return "strikethrough"
         case .heading: return "number"
+        case .horizontalRule: return "minus"
         }
     }
 }

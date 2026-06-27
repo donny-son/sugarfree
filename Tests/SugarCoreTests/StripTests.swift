@@ -35,6 +35,24 @@ final class StripTests: XCTestCase {
         XCTAssertTrue(removed.isEmpty)
     }
 
+    func testHorizontalRuleLineStripped() {
+        let (out, removed) = stripPlainText("a\n---\nb", sugars: [.horizontalRule])
+        XCTAssertEqual(out, "a\nb")
+        XCTAssertEqual(removed, [.horizontalRule])
+    }
+
+    func testHorizontalRuleVariantsStripped() {
+        let (out, removed) = stripPlainText("***\ntext\n___\n* * *", sugars: [.horizontalRule])
+        XCTAssertEqual(out, "text\n")
+        XCTAssertEqual(removed, [.horizontalRule])
+    }
+
+    func testHorizontalRuleLeavesEmphasisAlone() {
+        let (out, removed) = stripPlainText("**bold** and ---", sugars: [.horizontalRule])
+        XCTAssertEqual(out, "**bold** and ---")
+        XCTAssertTrue(removed.isEmpty)
+    }
+
     func testDisabledSugarIsLeftAlone() {
         let (out, removed) = stripPlainText("**bold** *italic*", sugars: [.italic])
         XCTAssertEqual(out, "**bold** italic")
@@ -59,6 +77,12 @@ final class StripTests: XCTestCase {
         let (out, removed) = stripHTML("<span style=\"font-weight: 700;\">x</span>", sugars: [.bold])
         XCTAssertEqual(out, "<span style=\"\">x</span>")
         XCTAssertEqual(removed, [.bold])
+    }
+
+    func testHTMLHorizontalRuleRemoved() {
+        let (out, removed) = stripHTML("<p>a</p><hr/><p>b</p>", sugars: [.horizontalRule])
+        XCTAssertEqual(out, "<p>a</p><p>b</p>")
+        XCTAssertEqual(removed, [.horizontalRule])
     }
 
     func testHTMLUnchangedWhenNothingMatches() {

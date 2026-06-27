@@ -8,10 +8,12 @@ GitHub release:
 | macOS app | `app-v<version>` | `./release.sh` (local, notarized) | `Sugarfree-<version>.dmg` |
 | Cross-platform CLI | `cli-v<version>` | `.github/workflows/release.yml` (CI) | `sugarfree-<version>-<platform>` tarballs/zip + `.sha256` |
 
-The two can version independently (they happen to both be 1.4.0 today). The app DMG
-still bundles a copy of the CLI inside it, but the standalone CLI binaries are a
-separate, CI-built release. The rest of this doc covers the **macOS app** track; the
-CLI track is just "push a `cli-v*` tag" (see the bottom).
+The two are still **independent tracks** — separate tags, separate GitHub releases,
+separate build pipelines — but as of 1.5.1 they **share a single version number**:
+bump both together and release them at the same version (`app-v<ver>` + `cli-v<ver>`).
+The app DMG still bundles a copy of the CLI inside it, but the standalone CLI binaries
+are a separate, CI-built release. The rest of this doc covers the **macOS app** track;
+the CLI track is just "push a `cli-v*` tag" (see the bottom).
 
 How to cut a signed, **notarized** `.dmg` and publish it. The whole pipeline is one
 command — `./release.sh` — once the one-time setup below is in place.
@@ -44,9 +46,11 @@ All of this is done once per machine; none of it is in the repo.
 
 ## Cut a release
 
-1. **Bump the version** in **both** places (kept in sync per `CLAUDE.md`):
+1. **Bump the version** in **all** places — the app and CLI share one version number,
+   so bump them together:
    - `Configs/Base.xcconfig` → `MARKETING_VERSION` (and bump `CURRENT_PROJECT_VERSION`)
    - `project.yml` → `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`
+   - `Sources/sugarfree/Sugarfree.swift` → `CommandConfiguration(version:)` (CLI)
 2. **Build the notarized DMG:**
    ```bash
    ./release.sh

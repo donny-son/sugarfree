@@ -41,7 +41,7 @@ struct Sugarfree: ParsableCommand {
           cat page.html | sugarfree --html    strip from HTML
           sugarfree --clipboard --all         clean the system clipboard in place
         """,
-        version: "1.4.0"
+        version: "1.5.1"
     )
 
     @Argument(help: "Input file. Omit to read from stdin (unless --clipboard).")
@@ -61,6 +61,9 @@ struct Sugarfree: ParsableCommand {
 
     @Flag(inversion: .prefixedNo, help: "Strip headers.")
     var headers: Bool?
+
+    @Flag(inversion: .prefixedNo, help: "Strip horizontal rules (--- and <hr>).")
+    var horizontalRules: Bool?
 
     @Flag(help: "Strip every sugar (overrides the bold+italic default).")
     var all = false
@@ -149,6 +152,7 @@ struct Sugarfree: ParsableCommand {
         apply(.underline, underline)
         apply(.strikethrough, strikethrough)
         apply(.heading, headers)
+        apply(.horizontalRule, horizontalRules)
         return sugars
     }
 

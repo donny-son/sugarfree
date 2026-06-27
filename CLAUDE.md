@@ -112,8 +112,10 @@ For release signing, copy `Configs/LocalSigning.xcconfig.example` to
 ## Releasing
 
 The macOS app and the cross-platform CLI ship on **two independent tracks** that never
-share a tag or a GitHub release (they may version independently — they happen to both be
-at 1.4.0 today). Full runbook in `RELEASING.md`; the summary:
+share a tag or a GitHub release. They are still separate tracks (separate tags, releases,
+and build pipelines), but **as of 1.5.1 they share a single version number** — always bump
+both together and release them at the same version. Full runbook in `RELEASING.md`; the
+summary:
 
 | Track | Tag | Built by | Published assets |
 |---|---|---|---|
@@ -144,8 +146,8 @@ Both start by bumping the version, then pushing a track-prefixed tag:
   a Swift version on its runner, so no Windows binary is produced. It never blocks the
   release; this is a known open item.
 
-Current published releases: `app-v1.4.0` (DMG) and `cli-v1.4.0` (macOS-universal + Linux
-x86_64/arm64; no Windows).
+Current published releases: `app-v1.5.1` (DMG) and `cli-v1.5.1` (macOS-universal + Linux
+x86_64/arm64; no Windows). The app and CLI version numbers are kept in lockstep.
 
 ## Design workflow (contract)
 
@@ -186,6 +188,7 @@ Each sugar is independently toggleable. Coverage per representation:
 | Underline | `.underlineStyle` attribute | `<u>`, `text-decoration:underline` | — (no markdown form) |
 | Strikethrough | `.strikethroughStyle` attribute | `<s>`/`<del>`/`<strike>`, `text-decoration:line-through` | `~~…~~` |
 | Headers | — (no marker form) | `<h1>`–`<h6>` unwrap to text | `# …` … `###### …` at line start (keeps text) |
+| Horizontal rules | — (no marker form) | `<hr>` (void element) removed | `---`/`***`/`___` line (thematic break) removed whole |
 
 Caveats (best-effort regex; documented, not bugs):
 - Plain-text italic via `_` only matches at non-alphanumeric boundaries, so `snake_case`
@@ -197,6 +200,11 @@ Caveats (best-effort regex; documented, not bugs):
   `issue #42`), with no following space (`#tag`), or a run longer than six (`####### …`).
   An optional trailing closing `#` run is dropped. Headers have no RTF marker form (RTF
   headings are just larger/bold fonts), so they're plain-text + HTML only.
+- Horizontal rules match a CommonMark thematic break: a whole line of 3+ matching `-`, `*`,
+  or `_` (optionally space-separated), removed including its newline. Emphasis markers
+  survive because they always carry inner content (`**bold**`), so the all-marker line
+  anchor never matches them. No RTF marker form (RTF rules are paragraph borders), so it's
+  plain-text + HTML only.
 
 ## Transforms (structural)
 

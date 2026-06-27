@@ -1,7 +1,7 @@
 # sugarfree CLI
 
 A cross-platform command-line version of Sugarfree. It strips formatting "sugar"
-(bold, italic, underline, strikethrough, headers) from text, HTML, or RTF, and can
+(bold, italic, underline, strikethrough, headers, horizontal rules) from text, HTML, or RTF, and can
 optionally convert tables into YAML/TOML lists — using the exact same
 [`SugarCore`](../Sources/SugarCore) logic as the macOS menu-bar app, so behavior
 never drifts between the two.
@@ -48,6 +48,7 @@ are stripped by default**, matching the app.
 | `--underline` / `--no-underline` | toggle underline (HTML/RTF only) |
 | `--strikethrough` / `--no-strikethrough` | toggle strikethrough |
 | `--headers` / `--no-headers` | toggle headers |
+| `--horizontal-rules` / `--no-horizontal-rules` | toggle horizontal rules (`---` and `<hr>`) |
 | `--all` | strip every sugar |
 | `--none` | strip nothing (useful with `--tables`) |
 
